@@ -1,0 +1,11 @@
+[package]
+name = "opencv-samples"
+version = "0.1.0-dev"
+namespace = "samples"
+
+[build]
+source_roots = ["src"]
+artifact = "library"
+
+[dependencies]
+opencv = { path = ".." }

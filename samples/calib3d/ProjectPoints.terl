@@ -1,0 +1,20 @@
+/** Demonstrates projection of three-dimensional points into an image plane. */
+module samples.calib3d.ProjectPoints.
+
+import opencv.Calib3d.
+import opencv.Types.
+import std.io.Console.{println}.
+
+/** Runs the camera-projection example. */
+pub main(): Unit ->
+    // Define the intrinsic camera parameters [fx, fy, cx, cy].
+    let rotation = Types.vector3(0.0, 0.0, 0.0);
+    let translation = Types.vector3(0.0, 0.0, 0.0);
+    let camera = Types.camera_intrinsics(2.0, 2.0, 1.0, 1.0);
+    let distortion = Types.distortion_coefficients(0.0, 0.0, 0.0, 0.0, 0.0);
+    // Backproject the 3D points to 2D using the selected pose parameters.
+    let projected = Calib3d.project_points([0.0, 0.0, 2.0, 1.0, 0.0, 2.0], rotation, translation, camera, distortion);
+    if {
+        projected == [1.0, 1.0, 2.0, 1.0] -> println("projection example complete");
+        true -> println("projection example failed")
+    }.

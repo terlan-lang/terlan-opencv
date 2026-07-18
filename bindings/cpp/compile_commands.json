@@ -1,0 +1,16 @@
+[
+  {
+    "directory": ".",
+    "arguments": [
+      "clang++",
+      "--target=x86_64-unknown-linux-gnu",
+      "-std=c++14",
+      "-DTERLAN_OPENCV_METADATA=1",
+      "-I.",
+      "-I../../upstream/install/include/opencv4",
+      "-c",
+      "opencv_metadata.cc"
+    ],
+    "file": "opencv_metadata.cc"
+  }
+]

@@ -1,0 +1,120 @@
+module opencv.FeaturesTest.
+
+import opencv.Features.
+import opencv.Mat.
+
+/** Validates ORB extraction, matching, copied results, and owner cleanup. */
+@test
+pub orb_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let features = Features.detect_orb(source, 8);
+    let extraction_valid = Features.count(features) == 0 and Features.keypoints(features) == [] and Features.descriptor_width(features) == 32 and Features.descriptors(features).to_list() == [] and Features.live_count() == 1;
+    let matches = Features.match_orb(features, features, 8);
+    let matching_valid = Features.match_count(matches) == 0 and Features.match_indices(matches) == [] and Features.match_distances(matches) == [] and Features.match_coordinates(matches) == [] and Features.live_match_count() == 1;
+    Features.dispose_matches(matches);
+    Features.dispose(features);
+    Mat.dispose(source);
+    extraction_valid and matching_valid and Features.live_match_count() == 0 and Features.live_count() == 0 and Mat.live_count() == 0.
+
+/** Validates BRISK extraction, matching, copied results, and owner cleanup. */
+@test
+pub brisk_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let features = Features.detect_brisk(source, 30, 3, 8);
+    let extraction_valid = Features.brisk_count(features) == 0 and Features.brisk_keypoints(features) == [] and Features.brisk_descriptor_width(features) == 64 and Features.brisk_descriptors(features).to_list() == [] and Features.live_brisk_count() == 1;
+    let matches = Features.match_brisk(features, features, 8);
+    let matching_valid = Features.brisk_match_count(matches) == 0 and Features.brisk_match_indices(matches) == [] and Features.brisk_match_distances(matches) == [] and Features.brisk_match_coordinates(matches) == [] and Features.live_brisk_match_count() == 1;
+    Features.dispose_brisk_matches(matches);
+    Features.dispose_brisk(features);
+    Mat.dispose(source);
+    extraction_valid and matching_valid and Features.live_brisk_match_count() == 0 and Features.live_brisk_count() == 0 and Mat.live_count() == 0.
+
+/** Validates AKAZE extraction, matching, copied results, and owner cleanup. */
+@test
+pub akaze_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let features = Features.detect_akaze(source, 0.001, 8);
+    let extraction_valid = Features.akaze_count(features) == 0 and Features.akaze_keypoints(features) == [] and Features.akaze_descriptor_width(features) == 61 and Features.akaze_descriptors(features).to_list() == [] and Features.live_akaze_count() == 1;
+    let matches = Features.match_akaze(features, features, 8);
+    let matching_valid = Features.akaze_match_count(matches) == 0 and Features.akaze_match_indices(matches) == [] and Features.akaze_match_distances(matches) == [] and Features.akaze_match_coordinates(matches) == [] and Features.live_akaze_match_count() == 1;
+    Features.dispose_akaze_matches(matches);
+    Features.dispose_akaze(features);
+    Mat.dispose(source);
+    extraction_valid and matching_valid and Features.live_akaze_match_count() == 0 and Features.live_akaze_count() == 0 and Mat.live_count() == 0.
+
+/** Validates SIFT and affine-SIFT extraction, matching, and owner cleanup. */
+@test
+pub sift_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let features = Features.detect_sift(source, 0.04, 8);
+    let extraction_valid = Features.sift_count(features) == 0 and Features.sift_keypoints(features) == [] and Features.sift_descriptor_width(features) == 128 and Features.sift_descriptors(features) == [] and Features.live_sift_count() == 1;
+    let affine_features = Features.detect_affine_sift(source, 0.04, 8);
+    let affine_valid = Features.sift_count(affine_features) == 0 and Features.sift_keypoints(affine_features) == [] and Features.sift_descriptor_width(affine_features) == 128 and Features.sift_descriptors(affine_features) == [] and Features.live_sift_count() == 2;
+    let matches = Features.match_sift(features, features, 8);
+    let matching_valid = Features.sift_match_count(matches) == 0 and Features.sift_match_indices(matches) == [] and Features.sift_match_distances(matches) == [] and Features.sift_match_coordinates(matches) == [] and Features.live_sift_match_count() == 1;
+    Features.dispose_sift_matches(matches);
+    Features.dispose_sift(affine_features);
+    Features.dispose_sift(features);
+    Mat.dispose(source);
+    extraction_valid and affine_valid and matching_valid and Features.live_sift_match_count() == 0 and Features.live_sift_count() == 0 and Mat.live_count() == 0.
+
+/** Validates KAZE extraction, matching, copied results, and owner cleanup. */
+@test
+pub kaze_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let features = Features.detect_kaze(source, 0.001, 8);
+    let extraction_valid = Features.kaze_count(features) == 0 and Features.kaze_keypoints(features) == [] and Features.kaze_descriptor_width(features) == 64 and Features.kaze_descriptors(features) == [] and Features.live_kaze_count() == 1;
+    let matches = Features.match_kaze(features, features, 8);
+    let matching_valid = Features.kaze_match_count(matches) == 0 and Features.kaze_match_indices(matches) == [] and Features.kaze_match_distances(matches) == [] and Features.kaze_match_coordinates(matches) == [] and Features.live_kaze_match_count() == 1;
+    Features.dispose_kaze_matches(matches);
+    Features.dispose_kaze(features);
+    Mat.dispose(source);
+    extraction_valid and matching_valid and Features.live_kaze_match_count() == 0 and Features.live_kaze_count() == 0 and Mat.live_count() == 0.
+
+/** Validates the MSER region count and owner cleanup. */
+@test
+pub mser_count_contract(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let regions = Features.detect_mser(source, 5, 16, 1024, 8);
+    let valid = Features.mser_count(regions) == 0 and Features.live_mser_count() == 1;
+    Features.dispose_mser(regions);
+    Mat.dispose(source);
+    valid and Features.live_mser_count() == 0 and Mat.live_count() == 0.
+
+/** Validates MSER point coordinates are copied independently of the owner. */
+@test
+pub mser_points_contract(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let regions = Features.detect_mser(source, 5, 16, 1024, 8);
+    let points = Features.mser_points(regions);
+    Features.dispose_mser(regions);
+    Mat.dispose(source);
+    points == [] and Features.live_mser_count() == 0 and Mat.live_count() == 0.
+
+/** Validates MSER region offsets are copied independently of the owner. */
+@test
+pub mser_offsets_contract(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let regions = Features.detect_mser(source, 5, 16, 1024, 8);
+    let offsets = Features.mser_offsets(regions);
+    Features.dispose_mser(regions);
+    Mat.dispose(source);
+    offsets == [0] and Features.live_mser_count() == 0 and Mat.live_count() == 0.
+
+/** Validates MSER bounds are copied independently of the owner. */
+@test
+pub mser_bounds_contract(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let regions = Features.detect_mser(source, 5, 16, 1024, 8);
+    let bounds = Features.mser_bounds(regions);
+    Features.dispose_mser(regions);
+    Mat.dispose(source);
+    bounds == [] and Features.live_mser_count() == 0 and Mat.live_count() == 0.
+
+/** Validates simple-blob keypoints are returned as copied geometry. */
+@test
+pub blob_feature_contracts(): Bool ->
+    let source = Mat.zeros(64, 64, Atom["gray"]);
+    let keypoints = Features.simple_blob_keypoints(source, 255, 1, 4096, 1.0, 8);
+    Mat.dispose(source);
+    keypoints == [] and Mat.live_count() == 0.

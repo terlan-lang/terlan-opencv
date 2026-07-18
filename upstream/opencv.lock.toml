@@ -1,0 +1,17 @@
+schema = "terlan.opencv.upstream.v1"
+repository = "https://github.com/opencv/opencv.git"
+tag = "4.13.0"
+commit = "fe38fc608f6acb8b68953438a62305d8318f4fcd"
+release_date = "2025-12-31"
+license = "Apache-2.0"
+
+[source]
+checkout = "upstream/opencv"
+vendored = false
+verification = "git rev-parse HEAD must equal the pinned commit"
+
+[build]
+cache = "cmake/opencv-cpu.cmake"
+modules = ["core", "imgproc", "imgcodecs", "features", "calib3d", "ml", "dnn"]
+profile = "cpu-only"
+language_standard = "c++14"

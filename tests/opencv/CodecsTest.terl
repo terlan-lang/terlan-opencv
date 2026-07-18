@@ -1,0 +1,17 @@
+module opencv.CodecsTest.
+
+import opencv.Codecs.
+import opencv.Mat.
+import std.vm.Bytes.
+
+/** Validates deterministic in-memory BMP encoding, grayscale decoding, and cleanup. */
+@test
+pub codec_contracts(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0]), 1, 1, Atom["gray"]);
+    let encoded = Codecs.encode(source, Atom["bmp"]);
+    let decoded = Codecs.decode(encoded, Atom["grayscale"]);
+    let valid = encoded.length() > 0 and Mat.rows(decoded) == 1 and Mat.cols(decoded) == 1 and Mat.channels(decoded) == 1 and Mat.to_u8(decoded).to_list() == [0];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
+

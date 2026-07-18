@@ -1,0 +1,20 @@
+/** Demonstrates training and applying a small K-nearest-neighbor classifier. */
+module samples.ml.KnnClassification.
+
+import opencv.Ml.
+import std.io.Console.{println}.
+
+/** Runs the KNN classification example. */
+pub main(): Unit ->
+    // Set up labeled training data as flattened rows.
+    let samples = [0.0, 0.0, 0.0, 1.0, 10.0, 10.0, 10.0, 11.0];
+    let labels = [0, 0, 1, 1];
+    // Train the classifier, then predict two unseen rows.
+    let model = Ml.train_knn_classifier(samples, labels, 2, 3);
+    let predictions = Ml.predict(model, [0.2, 0.2, 10.2, 10.2], 3);
+    let valid = predictions == [0, 1] and Ml.sample_count(model) == 4 and Ml.feature_count(model) == 2;
+    Ml.dispose(model);
+    if {
+        valid and Ml.live_count() == 0 -> println("KNN example complete");
+        true -> println("KNN example failed")
+    }.

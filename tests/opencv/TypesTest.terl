@@ -1,0 +1,16 @@
+module opencv.TypesTest.
+
+import opencv.Types.{Bgr, Bgra, Gray, affine_transform, camera_intrinsics, camera_pose, distortion_coefficients, perspective_transform, size, vector3}.
+
+/** Validates named singleton variants and copied value constructors. */
+@test
+pub symbolic_and_value_type_contracts(): Bool ->
+    let dimensions = size(3, 2);
+    let affine = affine_transform(1.0, 0.0, 2.0, 0.0, 1.0, -1.0);
+    let perspective = perspective_transform(1.0, 0.0, 2.0, 0.0, 1.0, -1.0, 0.0, 0.0, 1.0);
+    let camera = camera_intrinsics(100.0, 110.0, 50.0, 40.0);
+    let distortion = distortion_coefficients(0.1, 0.2, 0.3, 0.4, 0.5);
+    let vector = vector3(1.0, 2.0, 3.0);
+    let pose = camera_pose(0.1, 0.2, 0.3, 1.0, 2.0, 3.0);
+    Gray != Bgr and Bgr != Bgra and dimensions.width == 3 and dimensions.height == 2 and affine.m02 == 2.0 and affine.m12 == -1.0 and perspective.m22 == 1.0 and camera.fx == 100.0 and camera.fy == 110.0 and distortion.k1 == 0.1 and distortion.k3 == 0.5 and vector.z == 3.0 and pose.tz == 3.0.
+

@@ -1,0 +1,28 @@
+/** Demonstrates erosion, dilation, and morphological opening. */
+module samples.imgproc.Morphology.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray, Open}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the morphology example and releases every result matrix. */
+pub main(): Unit ->
+    // Load a binary source image.
+    let source = Mat.from_u8(Bytes.from_list([0, 255, 0, 255, 255, 255, 0, 255, 0]), 3, 3, Gray);
+    // Apply the erosion operation with a rectangular 3x3 element.
+    let eroded = Imgproc.erode(source, 3, 3, 1);
+    // Apply the dilation operation with the same element.
+    let dilated = Imgproc.dilate(source, 3, 3, 1);
+    // Opening composes erosion followed by dilation.
+    let opened = Imgproc.morphology(source, Open, 3, 3, 1);
+    let valid = Mat.rows(eroded) == 3 and Mat.rows(dilated) == 3 and Mat.rows(opened) == 3;
+    Mat.dispose(opened);
+    Mat.dispose(dilated);
+    Mat.dispose(eroded);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("morphology example complete");
+        true -> println("morphology example failed")
+    }.

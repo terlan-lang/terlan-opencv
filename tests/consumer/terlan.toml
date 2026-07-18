@@ -1,0 +1,11 @@
+[package]
+name = "terlan-opencv-consumer"
+version = "0.0.0"
+namespace = "opencv_consumer"
+
+[build]
+source_roots = ["src"]
+artifact = "terlan-vm"
+
+[dependencies]
+opencv = { path = "../../generated" }

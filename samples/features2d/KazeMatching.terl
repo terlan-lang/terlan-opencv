@@ -1,0 +1,32 @@
+/** Demonstrates bounded KAZE detection, float descriptors, and matching. */
+module samples.features2d.KazeMatching.
+
+import opencv.Features.
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+
+/** Runs the KAZE matching example. */
+pub main(): Unit ->
+    // KAZE detects nonlinear scale-space features on a deterministic target.
+    let blank = Mat.zeros(64, 64, Gray);
+    let box = Imgproc.draw_rectangle(blank, 8, 8, 48, 48, 255, 2);
+    let cross = Imgproc.draw_cross(box, 32, 32, 21, 255, 2);
+    let image = Imgproc.draw_circle(cross, 20, 20, 6, 255, 2);
+    let query = Features.detect_kaze(image, 0.0001, 64);
+    let train = Features.detect_kaze(image, 0.0001, 64);
+    let matches = Features.match_kaze(query, train, 32);
+    let match_count = Features.kaze_match_count(matches);
+    let valid = Features.kaze_count(query) > 0 and Features.kaze_descriptor_width(query) == 64 and match_count > 0 and Features.kaze_match_distances(matches)[0] < 0.001;
+    Features.dispose_kaze_matches(matches);
+    Features.dispose_kaze(train);
+    Features.dispose_kaze(query);
+    Mat.dispose(image);
+    Mat.dispose(cross);
+    Mat.dispose(box);
+    Mat.dispose(blank);
+    if {
+        valid and Features.live_kaze_match_count() == 0 and Features.live_kaze_count() == 0 and Mat.live_count() == 0 -> println("KAZE matching example complete");
+        true -> println("KAZE matching example failed")
+    }.

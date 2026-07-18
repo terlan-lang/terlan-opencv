@@ -1,0 +1,23 @@
+/** Demonstrates locating a copied template with squared-difference scores. */
+module samples.imgproc.TemplateMatching.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the template-matching example. */
+pub main(): Unit ->
+    // Slide the template over the source image. Squared difference reports
+    // the best match as the smallest score, which is zero at the top left.
+    let image = Mat.from_u8(Bytes.from_list([1, 2, 3, 4, 5, 6, 7, 8, 9]), 3, 3, Gray);
+    let pattern = Mat.from_u8(Bytes.from_list([1, 2, 4, 5]), 2, 2, Gray);
+    let scores = Imgproc.match_template_sqdiff(image, pattern);
+    let valid = scores.length() == 4 and scores[0] >= 0.0 and scores[0] < 0.001 and scores[1] > scores[0];
+    Mat.dispose(pattern);
+    Mat.dispose(image);
+    if {
+        valid and Mat.live_count() == 0 -> println("Template matching example complete");
+        true -> println("Template matching example failed")
+    }.

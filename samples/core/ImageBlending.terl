@@ -1,0 +1,25 @@
+/** Demonstrates linear blending of two equally shaped images. */
+module samples.core.ImageBlending.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the linear image-blending example. */
+pub main(): Unit ->
+    // Read images of the same size and type. This port uses deterministic
+    // in-memory pixels instead of tutorial filesystem input.
+    let first = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let second = Mat.from_u8(Bytes.from_list([255, 128, 64, 0]), 2, 2, Gray);
+    // Blend with beta = 1.0 - alpha and no additive offset.
+    let blended = Imgproc.add_weighted(first, second, 0.25, 0.75, 0.0);
+    let valid = Mat.rows(blended) == 2 and Mat.cols(blended) == 2 and Mat.channels(blended) == 1;
+    Mat.dispose(blended);
+    Mat.dispose(second);
+    Mat.dispose(first);
+    if {
+        valid and Mat.live_count() == 0 -> println("Image blending example complete");
+        true -> println("Image blending example failed")
+    }.

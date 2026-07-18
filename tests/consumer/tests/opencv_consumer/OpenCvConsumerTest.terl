@@ -1,0 +1,12 @@
+module opencv_consumer.OpenCvConsumerTest.
+
+import opencv_consumer.Pipeline.
+import std.test.Test.{assert}.
+
+/**
+ * Proves an independent project can execute the generated package through a
+ * normal path dependency without compiler-repository source paths.
+ */
+@test
+pub external_consumer_executes_real_opencv_pipeline(): Bool ->
+    assert(Pipeline.execute()).

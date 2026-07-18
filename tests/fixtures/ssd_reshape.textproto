@@ -1,0 +1,50 @@
+ir_version: 8
+producer_name: "terlan-opencv-test"
+graph {
+  node {
+    input: "input"
+    input: "shape"
+    output: "output"
+    name: "reshape"
+    op_type: "Reshape"
+  }
+  name: "ssd_reshape_graph"
+  initializer {
+    dims: 4
+    data_type: 7
+    int64_data: 1
+    int64_data: 1
+    int64_data: 3
+    int64_data: 7
+    name: "shape"
+  }
+  input {
+    name: "input"
+    type {
+      tensor_type {
+        elem_type: 1
+        shape {
+          dim { dim_value: 1 }
+          dim { dim_value: 3 }
+          dim { dim_value: 1 }
+          dim { dim_value: 7 }
+        }
+      }
+    }
+  }
+  output {
+    name: "output"
+    type {
+      tensor_type {
+        elem_type: 1
+        shape {
+          dim { dim_value: 1 }
+          dim { dim_value: 1 }
+          dim { dim_value: 3 }
+          dim { dim_value: 7 }
+        }
+      }
+    }
+  }
+}
+opset_import { version: 13 }

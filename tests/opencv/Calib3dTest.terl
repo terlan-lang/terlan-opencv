@@ -1,0 +1,95 @@
+module opencv.Calib3dTest.
+
+import opencv.Calib3d.
+import opencv.Mat.
+import opencv.Types.
+
+/** Validates copied pose solving and refinement against synthetic observations. */
+camera_pose_valid(object_points: List[Float], image_points: List[Float], camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let solved = Calib3d.solve_pose(object_points, image_points, camera, distortion);
+    let solved_repeated = Calib3d.solve_pose(object_points, image_points, camera, distortion);
+    let solved_robust = Calib3d.solve_pose_robust(object_points, image_points, camera, distortion);
+    let solved_robust_repeated = Calib3d.solve_pose_robust(object_points, image_points, camera, distortion);
+    let initial = Types.camera_pose(0.15, -0.1, 0.1, 0.5, -0.2, 7.5);
+    let refined = Calib3d.refine_pose(object_points, image_points, initial, camera, distortion);
+    let refined_repeated = Calib3d.refine_pose(object_points, image_points, initial, camera, distortion);
+    let refined_vvs = Calib3d.refine_pose_vvs(object_points, image_points, initial, camera, distortion);
+    let refined_vvs_repeated = Calib3d.refine_pose_vvs(object_points, image_points, initial, camera, distortion);
+    let identity = Types.camera_pose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let composed = Calib3d.compose_pose(solved, identity);
+    let composed_repeated = Calib3d.compose_pose(solved, identity);
+    let solved_valid = solved == solved_repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11;
+    let robust_valid = solved_robust == solved_robust_repeated and solved_robust.tz > 7.9 and solved_robust.tz < 8.1 and solved_robust.rx > 0.09 and solved_robust.rx < 0.11;
+    let lm_valid = refined == refined_repeated and refined.tz > 7.9 and refined.tz < 8.1 and refined.rx > 0.09 and refined.rx < 0.11;
+    let vvs_valid = refined_vvs == refined_vvs_repeated and refined_vvs.tz > 7.9 and refined_vvs.tz < 8.1 and refined_vvs.rx > 0.09 and refined_vvs.rx < 0.11;
+    let composed_valid = composed == composed_repeated and composed.tz > 7.9 and composed.tz < 8.1 and composed.rx > 0.09 and composed.rx < 0.11;
+    solved_valid and robust_valid and lm_valid and vvs_valid and composed_valid.
+
+/** Validates fixed four-correspondence AP3P pose selection. */
+minimal_camera_pose_valid(camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let object_points = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 0.0, 0.0, 1.0];
+    let rotation = Types.vector3(0.1, -0.2, 0.05);
+    let translation = Types.vector3(0.25, -0.4, 8.0);
+    let image_points = Calib3d.project_points(object_points, rotation, translation, camera, distortion);
+    let solved = Calib3d.solve_pose_minimal(object_points, image_points, camera, distortion);
+    let repeated = Calib3d.solve_pose_minimal(object_points, image_points, camera, distortion);
+    solved == repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11.
+
+/** Validates lowest-error fixed-IPPE pose selection for a planar target. */
+planar_camera_pose_valid(camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let object_points = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -0.5, 0.0, 0.0, 0.5, 0.0, 0.0];
+    let rotation = Types.vector3(0.1, -0.2, 0.05);
+    let translation = Types.vector3(0.25, -0.4, 8.0);
+    let image_points = Calib3d.project_points(object_points, rotation, translation, camera, distortion);
+    let solved = Calib3d.solve_pose_planar(object_points, image_points, camera, distortion);
+    let repeated = Calib3d.solve_pose_planar(object_points, image_points, camera, distortion);
+    let square_objects = [-1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, -1.0, 0.0, -1.0, -1.0, 0.0];
+    let square_images = Calib3d.project_points(square_objects, rotation, translation, camera, distortion);
+    let square = Calib3d.solve_square_marker_pose(square_images, 2.0, camera, distortion);
+    let square_repeated = Calib3d.solve_square_marker_pose(square_images, 2.0, camera, distortion);
+    let planar_valid = solved == repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11;
+    let square_valid = square == square_repeated and square.tz > 7.9 and square.tz < 8.1 and square.rx > 0.09 and square.rx < 0.11;
+    planar_valid and square_valid.
+
+/** Runs transform, projection, pose solving, refinement, and composition contracts. */
+@test
+pub calibration_and_pose_contracts(): Bool ->
+    let distortion = Types.distortion_coefficients(0.0, 0.0, 0.0, 0.0, 0.0);
+    let undistort_source = Mat.zeros(64, 64, Atom["gray"]);
+    let undistort_camera = Types.camera_intrinsics(64.0, 64.0, 31.5, 31.5);
+    let undistorted = Calib3d.undistort(undistort_source, undistort_camera, distortion);
+    let optimal_undistorted = Calib3d.undistort_optimal(undistort_source, undistort_camera, distortion, 0.5, true);
+    let undistorted_points = Calib3d.undistort_points([31.5, 31.5], undistort_camera, distortion);
+    let undistort_valid = Mat.rows(undistorted) == 64 and Mat.cols(undistorted) == 64 and Mat.channels(undistorted) == 1 and Mat.to_u8(undistorted).to_list() == Mat.to_u8(undistort_source).to_list() and Mat.rows(optimal_undistorted) == 64 and Mat.cols(optimal_undistorted) == 64 and Mat.channels(optimal_undistorted) == 1 and Mat.to_u8(optimal_undistorted).to_list() == Mat.to_u8(undistort_source).to_list() and undistorted_points == [31.5, 31.5] and Calib3d.undistort_points([], undistort_camera, distortion) == [];
+    let identity = Types.affine_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    let affine_points = Calib3d.affine_transform_points([0.0, 0.0, 4.0, 4.0], identity);
+    let affine_valid = affine_points == [0.0, 0.0, 4.0, 4.0] and Calib3d.affine_transform_points([], identity) == [];
+    let perspective_identity = Types.perspective_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+    let perspective_points = Calib3d.perspective_transform_points([0.0, 0.0, 4.0, 4.0], perspective_identity);
+    let perspective_valid = perspective_points == [0.0, 0.0, 4.0, 4.0] and Calib3d.perspective_transform_points([], perspective_identity) == [];
+    let correspondence_points = [0.0, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
+    let translated_points = [2.0, -1.0, 6.0, -1.0, 6.0, 3.0, 2.0, 3.0];
+    let estimated_perspective = Calib3d.estimate_perspective_transform(correspondence_points, translated_points);
+    let estimated_perspective_repeated = Calib3d.estimate_perspective_transform(correspondence_points, translated_points);
+    let perspective_estimation_valid = Calib3d.perspective_transform_points(correspondence_points, estimated_perspective) == translated_points and Calib3d.perspective_transform_points(correspondence_points, estimated_perspective_repeated) == translated_points;
+    let affine_correspondence_points = [0.0, 0.0, 4.0, 0.0, 0.0, 4.0];
+    let affine_translated_points = [2.0, -1.0, 6.0, -1.0, 2.0, 3.0];
+    let estimated_affine = Calib3d.estimate_affine_transform(affine_correspondence_points, affine_translated_points);
+    let estimated_affine_repeated = Calib3d.estimate_affine_transform(affine_correspondence_points, affine_translated_points);
+    let affine_estimation_valid = Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine) == affine_translated_points and Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine_repeated) == affine_translated_points;
+    let zero_vector = Types.vector3(0.0, 0.0, 0.0);
+    let projection_camera = Types.camera_intrinsics(2.0, 2.0, 1.0, 1.0);
+    let object_points = [0.0, 0.0, 2.0, 1.0, 0.0, 2.0, 0.0, 1.0, 2.0];
+    let projected_points = Calib3d.project_points(object_points, zero_vector, zero_vector, projection_camera, distortion);
+    let projected_points_repeated = Calib3d.project_points(object_points, zero_vector, zero_vector, projection_camera, distortion);
+    let projection_valid = projected_points == [1.0, 1.0, 2.0, 1.0, 1.0, 2.0] and projected_points_repeated == projected_points and Calib3d.project_points([], zero_vector, zero_vector, projection_camera, distortion) == [];
+    let pose_objects = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -0.5, -0.5, 1.0, 0.5, -0.5, 1.0, -0.5, 0.5, 1.0, 0.5, 0.5, 1.0];
+    let pose_rotation = Types.vector3(0.1, -0.2, 0.05);
+    let pose_translation = Types.vector3(0.25, -0.4, 8.0);
+    let pose_camera = Types.camera_intrinsics(100.0, 100.0, 50.0, 50.0);
+    let pose_images = Calib3d.project_points(pose_objects, pose_rotation, pose_translation, pose_camera, distortion);
+    let valid = affine_valid and perspective_valid and perspective_estimation_valid and affine_estimation_valid and projection_valid and camera_pose_valid(pose_objects, pose_images, pose_camera, distortion) and minimal_camera_pose_valid(pose_camera, distortion) and planar_camera_pose_valid(pose_camera, distortion) and undistort_valid;
+    Mat.dispose(optimal_undistorted);
+    Mat.dispose(undistorted);
+    Mat.dispose(undistort_source);
+    valid and Mat.live_count() == 0.

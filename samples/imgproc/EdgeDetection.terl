@@ -1,0 +1,28 @@
+/** Demonstrates blur, Canny, Sobel, and Scharr edge detection. */
+module samples.imgproc.EdgeDetection.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the edge-detection example. */
+pub main(): Unit ->
+    let source = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]), 5, 5, Gray);
+    // Reduce noise with a 3x3 blur before applying the Canny detector.
+    let blurred = Imgproc.box_blur(source, 3, 3);
+    let canny = Imgproc.canny(blurred, 40.0, 120.0, 3, false);
+    // Generate first-order horizontal gradients with Sobel and Scharr.
+    let sobel = Imgproc.sobel_edges(blurred, 1, 0, 3);
+    let scharr = Imgproc.scharr_edges(blurred, 1, 0);
+    let valid = Mat.rows(canny) == 5 and Mat.rows(sobel) == 5 and Mat.rows(scharr) == 5;
+    Mat.dispose(scharr);
+    Mat.dispose(sobel);
+    Mat.dispose(canny);
+    Mat.dispose(blurred);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("Edge detection example complete");
+        true -> println("Edge detection example failed")
+    }.

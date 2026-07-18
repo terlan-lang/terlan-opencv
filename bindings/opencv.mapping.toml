@@ -1,0 +1,690 @@
+schema = "terlan.opencv.mapping.v1"
+namespace = "opencv"
+upstream_commit = "fe38fc608f6acb8b68953438a62305d8318f4fcd"
+
+[policy]
+buffer_boundary = "copy"
+exception_boundary = "stable_result"
+null_failure_boundary = "finite_thread_local_status"
+mutable_output_parameters = "adapter_only"
+integer_type_codes = "adapter_only"
+default_thread_safety = "thread_confined"
+
+[[symbols]]
+id = "record.cv.mat"
+disposition = "bind"
+public = "opencv.Mat.Mat"
+ownership = "unique"
+
+[[symbols]]
+id = "constructor.cv.mat.owned"
+disposition = "adapter_internal"
+public = "opencv.Mat.from_u8"
+
+[[symbols]]
+id = "constructor.cv.mat.zeroed"
+disposition = "adapter_internal"
+public = "opencv.Mat.zeros"
+
+[[symbols]]
+id = "field.cv.mat.rows_cols"
+disposition = "adapter_internal"
+public = "opencv.Mat.{rows,cols}"
+
+[[symbols]]
+id = "field.cv.mat.data"
+disposition = "adapter_internal"
+public = "opencv.Mat.{from_u8,to_u8}"
+copy_required = true
+
+[[symbols]]
+id = "method.cv.mat.clone"
+disposition = "bind"
+public = "opencv.Mat.clone"
+ownership = "unique"
+
+[[symbols]]
+id = "method.cv.mat.is_continuous"
+disposition = "bind"
+public = "opencv.Mat.is_contiguous"
+
+[[symbols]]
+id = "method.cv.mat.channels"
+disposition = "bind"
+public = "opencv.Mat.channels"
+
+[[symbols]]
+id = "record.cv.size"
+disposition = "bind"
+public = "opencv.Types.Size"
+ownership = "copied"
+
+[[symbols]]
+id = "constructor.cv.size"
+disposition = "adapter_internal"
+public = "opencv.Types.Size"
+
+[[symbols]]
+id = "enum.cv.interpolation_flags"
+disposition = "bind"
+public = "opencv.Types.Interpolation"
+variants = ["Nearest=INTER_NEAREST", "Linear=INTER_LINEAR", "Area=INTER_AREA", "Cubic=INTER_CUBIC"]
+
+[[symbols]]
+id = "enum.cv.color_conversion_codes"
+disposition = "bind"
+public = "opencv.Types.ColorConversion"
+variants = ["BgrToGray=COLOR_BGR2GRAY", "GrayToBgr=COLOR_GRAY2BGR", "BgrToBgra=COLOR_BGR2BGRA", "BgraToBgr=COLOR_BGRA2BGR"]
+
+[[symbols]]
+id = "function.cv.resize"
+disposition = "bind"
+public = "opencv.Imgproc.resize"
+output = "new_owned_mat"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.cvt_color"
+disposition = "bind"
+public = "opencv.Imgproc.cvt_color"
+output = "new_owned_mat"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.gaussian_blur"
+disposition = "bind"
+public = "opencv.Imgproc.gaussian_blur"
+output = "new_owned_mat"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.fast"
+disposition = "bind"
+public = "opencv.Imgproc.fast_keypoints"
+output = "copied_coordinates"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.undistort"
+disposition = "bind"
+public = "opencv.Calib3d.undistort"
+output = "new_owned_mat"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.get_optimal_new_camera_matrix"
+disposition = "bind"
+public = "opencv.Calib3d.undistort_optimal"
+output = "new_owned_mat"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.undistort_points"
+disposition = "bind"
+public = "opencv.Calib3d.undistort_points"
+output = "copied_coordinates"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.perspective_transform"
+disposition = "bind"
+public = "opencv.Calib3d.perspective_transform_points"
+output = "copied_coordinates"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.transform"
+disposition = "bind"
+public = "opencv.Calib3d.affine_transform_points"
+output = "copied_coordinates"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.get_perspective_transform"
+disposition = "bind"
+public = "opencv.Calib3d.estimate_perspective_transform"
+output = "copied_transform"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.get_affine_transform"
+disposition = "bind"
+public = "opencv.Calib3d.estimate_affine_transform"
+output = "copied_transform"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.project_points"
+disposition = "bind"
+public = "opencv.Calib3d.project_points"
+output = "copied_coordinates"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_pnp"
+disposition = "bind"
+public = "opencv.Calib3d.solve_pose"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_pnp_refine_lm"
+disposition = "bind"
+public = "opencv.Calib3d.refine_pose"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_pnp_refine_vvs"
+disposition = "bind"
+public = "opencv.Calib3d.refine_pose_vvs"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.compose_rt"
+disposition = "bind"
+public = "opencv.Calib3d.compose_pose"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_pnp_ransac"
+disposition = "bind"
+public = "opencv.Calib3d.solve_pose_robust"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_p3p"
+disposition = "bind"
+public = "opencv.Calib3d.solve_pose_minimal"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "function.cv.solve_pnp_generic"
+disposition = "bind"
+public = "opencv.Calib3d.solve_pose_planar"
+output = "copied_pose"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "record.cv.ml.knearest"
+disposition = "bind"
+public = "opencv.Ml.KnnModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.knearest.create"
+disposition = "bind"
+public = "opencv.Ml.train_knn_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.stat_model.train"
+disposition = "bind"
+public = "opencv.Ml.{train_knn_classifier,train_linear_svm_classifier,train_normal_bayes_classifier,train_logistic_classifier,train_decision_tree_classifier,train_boost_classifier,train_sgd_svm_classifier}"
+input = "copied_row_major_samples_and_integer_labels"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.knearest.find_nearest"
+disposition = "bind"
+public = "opencv.Ml.predict"
+output = "copied_integer_labels"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.knearest.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_knn_classifier,predict}"
+reason = "fixed to brute-force classification with bounded k"
+
+[[symbols]]
+id = "method.cv.ml.stat_model.state"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_knn_classifier,predict,train_linear_svm_classifier,predict_linear_svm,train_normal_bayes_classifier,predict_normal_bayes,train_logistic_classifier,predict_logistic,train_decision_tree_classifier,predict_decision_tree,train_boost_classifier,predict_boost,train_sgd_svm_classifier,predict_sgd_svm}"
+reason = "used only to validate the private trained model"
+
+[[symbols]]
+id = "record.cv.ml.svm"
+disposition = "bind"
+public = "opencv.Ml.LinearSvmModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.svm.create"
+disposition = "bind"
+public = "opencv.Ml.train_linear_svm_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.stat_model.predict"
+disposition = "bind"
+public = "opencv.Ml.{predict_linear_svm,predict_normal_bayes,predict_decision_tree,predict_boost,predict_sgd_svm}"
+output = "copied_integer_labels"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.svm.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_linear_svm_classifier,predict_linear_svm}"
+reason = "fixed to linear C-SVC with C=1 and bounded convergence"
+
+[[symbols]]
+id = "record.cv.ml.normal_bayes"
+disposition = "bind"
+public = "opencv.Ml.NormalBayesModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.normal_bayes.create"
+disposition = "bind"
+public = "opencv.Ml.train_normal_bayes_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.normal_bayes.predict_prob"
+disposition = "adapter_internal"
+public = "opencv.Ml.predict_normal_bayes"
+reason = "probability matrix shape and class ordering remain private"
+
+[[symbols]]
+id = "record.cv.ml.logistic_regression"
+disposition = "bind"
+public = "opencv.Ml.LogisticRegressionModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.logistic_regression.create"
+disposition = "bind"
+public = "opencv.Ml.train_logistic_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.logistic_regression.predict"
+disposition = "bind"
+public = "opencv.Ml.predict_logistic"
+output = "copied_integer_labels"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.logistic_regression.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_logistic_classifier,predict_logistic}"
+reason = "fixed to batch training with L2 regularization and bounded convergence"
+
+[[symbols]]
+id = "record.cv.ml.decision_tree"
+disposition = "bind"
+public = "opencv.Ml.DecisionTreeModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.decision_tree.create"
+disposition = "bind"
+public = "opencv.Ml.train_decision_tree_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.decision_tree.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_decision_tree_classifier,predict_decision_tree}"
+reason = "fixed to bounded depth, sample, category, and no-pruning policy"
+
+[[symbols]]
+id = "method.cv.ml.decision_tree.topology"
+disposition = "adapter_internal"
+public = "opencv.Ml.train_decision_tree_classifier"
+reason = "tree roots, nodes, splits, and subsets remain private validation state"
+
+[[symbols]]
+id = "record.cv.ml.boost"
+disposition = "bind"
+public = "opencv.Ml.BoostModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.boost.create"
+disposition = "bind"
+public = "opencv.Ml.train_boost_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.boost.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_boost_classifier,predict_boost}"
+reason = "fixed to REAL AdaBoost with bounded weak decision stumps and immutable trimming policy"
+
+[[symbols]]
+id = "record.cv.ml.svm_sgd"
+disposition = "bind"
+public = "opencv.Ml.SgdSvmModel"
+ownership = "unique"
+
+[[symbols]]
+id = "function.cv.ml.svm_sgd.create"
+disposition = "bind"
+public = "opencv.Ml.train_sgd_svm_classifier"
+ownership = "unique"
+exception = "opencv.native_exception"
+
+[[symbols]]
+id = "method.cv.ml.svm_sgd.model"
+disposition = "adapter_internal"
+public = "opencv.Ml.predict_sgd_svm"
+reason = "weights, shift, and raw signed decision values remain private validation state"
+
+[[symbols]]
+id = "method.cv.ml.svm_sgd.policy"
+disposition = "adapter_internal"
+public = "opencv.Ml.{train_sgd_svm_classifier,predict_sgd_svm}"
+reason = "fixed to ASGD, soft margin, optimal coefficients, seeded local sampling, and bounded convergence"
+
+[[types]]
+cpp = "cv::Mat"
+disposition = "opaque_resource"
+terlan = "opencv.Mat.Mat"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::ml::KNearest"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.KnnModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::KNearest>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique KnnModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::SVM"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.LinearSvmModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::SVM>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique LinearSvmModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::NormalBayesClassifier"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.NormalBayesModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::NormalBayesClassifier>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique NormalBayesModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::LogisticRegression"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.LogisticRegressionModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::LogisticRegression>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique LogisticRegressionModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::LogisticRegression::RegKinds"
+disposition = "adapter_internal"
+reason = "fixed to REG_L2 by the package adapter"
+
+[[types]]
+cpp = "cv::ml::LogisticRegression::Methods"
+disposition = "adapter_internal"
+reason = "fixed to BATCH by the package adapter"
+
+[[types]]
+cpp = "cv::ml::DTrees"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.DecisionTreeModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::DTrees>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique DecisionTreeModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::DTrees::Node"
+disposition = "adapter_internal"
+reason = "mutable tree topology remains private adapter validation state"
+
+[[types]]
+cpp = "cv::ml::DTrees::Split"
+disposition = "adapter_internal"
+reason = "mutable split topology remains private adapter validation state"
+
+[[types]]
+cpp = "std::vector<int>"
+disposition = "adapter_internal"
+reason = "borrowed decision-tree topology vectors never cross the package boundary"
+
+[[types]]
+cpp = "cv::ml::Boost"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.BoostModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::Boost>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique BoostModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::Boost::Types"
+disposition = "adapter_internal"
+reason = "fixed to REAL by the package adapter"
+
+[[types]]
+cpp = "cv::ml::SVMSGD"
+disposition = "opaque_resource"
+terlan = "opencv.Ml.SgdSvmModel"
+ownership = "unique"
+thread_safety = "thread_confined"
+
+[[types]]
+cpp = "cv::Ptr<cv::ml::SVMSGD>"
+disposition = "adapter_internal"
+reason = "retained only inside the unique SgdSvmModel adapter owner"
+
+[[types]]
+cpp = "cv::ml::SVMSGD::SvmsgdType"
+disposition = "adapter_internal"
+reason = "fixed to ASGD by the package adapter"
+
+[[types]]
+cpp = "cv::ml::SVMSGD::MarginType"
+disposition = "adapter_internal"
+reason = "fixed to SOFT_MARGIN by the package adapter"
+
+[[types]]
+cpp = "cv::ml::SVM::Types"
+disposition = "adapter_internal"
+reason = "fixed to C_SVC by the package adapter"
+
+[[types]]
+cpp = "cv::ml::SVM::KernelTypes"
+disposition = "adapter_internal"
+reason = "fixed to LINEAR by the package adapter"
+
+[[types]]
+cpp = "cv::ml::StatModel"
+disposition = "adapter_internal"
+reason = "base-class training and state operations remain behind the reviewed classifier adapters"
+
+[[types]]
+cpp = "cv::ml::KNearest::Types"
+disposition = "adapter_internal"
+reason = "fixed to BRUTE_FORCE by the package adapter"
+
+[[types]]
+cpp = "cv::Size"
+disposition = "copied_value"
+terlan = "opencv.Types.Size"
+
+[[types]]
+cpp = "cv::InputArray"
+disposition = "adapter_internal"
+reason = "constructed as a borrowed call argument from a live Mat handle"
+
+[[types]]
+cpp = "cv::OutputArray"
+disposition = "adapter_internal"
+reason = "backed by a fresh adapter-owned Mat and never exposed mutably"
+
+[[types]]
+cpp = "cv::InputOutputArray"
+disposition = "adapter_internal"
+reason = "backed by private copied pose vectors and never exposed mutably"
+
+[[types]]
+cpp = "cv::OutputArrayOfArrays"
+disposition = "adapter_internal"
+reason = "candidate pose vectors remain private and only the best reviewed result is copied"
+
+[[types]]
+cpp = "cv::SolvePnPMethod"
+disposition = "adapter_internal"
+reason = "fixed to reviewed pose-solving policies by package adapters"
+
+[[types]]
+cpp = "cv::TermCriteria"
+disposition = "adapter_internal"
+reason = "fixed to the reviewed count-and-epsilon pose refinement policy"
+
+[[types]]
+cpp = "cv::Rect*"
+disposition = "adapter_internal"
+reason = "optional valid-pixel ROI output remains private to the reviewed camera adapter"
+
+[[types]]
+cpp = "cv::Scalar"
+disposition = "adapter_internal"
+reason = "used only to initialize an owned zero matrix"
+
+[[types]]
+cpp = "const cv::Scalar&"
+disposition = "adapter_internal"
+reason = "borrowed only for the duration of the zeroing constructor"
+
+[[types]]
+cpp = "cv::InterpolationFlags"
+disposition = "finite_enum"
+terlan = "opencv.Types.Interpolation"
+
+[[types]]
+cpp = "cv::ColorConversionCodes"
+disposition = "finite_enum"
+terlan = "opencv.Types.ColorConversion"
+
+[[types]]
+cpp = "cv::AlgorithmHint"
+disposition = "adapter_internal"
+reason = "fixed to cv::ALGO_HINT_DEFAULT in the first surface"
+
+[[types]]
+cpp = "cv::BorderTypes"
+disposition = "adapter_internal"
+reason = "fixed to cv::BORDER_DEFAULT in the first surface"
+
+[[types]]
+cpp = "unsigned char*"
+disposition = "adapter_internal"
+reason = "copied only after validated dimensions and contiguous storage"
+
+[[types]]
+cpp = "std::size_t"
+disposition = "adapter_internal"
+reason = "checked byte-count arithmetic; never exposed in Terlan"
+
+[[types]]
+cpp = "std::vector<std::uint8_t>"
+disposition = "copied_container"
+terlan = "Bytes"
+
+[[types]]
+cpp = "std::vector<cv::Point2f>"
+disposition = "adapter_internal"
+reason = "validated and flattened inside the adapter before crossing the boundary"
+
+[[types]]
+cpp = "std::vector<cv::KeyPoint>&"
+disposition = "adapter_internal"
+reason = "filled by OpenCV and flattened into validated copied coordinates"
+
+[[types]]
+cpp = "cv::FastFeatureDetector::DetectorType"
+disposition = "adapter_internal"
+reason = "fixed to TYPE_9_16 by the reviewed package adapter"
+
+[[types]]
+cpp = "std::vector<double>"
+disposition = "copied_container"
+terlan = "List[Float]"
+
+[[types]]
+cpp = "int"
+disposition = "checked_scalar"
+terlan = "Int"
+reason = "range-checked before narrowing to the OpenCV ABI"
+
+[[types]]
+cpp = "double"
+disposition = "scalar"
+terlan = "Float"
+
+[[types]]
+cpp = "float"
+disposition = "scalar"
+terlan = "Float"
+reason = "used only by reviewed OpenCV scalar parameters; public adapters may fix policy values"
+
+[[types]]
+cpp = "bool"
+disposition = "scalar"
+terlan = "Bool"
+
+[[types]]
+cpp = "void"
+disposition = "adapter_internal"
+reason = "native output parameters are converted to owned Result values"
+
+[[types]]
+cpp = "cv::Exception"
+disposition = "contained_exception"
+terlan = "Error"
+reason = "translated to stable opencv.native_exception without raw payload reflection"
+
+[[types]]
+cpp = "std::exception"
+disposition = "contained_exception"
+terlan = "Error"
+reason = "translated to stable opencv.native_exception without raw payload reflection"
+
+[[types]]
+cpp = "unknown native exception"
+disposition = "contained_exception"
+terlan = "Error"
+reason = "translated to opencv.native_failure"

@@ -1,0 +1,29 @@
+/** Demonstrates fixed, Otsu, and triangle threshold selection. */
+module samples.imgproc.Thresholding.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{BinaryThreshold, Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the thresholding example and releases every result matrix. */
+pub main(): Unit ->
+    // The GUI tutorial loads a color image and converts it to gray; this port
+    // starts with deterministic grayscale pixels because GUI I/O is not owned
+    // by the current package.
+    let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    // Apply a fixed binary threshold.
+    let fixed = Imgproc.threshold(source, 100.0, 255.0, BinaryThreshold);
+    // Let Otsu and triangle selection derive their thresholds from the image.
+    let otsu = Imgproc.otsu_threshold(source, 255.0, BinaryThreshold);
+    let triangle = Imgproc.triangle_threshold(source, 255.0, BinaryThreshold);
+    let valid = Mat.to_u8(fixed).to_list() == [0, 0, 255, 255] and Mat.rows(otsu) == 2 and Mat.rows(triangle) == 2;
+    Mat.dispose(triangle);
+    Mat.dispose(otsu);
+    Mat.dispose(fixed);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("thresholding example complete");
+        true -> println("thresholding example failed")
+    }.

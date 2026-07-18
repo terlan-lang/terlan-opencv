@@ -1,0 +1,24 @@
+/** Demonstrates Gaussian pyramid downsampling and upsampling. */
+module samples.imgproc.Pyramids.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the image-pyramid example. */
+pub main(): Unit ->
+    // Load an even-sized image so pyrDown produces an exact half-size level.
+    let source = Mat.from_u8(Bytes.from_list([0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240]), 4, 4, Gray);
+    // Zoom out by one Gaussian pyramid level, then zoom back in.
+    let smaller = Imgproc.pyr_down(source);
+    let larger = Imgproc.pyr_up(smaller);
+    let valid = Mat.rows(smaller) == 2 and Mat.cols(smaller) == 2 and Mat.rows(larger) == 4 and Mat.cols(larger) == 4;
+    Mat.dispose(larger);
+    Mat.dispose(smaller);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("Pyramid example complete");
+        true -> println("Pyramid example failed")
+    }.

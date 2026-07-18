@@ -1,0 +1,28 @@
+/** Demonstrates immutable geometric drawing operations. */
+module samples.imgproc.Drawing.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+
+/** Runs the basic geometric drawing example. */
+pub main(): Unit ->
+    // Create a black empty image.
+    let canvas = Mat.zeros(32, 32, Gray);
+    // Draw simple lines and rectangles, then add an ellipse and filled circle.
+    // Each Terlan operation returns a new owner instead of mutating the input.
+    let line = Imgproc.draw_line(canvas, 2, 2, 29, 29, 255, 1);
+    let rectangle = Imgproc.draw_rectangle(line, 4, 4, 24, 24, 192, 1);
+    let ellipse = Imgproc.draw_ellipse(rectangle, 16, 16, 10, 5, 128, 1);
+    let drawing = Imgproc.fill_circle(ellipse, 16, 16, 3, 255);
+    let valid = Imgproc.non_zero_counts(drawing) != [0];
+    Mat.dispose(drawing);
+    Mat.dispose(ellipse);
+    Mat.dispose(rectangle);
+    Mat.dispose(line);
+    Mat.dispose(canvas);
+    if {
+        valid and Mat.live_count() == 0 -> println("Drawing example complete");
+        true -> println("Drawing example failed")
+    }.

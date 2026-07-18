@@ -1,0 +1,33 @@
+schema = "terlan.opencv.codec-policy.v1"
+module = "imgcodecs"
+public_module = "opencv.Codecs"
+input_boundary = "copied_bytes"
+output_boundary = "copied_bytes"
+filesystem_policy = "forbidden"
+availability_source = "pinned_build_and_link_probe"
+unavailable_error = "opencv.codec_unavailable"
+invalid_data_error = "opencv.invalid_encoded_image"
+max_encoded_bytes = 67108864
+max_decoded_bytes = 268435456
+
+public_functions = ["decode", "encode"]
+forbidden_functions = ["imread", "imwrite"]
+
+[[formats]]
+name = "bmp"
+extension = ".bmp"
+decode = true
+encode = true
+availability = "required"
+
+[[decode_modes]]
+name = "unchanged"
+value = -1
+
+[[decode_modes]]
+name = "grayscale"
+value = 0
+
+[[decode_modes]]
+name = "color"
+value = 1

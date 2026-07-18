@@ -1,0 +1,31 @@
+{
+  "schema": "terlan.opencv.skipped.v1",
+  "upstream_commit": "fe38fc608f6acb8b68953438a62305d8318f4fcd",
+  "symbols": [
+    {
+      "upstream_id": "cv::Mat::Mat(int,int,int,void*,std::size_t)",
+      "reason": "borrowed external buffer lifetime is outside the owned first surface"
+    },
+    {
+      "upstream_id": "cv::Mat::zeros(int,int,int)",
+      "reason": "returns cv::MatExpr; the adapter uses the owned Scalar constructor instead"
+    },
+    {
+      "upstream_id": "cv::Mat::data",
+      "reason": "raw data is adapter-internal and is never exposed as a public pointer"
+    },
+    {
+      "upstream_id": "cv::resize overloads outside the selected six-parameter declaration",
+      "reason": "the first surface fixes scale factors to zero and returns a new owned Mat"
+    },
+    {
+      "upstream_id": "cv::ColorConversionCodes values outside the four selected variants",
+      "reason": "unreviewed conversion and layout combinations are not public"
+    },
+    {
+      "upstream_id": "cv::InterpolationFlags values outside nearest, linear, area, and cubic",
+      "reason": "warping flags and bit-exact variants are not interpolation choices in the first surface"
+    }
+  ]
+}
+

@@ -1,0 +1,20 @@
+[package]
+name = "terlan-opencv"
+version = "0.1.0-dev"
+namespace = "opencv"
+description = "CPU-first OpenCV vision, machine-learning, and inference-preprocessing integration for Terlan"
+license = "Apache-2.0"
+repository = "https://github.com/terlan-lang/terlan-opencv"
+compiler = ">= 0.0.7"
+links = ["https://terlan.org", "https://opencv.org"]
+
+[build]
+source_roots = ["src"]
+artifact = "library"
+
+[native.cpp]
+binding = "bindings/opencv.metadata.json"
+mapping = "bindings/opencv.mapping.toml"
+upstream_lock = "upstream/opencv.lock.toml"
+cmake_cache = "cmake/opencv-cpu.cmake"
+modules = ["core", "imgproc", "imgcodecs", "features", "calib3d", "ml", "dnn"]

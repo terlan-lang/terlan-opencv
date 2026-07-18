@@ -1,0 +1,652 @@
+{
+  "schema": "terlan.opencv.metadata.v1",
+  "producer": {
+    "name": "reviewed-upstream-inventory",
+    "version": "1",
+    "note": "OCV0.2 must reproduce this inventory with the maintained Clang extractor before generation."
+  },
+  "upstream": {
+    "repository": "https://github.com/opencv/opencv.git",
+    "tag": "4.13.0",
+    "commit": "fe38fc608f6acb8b68953438a62305d8318f4fcd",
+    "modules": ["core", "imgproc", "imgcodecs", "features", "calib3d", "ml", "dnn"]
+  },
+  "compile": {
+    "language_standard": "c++14",
+    "headers": ["opencv2/core.hpp", "opencv2/imgproc.hpp", "opencv2/imgcodecs.hpp", "opencv2/features2d.hpp", "opencv2/calib3d.hpp", "opencv2/ml.hpp", "opencv2/dnn.hpp"],
+    "export_annotations": ["CV_EXPORTS", "CV_EXPORTS_W"]
+  },
+  "declarations": [
+    {
+      "id": "record.cv.mat",
+      "upstream_id": "cv::Mat",
+      "kind": "record",
+      "module": "core",
+      "signature": "class CV_EXPORTS Mat",
+      "annotations": ["CV_EXPORTS"],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 829, "column": 1},
+      "referenced_types": ["cv::Mat"]
+    },
+    {
+      "id": "constructor.cv.mat.owned",
+      "upstream_id": "cv::Mat::Mat(int,int,int)",
+      "kind": "constructor",
+      "module": "core",
+      "signature": "Mat(int rows, int cols, int type)",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 846, "column": 5},
+      "referenced_types": ["cv::Mat", "int"]
+    },
+    {
+      "id": "constructor.cv.mat.zeroed",
+      "upstream_id": "cv::Mat::Mat(int,int,int,const cv::Scalar&)",
+      "kind": "constructor",
+      "module": "core",
+      "signature": "Mat(int rows, int cols, int type, const Scalar& value)",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 865, "column": 5},
+      "referenced_types": ["cv::Mat", "int", "const cv::Scalar&"]
+    },
+    {
+      "id": "field.cv.mat.rows_cols",
+      "upstream_id": "cv::Mat::{rows,cols}",
+      "kind": "field_group",
+      "module": "core",
+      "signature": "int rows, cols",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 2165, "column": 5},
+      "referenced_types": ["cv::Mat", "int"]
+    },
+    {
+      "id": "field.cv.mat.data",
+      "upstream_id": "cv::Mat::data",
+      "kind": "field",
+      "module": "core",
+      "signature": "uchar* data",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 2167, "column": 5},
+      "referenced_types": ["cv::Mat", "unsigned char*", "std::size_t"]
+    },
+    {
+      "id": "method.cv.mat.clone",
+      "upstream_id": "cv::Mat::clone() const",
+      "kind": "method",
+      "module": "core",
+      "signature": "CV_NODISCARD_STD Mat clone() const",
+      "annotations": ["CV_NODISCARD_STD"],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 1226, "column": 5},
+      "referenced_types": ["cv::Mat"]
+    },
+    {
+      "id": "method.cv.mat.is_continuous",
+      "upstream_id": "cv::Mat::isContinuous() const",
+      "kind": "method",
+      "module": "core",
+      "signature": "bool isContinuous() const",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 1790, "column": 5},
+      "referenced_types": ["cv::Mat", "bool"]
+    },
+    {
+      "id": "method.cv.mat.channels",
+      "upstream_id": "cv::Mat::channels() const",
+      "kind": "method",
+      "module": "core",
+      "signature": "int channels() const",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/mat.hpp", "line": 1835, "column": 5},
+      "referenced_types": ["cv::Mat", "int"]
+    },
+    {
+      "id": "record.cv.size",
+      "upstream_id": "cv::Size_<int>",
+      "kind": "template_instantiation",
+      "module": "core",
+      "signature": "typedef Size_<int> Size2i; typedef Size2i Size",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/types.hpp", "line": 329, "column": 1},
+      "referenced_types": ["cv::Size", "int"]
+    },
+    {
+      "id": "constructor.cv.size",
+      "upstream_id": "cv::Size_<int>::Size_(int,int)",
+      "kind": "constructor",
+      "module": "core",
+      "signature": "Size_(_Tp width, _Tp height)",
+      "annotations": [],
+      "source": {"path": "modules/core/include/opencv2/core/types.hpp", "line": 1696, "column": 1},
+      "referenced_types": ["cv::Size", "int"]
+    },
+    {
+      "id": "enum.cv.interpolation_flags",
+      "upstream_id": "cv::InterpolationFlags",
+      "kind": "enum",
+      "module": "imgproc",
+      "signature": "enum InterpolationFlags",
+      "annotations": [],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 249, "column": 1},
+      "selected_values": ["INTER_NEAREST", "INTER_LINEAR", "INTER_CUBIC", "INTER_AREA"],
+      "referenced_types": ["cv::InterpolationFlags", "int"]
+    },
+    {
+      "id": "enum.cv.color_conversion_codes",
+      "upstream_id": "cv::ColorConversionCodes",
+      "kind": "enum",
+      "module": "imgproc",
+      "signature": "enum ColorConversionCodes",
+      "annotations": [],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 538, "column": 1},
+      "selected_values": ["COLOR_BGR2BGRA", "COLOR_BGRA2BGR", "COLOR_BGR2GRAY", "COLOR_GRAY2BGR"],
+      "referenced_types": ["cv::ColorConversionCodes", "int"]
+    },
+    {
+      "id": "function.cv.resize",
+      "upstream_id": "cv::resize(cv::InputArray,cv::OutputArray,cv::Size,double,double,int)",
+      "kind": "function",
+      "module": "imgproc",
+      "signature": "CV_EXPORTS_W void resize(InputArray src, OutputArray dst, Size dsize, double fx=0, double fy=0, int interpolation=INTER_LINEAR)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 2423, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "cv::Size", "double", "cv::InterpolationFlags", "void"]
+    },
+    {
+      "id": "function.cv.cvt_color",
+      "upstream_id": "cv::cvtColor(cv::InputArray,cv::OutputArray,int,int,cv::AlgorithmHint)",
+      "kind": "function",
+      "module": "imgproc",
+      "signature": "CV_EXPORTS_W void cvtColor(InputArray src, OutputArray dst, int code, int dstCn=0, AlgorithmHint hint=cv::ALGO_HINT_DEFAULT)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 3757, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "int", "cv::ColorConversionCodes", "cv::AlgorithmHint", "void"]
+    },
+    {
+      "id": "function.cv.gaussian_blur",
+      "upstream_id": "cv::GaussianBlur(cv::InputArray,cv::OutputArray,cv::Size,double,double,int,cv::AlgorithmHint)",
+      "kind": "function",
+      "module": "imgproc",
+      "signature": "CV_EXPORTS_W void GaussianBlur(InputArray src, OutputArray dst, Size ksize, double sigmaX, double sigmaY=0, int borderType=BORDER_DEFAULT, AlgorithmHint hint=cv::ALGO_HINT_DEFAULT)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 1545, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "cv::Size", "double", "cv::BorderTypes", "cv::AlgorithmHint", "void"]
+    },
+    {
+      "id": "function.cv.fast",
+      "upstream_id": "cv::FAST(cv::InputArray,std::vector<cv::KeyPoint>&,int,bool,cv::FastFeatureDetector::DetectorType)",
+      "kind": "function",
+      "module": "features",
+      "signature": "CV_EXPORTS void FAST(InputArray image, std::vector<KeyPoint>& keypoints, int threshold, bool nonmaxSuppression, FastFeatureDetector::DetectorType type)",
+      "annotations": ["CV_EXPORTS"],
+      "source": {"path": "modules/features/include/opencv2/features2d.hpp", "line": 623, "column": 1},
+      "referenced_types": ["cv::InputArray", "std::vector<cv::KeyPoint>&", "int", "bool", "cv::FastFeatureDetector::DetectorType", "void"]
+    },
+    {
+      "id": "function.cv.undistort",
+      "upstream_id": "cv::undistort(cv::InputArray,cv::OutputArray,cv::InputArray,cv::InputArray,cv::InputArray)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void undistort(InputArray src, OutputArray dst, InputArray cameraMatrix, InputArray distCoeffs, InputArray newCameraMatrix=noArray())",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 3723, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "void"]
+    },
+    {
+      "id": "function.cv.get_optimal_new_camera_matrix",
+      "upstream_id": "cv::getOptimalNewCameraMatrix(cv::InputArray,cv::InputArray,cv::Size,double,cv::Size,cv::Rect*,bool)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W Mat getOptimalNewCameraMatrix(InputArray cameraMatrix, InputArray distCoeffs, Size imageSize, double alpha, Size newImgSize=Size(), Rect* validPixROI=0, bool centerPrincipalPoint=false)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 2204, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::Size", "cv::Rect*", "double", "bool", "cv::Mat"]
+    },
+    {
+      "id": "function.cv.undistort_points",
+      "upstream_id": "cv::undistortPoints(cv::InputArray,cv::OutputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void undistortPoints(InputArray src, OutputArray dst, InputArray cameraMatrix, InputArray distCoeffs, InputArray R=noArray(), InputArray P=noArray())",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 3852, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "void"]
+    },
+    {
+      "id": "function.cv.perspective_transform",
+      "upstream_id": "cv::perspectiveTransform(cv::InputArray,cv::OutputArray,cv::InputArray)",
+      "kind": "function",
+      "module": "core",
+      "signature": "CV_EXPORTS_W void perspectiveTransform(InputArray src, OutputArray dst, InputArray m)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/core/include/opencv2/core.hpp", "line": 1856, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "void"]
+    },
+    {
+      "id": "function.cv.transform",
+      "upstream_id": "cv::transform(cv::InputArray,cv::OutputArray,cv::InputArray)",
+      "kind": "function",
+      "module": "core",
+      "signature": "CV_EXPORTS_W void transform(InputArray src, OutputArray dst, InputArray m)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/core/include/opencv2/core.hpp", "line": 1829, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "void"]
+    },
+    {
+      "id": "function.cv.get_perspective_transform",
+      "upstream_id": "cv::getPerspectiveTransform(cv::InputArray,cv::InputArray,int)",
+      "kind": "function",
+      "module": "imgproc",
+      "signature": "CV_EXPORTS_W Mat getPerspectiveTransform(InputArray src, InputArray dst, int solveMethod = DECOMP_LU)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 2642, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "int", "cv::Mat"]
+    },
+    {
+      "id": "function.cv.get_affine_transform",
+      "upstream_id": "cv::getAffineTransform(cv::InputArray,cv::InputArray)",
+      "kind": "function",
+      "module": "imgproc",
+      "signature": "CV_EXPORTS_W Mat getAffineTransform(InputArray src, InputArray dst)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/imgproc/include/opencv2/imgproc.hpp", "line": 2648, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::Mat"]
+    },
+    {
+      "id": "function.cv.compose_rt",
+      "upstream_id": "cv::composeRT(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray,cv::OutputArray)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void composeRT(InputArray rvec1, InputArray tvec1, InputArray rvec2, InputArray tvec2, OutputArray rvec3, OutputArray tvec3, OutputArray dr3dr1 = noArray(), OutputArray dr3dt1 = noArray(), OutputArray dr3dr2 = noArray(), OutputArray dr3dt2 = noArray(), OutputArray dt3dr1 = noArray(), OutputArray dt3dt1 = noArray(), OutputArray dt3dr2 = noArray(), OutputArray dt3dt2 = noArray())",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 951, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "void"]
+    },
+    {
+      "id": "function.cv.project_points",
+      "upstream_id": "cv::projectPoints(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArray,cv::OutputArray,double)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void projectPoints(InputArray objectPoints, InputArray rvec, InputArray tvec, InputArray cameraMatrix, InputArray distCoeffs, OutputArray imagePoints, OutputArray jacobian = noArray(), double aspectRatio = 0)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 992, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "double", "void"]
+    },
+    {
+      "id": "function.cv.solve_pnp",
+      "upstream_id": "cv::solvePnP(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArray,cv::OutputArray,bool,int)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W bool solvePnP(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, OutputArray rvec, OutputArray tvec, bool useExtrinsicGuess = false, int flags = SOLVEPNP_ITERATIVE)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1072, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "bool", "int"]
+    },
+    {
+      "id": "function.cv.solve_pnp_ransac",
+      "upstream_id": "cv::solvePnPRansac(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArray,cv::OutputArray,bool,int,float,double,cv::OutputArray,int)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W bool solvePnPRansac(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, OutputArray rvec, OutputArray tvec, bool useExtrinsicGuess = false, int iterationsCount = 100, float reprojectionError = 8.0, double confidence = 0.99, OutputArray inliers = noArray(), int flags = SOLVEPNP_ITERATIVE)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1122, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "bool", "int", "float", "double"]
+    },
+    {
+      "id": "function.cv.solve_p3p",
+      "upstream_id": "cv::solveP3P(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArrayOfArrays,cv::OutputArrayOfArrays,int)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W int solveP3P(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, OutputArrayOfArrays rvecs, OutputArrayOfArrays tvecs, int flags)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1168, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArrayOfArrays", "int"]
+    },
+    {
+      "id": "function.cv.solve_pnp_generic",
+      "upstream_id": "cv::solvePnPGeneric(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::OutputArrayOfArrays,cv::OutputArrayOfArrays,bool,cv::SolvePnPMethod,cv::InputArray,cv::InputArray,cv::OutputArray)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W int solvePnPGeneric(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, OutputArrayOfArrays rvecs, OutputArrayOfArrays tvecs, bool useExtrinsicGuess = false, SolvePnPMethod flags = SOLVEPNP_ITERATIVE, InputArray rvec = noArray(), InputArray tvec = noArray(), OutputArray reprojectionError = noArray())",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1309, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArrayOfArrays", "cv::OutputArray", "cv::SolvePnPMethod", "bool", "int"]
+    },
+    {
+      "id": "function.cv.solve_pnp_refine_lm",
+      "upstream_id": "cv::solvePnPRefineLM(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::InputOutputArray,cv::InputOutputArray,cv::TermCriteria)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void solvePnPRefineLM(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, InputOutputArray rvec, InputOutputArray tvec, TermCriteria criteria = TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 20, FLT_EPSILON))",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1197, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::InputOutputArray", "cv::TermCriteria", "void"]
+    },
+    {
+      "id": "function.cv.solve_pnp_refine_vvs",
+      "upstream_id": "cv::solvePnPRefineVVS(cv::InputArray,cv::InputArray,cv::InputArray,cv::InputArray,cv::InputOutputArray,cv::InputOutputArray,cv::TermCriteria,double)",
+      "kind": "function",
+      "module": "calib3d",
+      "signature": "CV_EXPORTS_W void solvePnPRefineVVS(InputArray objectPoints, InputArray imagePoints, InputArray cameraMatrix, InputArray distCoeffs, InputOutputArray rvec, InputOutputArray tvec, TermCriteria criteria = TermCriteria(TermCriteria::EPS + TermCriteria::COUNT, 20, FLT_EPSILON), double VVSlambda = 1)",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/calib3d/include/opencv2/calib3d.hpp", "line": 1228, "column": 1},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::InputOutputArray", "cv::TermCriteria", "double", "void"]
+    },
+    {
+      "id": "record.cv.ml.knearest",
+      "upstream_id": "cv::ml::KNearest",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W KNearest : public StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 436, "column": 1},
+      "referenced_types": ["cv::ml::KNearest", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.knearest.create",
+      "upstream_id": "cv::ml::KNearest::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<KNearest> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 507, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::KNearest>"]
+    },
+    {
+      "id": "method.cv.ml.stat_model.train",
+      "upstream_id": "cv::ml::StatModel::train(cv::InputArray,int,cv::InputArray)",
+      "kind": "method",
+      "module": "ml",
+      "signature": "CV_WRAP virtual bool train(InputArray samples, int layout, InputArray responses)",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 354, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "int", "bool"]
+    },
+    {
+      "id": "method.cv.ml.knearest.find_nearest",
+      "upstream_id": "cv::ml::KNearest::findNearest(cv::InputArray,int,cv::OutputArray,cv::OutputArray,cv::OutputArray) const",
+      "kind": "method",
+      "module": "ml",
+      "signature": "CV_WRAP virtual float findNearest(InputArray samples, int k, OutputArray results, OutputArray neighborResponses=noArray(), OutputArray dist=noArray()) const = 0",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 490, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "int", "float"]
+    },
+    {
+      "id": "method.cv.ml.knearest.policy",
+      "upstream_id": "cv::ml::KNearest::{setDefaultK,setIsClassifier,setAlgorithmType,getDefaultK,getIsClassifier,getAlgorithmType}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed brute-force classifier policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 442, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::ml::KNearest::Types", "int", "bool", "void"]
+    },
+    {
+      "id": "method.cv.ml.stat_model.state",
+      "upstream_id": "cv::ml::StatModel::{getVarCount,isTrained,isClassifier}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "model dimension and trained-classifier state getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 330, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["int", "bool"]
+    },
+    {
+      "id": "record.cv.ml.svm",
+      "upstream_id": "cv::ml::SVM",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W SVM : public StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 526, "column": 1},
+      "referenced_types": ["cv::ml::SVM", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.svm.create",
+      "upstream_id": "cv::ml::SVM::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<SVM> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 816, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::SVM>"]
+    },
+    {
+      "id": "method.cv.ml.stat_model.predict",
+      "upstream_id": "cv::ml::StatModel::predict(cv::InputArray,cv::OutputArray,int) const",
+      "kind": "method",
+      "module": "ml",
+      "signature": "CV_WRAP virtual float predict(InputArray samples, OutputArray results=noArray(), int flags=0) const = 0",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 377, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "int", "float"]
+    },
+    {
+      "id": "method.cv.ml.svm.policy",
+      "upstream_id": "cv::ml::SVM::{setType,setKernel,setC,setTermCriteria,getType,getKernelType,getC,getTermCriteria}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed linear C-SVC policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 540, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::ml::SVM::Types", "cv::ml::SVM::KernelTypes", "cv::TermCriteria", "int", "double", "void"]
+    },
+    {
+      "id": "record.cv.ml.normal_bayes",
+      "upstream_id": "cv::ml::NormalBayesClassifier",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W NormalBayesClassifier : public StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 398, "column": 1},
+      "referenced_types": ["cv::ml::NormalBayesClassifier", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.normal_bayes.create",
+      "upstream_id": "cv::ml::NormalBayesClassifier::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<NormalBayesClassifier> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 414, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::NormalBayesClassifier>"]
+    },
+    {
+      "id": "method.cv.ml.normal_bayes.predict_prob",
+      "upstream_id": "cv::ml::NormalBayesClassifier::predictProb(cv::InputArray,cv::OutputArray,cv::OutputArray,int) const",
+      "kind": "method",
+      "module": "ml",
+      "signature": "CV_WRAP virtual float predictProb(InputArray inputs, OutputArray outputs, OutputArray outputProbs, int flags=0) const = 0",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 409, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "int", "float"]
+    },
+    {
+      "id": "record.cv.ml.logistic_regression",
+      "upstream_id": "cv::ml::LogisticRegression",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W LogisticRegression : public StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1629, "column": 1},
+      "referenced_types": ["cv::ml::LogisticRegression", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.logistic_regression.create",
+      "upstream_id": "cv::ml::LogisticRegression::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<LogisticRegression> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1704, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::LogisticRegression>"]
+    },
+    {
+      "id": "method.cv.ml.logistic_regression.predict",
+      "upstream_id": "cv::ml::LogisticRegression::predict(cv::InputArray,cv::OutputArray,int) const",
+      "kind": "method",
+      "module": "ml",
+      "signature": "CV_WRAP virtual float predict(InputArray samples, OutputArray results=noArray(), int flags=0) const CV_OVERRIDE = 0",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1691, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::InputArray", "cv::OutputArray", "int", "float"]
+    },
+    {
+      "id": "method.cv.ml.logistic_regression.policy",
+      "upstream_id": "cv::ml::LogisticRegression::{setLearningRate,setIterations,setRegularization,setTrainMethod,setMiniBatchSize,setTermCriteria,getLearningRate,getIterations,getRegularization,getTrainMethod,getMiniBatchSize,getTermCriteria}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed batch L2 logistic-regression policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1635, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::ml::LogisticRegression::RegKinds", "cv::ml::LogisticRegression::Methods", "cv::TermCriteria", "int", "double", "void"]
+    },
+    {
+      "id": "record.cv.ml.decision_tree",
+      "upstream_id": "cv::ml::DTrees",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W DTrees : public StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1053, "column": 1},
+      "referenced_types": ["cv::ml::DTrees", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.decision_tree.create",
+      "upstream_id": "cv::ml::DTrees::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<DTrees> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1225, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::DTrees>"]
+    },
+    {
+      "id": "method.cv.ml.decision_tree.policy",
+      "upstream_id": "cv::ml::DTrees::{setMaxCategories,setMaxDepth,setMinSampleCount,setCVFolds,setUseSurrogates,setUse1SERule,setTruncatePrunedTree,setRegressionAccuracy,setPriors,getMaxCategories,getMaxDepth,getMinSampleCount,getCVFolds,getUseSurrogates,getUse1SERule,getTruncatePrunedTree,getRegressionAccuracy,getPriors}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed bounded decision-tree policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1071, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Mat", "int", "float", "bool", "void"]
+    },
+    {
+      "id": "method.cv.ml.decision_tree.topology",
+      "upstream_id": "cv::ml::DTrees::{getRoots,getNodes,getSplits,getSubsets}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "private decision-tree topology validation accessors",
+      "annotations": [],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1202, "column": 5},
+      "may_throw": false,
+      "referenced_types": ["cv::ml::DTrees::Node", "cv::ml::DTrees::Split", "std::vector<int>"]
+    },
+    {
+      "id": "record.cv.ml.boost",
+      "upstream_id": "cv::ml::Boost",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W Boost : public DTrees",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1332, "column": 1},
+      "referenced_types": ["cv::ml::Boost", "cv::ml::DTrees"]
+    },
+    {
+      "id": "function.cv.ml.boost.create",
+      "upstream_id": "cv::ml::Boost::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<Boost> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1370, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::Boost>"]
+    },
+    {
+      "id": "method.cv.ml.boost.policy",
+      "upstream_id": "cv::ml::Boost::{setBoostType,setWeakCount,setWeightTrimRate,getBoostType,getWeakCount,getWeightTrimRate}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed real AdaBoost weak-learner policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1338, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::ml::Boost::Types", "int", "double", "void"]
+    },
+    {
+      "id": "record.cv.ml.svm_sgd",
+      "upstream_id": "cv::ml::SVMSGD",
+      "kind": "record",
+      "module": "ml",
+      "signature": "class CV_EXPORTS_W SVMSGD : public cv::ml::StatModel",
+      "annotations": ["CV_EXPORTS_W"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1796, "column": 1},
+      "referenced_types": ["cv::ml::SVMSGD", "cv::ml::StatModel"]
+    },
+    {
+      "id": "function.cv.ml.svm_sgd.create",
+      "upstream_id": "cv::ml::SVMSGD::create()",
+      "kind": "function",
+      "module": "ml",
+      "signature": "CV_WRAP static Ptr<SVMSGD> create()",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1829, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Ptr<cv::ml::SVMSGD>"]
+    },
+    {
+      "id": "method.cv.ml.svm_sgd.model",
+      "upstream_id": "cv::ml::SVMSGD::{getWeights,getShift}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "private trained SGD-SVM weight and shift accessors",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1818, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::Mat", "float"]
+    },
+    {
+      "id": "method.cv.ml.svm_sgd.policy",
+      "upstream_id": "cv::ml::SVMSGD::{setOptimalParameters,setSvmsgdType,setMarginType,setMarginRegularization,setInitialStepSize,setStepDecreasingPower,setTermCriteria,getSvmsgdType,getMarginType,getMarginRegularization,getInitialStepSize,getStepDecreasingPower,getTermCriteria}",
+      "kind": "method_group",
+      "module": "ml",
+      "signature": "fixed average-SGD soft-margin policy setters and validation getters",
+      "annotations": ["CV_WRAP"],
+      "source": {"path": "modules/ml/include/opencv2/ml.hpp", "line": 1846, "column": 5},
+      "may_throw": true,
+      "referenced_types": ["cv::ml::SVMSGD::SvmsgdType", "cv::ml::SVMSGD::MarginType", "cv::TermCriteria", "int", "float", "void"]
+    }
+  ]
+}

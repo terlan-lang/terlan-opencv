@@ -1,0 +1,24 @@
+/** Demonstrates copied matrix transposition and concatenation. */
+module samples.core.MatrixOperations.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the matrix-operations example. */
+pub main(): Unit ->
+    // Create a small matrix whose dimensions make transposition observable.
+    let source = Mat.from_u8(Bytes.from_list([1, 2, 3, 4, 5, 6]), 2, 3, Gray);
+    let transposed = Imgproc.transpose(source);
+    // Concatenation returns another independent matrix owner.
+    let joined = Imgproc.concat_horizontal(source, source);
+    let valid = Mat.rows(transposed) == 3 and Mat.cols(transposed) == 2 and Mat.rows(joined) == 2 and Mat.cols(joined) == 6;
+    Mat.dispose(joined);
+    Mat.dispose(transposed);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("Matrix operations example complete");
+        true -> println("Matrix operations example failed")
+    }.

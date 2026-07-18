@@ -1,0 +1,26 @@
+/** Demonstrates constant, replicated, and reflected image borders. */
+module samples.imgproc.Borders.
+
+import opencv.Imgproc.
+import opencv.Mat.
+import opencv.Types.{Constant, Gray, Reflect, Replicate}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the border-padding example. */
+pub main(): Unit ->
+    let source = Mat.from_u8(Bytes.from_list([1, 2, 3, 4]), 2, 2, Gray);
+    // Initialize equal border widths around the source image.
+    let constant = Imgproc.pad(source, 1, 1, 1, 1, Constant);
+    // Compare the reviewed constant, replicated, and reflected policies.
+    let replicated = Imgproc.pad(source, 1, 1, 1, 1, Replicate);
+    let reflected = Imgproc.pad(source, 1, 1, 1, 1, Reflect);
+    let valid = Mat.rows(constant) == 4 and Mat.cols(constant) == 4 and Mat.rows(replicated) == 4 and Mat.rows(reflected) == 4;
+    Mat.dispose(reflected);
+    Mat.dispose(replicated);
+    Mat.dispose(constant);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("Borders example complete");
+        true -> println("Borders example failed")
+    }.

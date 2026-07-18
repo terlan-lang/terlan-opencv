@@ -1,0 +1,31 @@
+/** Demonstrates normalized SSD decoding and class-aware suppression. */
+module samples.dnn.ObjectDetection.
+
+import opencv.Dnn.
+import opencv.Mat.
+import opencv.Types.{Bgr}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the bounded object-detection example. */
+pub main(): Unit ->
+    // Reshape one copied tensor into three canonical SSD detection rows.
+    let model_bytes = Bytes.from_list([8, 8, 18, 18, 116, 101, 114, 108, 97, 110, 45, 111, 112, 101, 110, 99, 118, 45, 116, 101, 115, 116, 58, 149, 1, 10, 40, 10, 5, 105, 110, 112, 117, 116, 10, 5, 115, 104, 97, 112, 101, 18, 6, 111, 117, 116, 112, 117, 116, 26, 7, 114, 101, 115, 104, 97, 112, 101, 34, 7, 82, 101, 115, 104, 97, 112, 101, 18, 17, 115, 115, 100, 95, 114, 101, 115, 104, 97, 112, 101, 95, 103, 114, 97, 112, 104, 42, 19, 8, 4, 16, 7, 56, 1, 56, 1, 56, 3, 56, 7, 66, 5, 115, 104, 97, 112, 101, 90, 31, 10, 5, 105, 110, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 3, 10, 2, 8, 1, 10, 2, 8, 7, 98, 32, 10, 6, 111, 117, 116, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 1, 10, 2, 8, 3, 10, 2, 8, 7, 66, 2, 16, 13]);
+    let image = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 255, 255, 242, 204, 229, 0, 51, 26, 0, 51, 26, 255, 153, 128, 255, 153, 128]), 1, 7, Bgr);
+    let blob = Dnn.blob_from_bgr_rgb(image, 7, 1);
+    let model = Dnn.load_onnx(model_bytes);
+    let output = Dnn.forward(model, blob);
+    let detections = Dnn.ssd_detections(output, 0.5, 3);
+    let retained = Dnn.non_max_suppression(detections, 0.3, 3);
+    let confidences = Dnn.detection_confidences(detections);
+    let valid = Dnn.detection_class_indices(detections) == [1, 1] and Dnn.detection_count(retained) == 1 and confidences.length() == 2 and confidences[0] > confidences[1];
+    Dnn.dispose_detections(retained);
+    Dnn.dispose_detections(detections);
+    Dnn.dispose_output(output);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    if {
+        valid and Dnn.live_detection_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_model_count() == 0 and Dnn.live_count() == 0 and Mat.live_count() == 0 -> println("DNN object detection example complete");
+        true -> println("DNN object detection example failed")
+    }.

@@ -1,0 +1,58 @@
+syntax = "proto2";
+
+package onnx;
+
+message OperatorSetIdProto {
+  optional string domain = 1;
+  optional int64 version = 2;
+}
+
+message TensorShapeProto {
+  message Dimension {
+    optional int64 dim_value = 1;
+    optional string dim_param = 2;
+  }
+  repeated Dimension dim = 1;
+}
+
+message TypeProto {
+  message Tensor {
+    optional int32 elem_type = 1;
+    optional TensorShapeProto shape = 2;
+  }
+  optional Tensor tensor_type = 1;
+}
+
+message ValueInfoProto {
+  optional string name = 1;
+  optional TypeProto type = 2;
+}
+
+message TensorProto {
+  repeated int64 dims = 1;
+  optional int32 data_type = 2;
+  repeated int64 int64_data = 7;
+  optional string name = 8;
+}
+
+message NodeProto {
+  repeated string input = 1;
+  repeated string output = 2;
+  optional string name = 3;
+  optional string op_type = 4;
+}
+
+message GraphProto {
+  repeated NodeProto node = 1;
+  optional string name = 2;
+  repeated TensorProto initializer = 5;
+  repeated ValueInfoProto input = 11;
+  repeated ValueInfoProto output = 12;
+}
+
+message ModelProto {
+  optional int64 ir_version = 1;
+  optional string producer_name = 2;
+  optional GraphProto graph = 7;
+  repeated OperatorSetIdProto opset_import = 8;
+}

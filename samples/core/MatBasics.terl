@@ -1,0 +1,22 @@
+/** Demonstrates owned matrix construction, copying, inspection, and cleanup. */
+module samples.core.MatBasics.
+
+import opencv.Mat.
+import opencv.Types.{Gray}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/** Runs the matrix ownership example. */
+pub main(): Unit ->
+    // Create a matrix from owned byte input using the constructor.
+    let source = Bytes.from_list([0, 64, 128, 255]);
+    let image = Mat.from_u8(source, 2, 2, Gray);
+    // Clone the matrix into an independent owner before inspecting output.
+    let copied = Mat.clone(image);
+    let valid = Mat.rows(copied) == 2 and Mat.cols(copied) == 2 and Mat.channels(copied) == 1 and Mat.to_u8(copied).to_list() == source.to_list();
+    Mat.dispose(copied);
+    Mat.dispose(image);
+    if {
+        valid and Mat.live_count() == 0 -> println("matrix example complete");
+        true -> println("matrix example failed")
+    }.

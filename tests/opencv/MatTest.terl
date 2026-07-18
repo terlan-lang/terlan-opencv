@@ -1,0 +1,18 @@
+module opencv.MatTest.
+
+import opencv.Mat.
+import std.vm.Bytes.
+
+/** Validates matrix construction, cloning, copied bytes, dimensions, and cleanup. */
+@test
+pub matrix_lifecycle_contracts(): Bool ->
+    let bytes = Bytes.from_list([0, 1, 2, 3, 4, 5]);
+    let matrix = Mat.from_u8(bytes, 2, 3, Atom["gray"]);
+    let copied = Mat.clone(matrix);
+    let zero = Mat.zeros(2, 2, Atom["bgr"]);
+    let valid = Mat.rows(matrix) == 2 and Mat.cols(matrix) == 3 and Mat.channels(matrix) == 1 and Mat.is_contiguous(matrix) and Mat.to_u8(matrix).to_list() == bytes.to_list() and Mat.to_u8(copied).to_list() == bytes.to_list() and Mat.rows(zero) == 2 and Mat.cols(zero) == 2 and Mat.channels(zero) == 3 and Mat.to_u8(zero).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.live_count() == 3;
+    Mat.dispose(zero);
+    Mat.dispose(copied);
+    Mat.dispose(matrix);
+    valid and Mat.live_count() == 0.
+

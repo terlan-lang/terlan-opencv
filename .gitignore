@@ -1,0 +1,17 @@
+/generated/
+/_build/
+/upstream/opencv/
+/upstream/build/
+/upstream/install/
+/tools/surface_check/target/
+/tools/native_adapter_check/target/
+/tools/native_direct_check/target/
+/tools/metadata_check/target/
+/tools/promotion_check/target/
+/tools/codec_policy_check/target/
+/tools/native_install_check/target/
+/native/runtime_guard/target/
+.terlan/
+/.cache/
+__pycache__/
+*.pyc

@@ -1,0 +1,46 @@
+name: OpenCV Package CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: opencv-package-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    name: Offline package contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Install fixture and C++ tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes g++ protobuf-compiler
+
+      - name: Validate package-owned contracts
+        run: |
+          make \
+            opencv-validation-check \
+            opencv-onnx-fixture-check \
+            opencv-surface-check \
+            opencv-codec-policy-check \
+            opencv-metadata-check \
+            opencv-install-layout-check \
+            opencv-runtime-guard-check \
+            opencv-promotion-tool-check
+
+      - name: Validate promotion runner syntax
+        run: bash -n tools/run_fresh_workspace_check.sh

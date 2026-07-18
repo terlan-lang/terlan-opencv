@@ -1,0 +1,243 @@
+module opencv.DnnTest.
+
+import opencv.Dnn.
+import opencv.DnnDetectionChecks.
+import opencv.Mat.
+import std.vm.Bytes.
+
+/** Validates exact fixed, normalized, center-crop, and letterbox preprocessing. */
+dnn_blob_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let normalized_blob = Dnn.blob_from_bgr_rgb_normalized(image, 2, 2, [-1.0, 0.5, 1.0], [2.0, 4.0, 8.0]);
+    let grayscale_source = Bytes.from_list([0, 64, 128, 255]);
+    let grayscale = Mat.from_u8(grayscale_source, 2, 2, Atom["gray"]);
+    let grayscale_blob = Dnn.blob_from_grayscale(grayscale, 2, 2);
+    let grayscale_values = Dnn.values(grayscale_blob);
+    let normalized_grayscale_blob = Dnn.blob_from_grayscale_normalized(grayscale, 2, 2, [0.5], [4.0]);
+    let normalized_grayscale_values = Dnn.values(normalized_grayscale_blob);
+    let normalized_grayscale_valid = Dnn.batch_count(normalized_grayscale_blob) == 1 and Dnn.channel_count(normalized_grayscale_blob) == 1 and Dnn.height(normalized_grayscale_blob) == 2 and Dnn.width(normalized_grayscale_blob) == 2 and normalized_grayscale_values.length() == 4 and normalized_grayscale_values[0] == -2.0 and normalized_grayscale_values[1] > -0.997 and normalized_grayscale_values[1] < -0.996 and normalized_grayscale_values[2] > 0.007 and normalized_grayscale_values[2] < 0.008 and normalized_grayscale_values[3] == 2.0;
+    let wide_source = Bytes.from_list([255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255, 255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255]);
+    let wide_image = Mat.from_u8(wide_source, 2, 4, Atom["bgr"]);
+    let cropped_blob = Dnn.blob_from_bgr_rgb_center_crop(wide_image, 2, 2);
+    let letterbox_blob = Dnn.blob_from_bgr_rgb_letterbox(wide_image, 4, 4);
+    let normalized_letterbox_blob = Dnn.blob_from_bgr_rgb_normalized_letterbox(wide_image, 4, 4, [-1.0, 0.5, 1.0], [2.0, 4.0, 8.0]);
+    let normalized_cropped_blob = Dnn.blob_from_bgr_rgb_normalized_center_crop(wide_image, 2, 2, [-1.0, 0.5, 1.0], [2.0, 4.0, 8.0]);
+    let wide_grayscale_source = Bytes.from_list([10, 20, 30, 40, 50, 60, 70, 80]);
+    let wide_grayscale = Mat.from_u8(wide_grayscale_source, 2, 4, Atom["gray"]);
+    let cropped_grayscale_blob = Dnn.blob_from_grayscale_center_crop(wide_grayscale, 2, 2);
+    let cropped_grayscale_values = Dnn.values(cropped_grayscale_blob);
+    let normalized_cropped_grayscale_blob = Dnn.blob_from_grayscale_normalized_center_crop(wide_grayscale, 2, 2, [0.5], [4.0]);
+    let normalized_cropped_grayscale_values = Dnn.values(normalized_cropped_grayscale_blob);
+    let normalized_cropped_grayscale_valid = Dnn.batch_count(normalized_cropped_grayscale_blob) == 1 and Dnn.channel_count(normalized_cropped_grayscale_blob) == 1 and Dnn.height(normalized_cropped_grayscale_blob) == 2 and Dnn.width(normalized_cropped_grayscale_blob) == 2 and normalized_cropped_grayscale_values.length() == 4 and normalized_cropped_grayscale_values[0] > -1.687 and normalized_cropped_grayscale_values[0] < -1.686 and normalized_cropped_grayscale_values[1] > -1.53 and normalized_cropped_grayscale_values[1] < -1.529 and normalized_cropped_grayscale_values[2] > -1.059 and normalized_cropped_grayscale_values[2] < -1.058 and normalized_cropped_grayscale_values[3] > -0.902 and normalized_cropped_grayscale_values[3] < -0.901;
+    Dnn.dispose(normalized_cropped_grayscale_blob);
+    let letterbox_grayscale_blob = Dnn.blob_from_grayscale_letterbox(wide_grayscale, 4, 4);
+    let letterbox_grayscale_values = Dnn.values(letterbox_grayscale_blob);
+    let letterbox_grayscale_valid = Dnn.batch_count(letterbox_grayscale_blob) == 1 and Dnn.channel_count(letterbox_grayscale_blob) == 1 and Dnn.height(letterbox_grayscale_blob) == 4 and Dnn.width(letterbox_grayscale_blob) == 4 and letterbox_grayscale_values.length() == 16 and letterbox_grayscale_values[0] == 0.0 and letterbox_grayscale_values[3] == 0.0 and letterbox_grayscale_values[4] > 0.039 and letterbox_grayscale_values[4] < 0.04 and letterbox_grayscale_values[7] > 0.156 and letterbox_grayscale_values[7] < 0.157 and letterbox_grayscale_values[8] > 0.196 and letterbox_grayscale_values[8] < 0.197 and letterbox_grayscale_values[11] > 0.313 and letterbox_grayscale_values[11] < 0.314 and letterbox_grayscale_values[12] == 0.0 and letterbox_grayscale_values[15] == 0.0;
+    let normalized_letterbox_grayscale_blob = Dnn.blob_from_grayscale_normalized_letterbox(wide_grayscale, 4, 4, [0.5], [4.0]);
+    let normalized_letterbox_grayscale_values = Dnn.values(normalized_letterbox_grayscale_blob);
+    let normalized_letterbox_grayscale_valid = Dnn.batch_count(normalized_letterbox_grayscale_blob) == 1 and Dnn.channel_count(normalized_letterbox_grayscale_blob) == 1 and Dnn.height(normalized_letterbox_grayscale_blob) == 4 and Dnn.width(normalized_letterbox_grayscale_blob) == 4 and normalized_letterbox_grayscale_values.length() == 16 and normalized_letterbox_grayscale_values[0] == -2.0 and normalized_letterbox_grayscale_values[3] == -2.0 and normalized_letterbox_grayscale_values[4] > -1.844 and normalized_letterbox_grayscale_values[4] < -1.843 and normalized_letterbox_grayscale_values[7] > -1.373 and normalized_letterbox_grayscale_values[7] < -1.372 and normalized_letterbox_grayscale_values[8] > -1.216 and normalized_letterbox_grayscale_values[8] < -1.215 and normalized_letterbox_grayscale_values[11] > -0.746 and normalized_letterbox_grayscale_values[11] < -0.745 and normalized_letterbox_grayscale_values[12] == -2.0 and normalized_letterbox_grayscale_values[15] == -2.0;
+    Dnn.dispose(normalized_letterbox_grayscale_blob);
+    let normalized_letterbox_valid = Dnn.batch_count(normalized_letterbox_blob) == 1 and Dnn.channel_count(normalized_letterbox_blob) == 3 and Dnn.height(normalized_letterbox_blob) == 4 and Dnn.width(normalized_letterbox_blob) == 4 and Dnn.values(normalized_letterbox_blob) == [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 2.0, 2.0, -2.0, -2.0, -2.0, -2.0, -2.0, 2.0, -2.0, 2.0, -2.0, 2.0, -2.0, 2.0, -2.0, -2.0, -2.0, -2.0, -8.0, -8.0, -8.0, -8.0, 0.0, -8.0, -8.0, 0.0, 0.0, -8.0, -8.0, 0.0, -8.0, -8.0, -8.0, -8.0];
+    let valid = Dnn.batch_count(blob) == 1 and Dnn.channel_count(blob) == 3 and Dnn.height(blob) == 2 and Dnn.width(blob) == 2 and Dnn.values(blob) == [1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0] and Dnn.values(normalized_blob) == [4.0, 2.0, 2.0, 4.0, -2.0, 2.0, -2.0, 2.0, -8.0, -8.0, 0.0, 0.0] and Dnn.batch_count(grayscale_blob) == 1 and Dnn.channel_count(grayscale_blob) == 1 and Dnn.height(grayscale_blob) == 2 and Dnn.width(grayscale_blob) == 2 and grayscale_values.length() == 4 and grayscale_values[0] == 0.0 and grayscale_values[1] > 0.25 and grayscale_values[1] < 0.251 and grayscale_values[2] > 0.501 and grayscale_values[2] < 0.502 and grayscale_values[3] == 1.0 and normalized_grayscale_valid and Dnn.values(cropped_blob) == [0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0] and Dnn.batch_count(letterbox_blob) == 1 and Dnn.channel_count(letterbox_blob) == 3 and Dnn.height(letterbox_blob) == 4 and Dnn.width(letterbox_blob) == 4 and Dnn.values(letterbox_blob) == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0] and normalized_letterbox_valid and Dnn.values(normalized_cropped_blob) == [2.0, 4.0, 2.0, 4.0, 2.0, -2.0, 2.0, -2.0, -8.0, -8.0, -8.0, -8.0] and cropped_grayscale_values.length() == 4 and cropped_grayscale_values[0] > 0.078 and cropped_grayscale_values[0] < 0.079 and cropped_grayscale_values[1] > 0.117 and cropped_grayscale_values[1] < 0.118 and cropped_grayscale_values[2] > 0.235 and cropped_grayscale_values[2] < 0.236 and cropped_grayscale_values[3] > 0.274 and cropped_grayscale_values[3] < 0.275 and letterbox_grayscale_valid and Mat.to_u8(image).to_list() == source.to_list() and Mat.to_u8(grayscale).to_list() == grayscale_source.to_list() and Mat.to_u8(wide_image).to_list() == wide_source.to_list() and Mat.to_u8(wide_grayscale).to_list() == wide_grayscale_source.to_list() and Dnn.live_count() == 10;
+    Dnn.dispose(normalized_letterbox_blob);
+    Dnn.dispose(letterbox_grayscale_blob);
+    Dnn.dispose(letterbox_blob);
+    Dnn.dispose(normalized_cropped_blob);
+    Dnn.dispose(cropped_grayscale_blob);
+    Dnn.dispose(cropped_blob);
+    Dnn.dispose(normalized_grayscale_blob);
+    Dnn.dispose(grayscale_blob);
+    Dnn.dispose(normalized_blob);
+    Dnn.dispose(blob);
+    Mat.dispose(wide_grayscale);
+    Mat.dispose(wide_image);
+    Mat.dispose(grayscale);
+    Mat.dispose(image);
+    valid and normalized_cropped_grayscale_valid and normalized_letterbox_grayscale_valid and Dnn.live_count() == 0.
+
+/** Returns the official-protobuf bytes for one fixed-shape ONNX Identity graph. */
+identity_onnx_bytes(): std.vm.Bytes.Bytes ->
+    Bytes.from_list([8, 8, 18, 18, 116, 101, 114, 108, 97, 110, 45, 111, 112, 101, 110, 99, 118, 45, 116, 101, 115, 116, 58, 120, 10, 35, 10, 5, 105, 110, 112, 117, 116, 18, 6, 111, 117, 116, 112, 117, 116, 26, 8, 105, 100, 101, 110, 116, 105, 116, 121, 34, 8, 73, 100, 101, 110, 116, 105, 116, 121, 18, 14, 105, 100, 101, 110, 116, 105, 116, 121, 95, 103, 114, 97, 112, 104, 90, 31, 10, 5, 105, 110, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 3, 10, 2, 8, 2, 10, 2, 8, 2, 98, 32, 10, 6, 111, 117, 116, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 3, 10, 2, 8, 2, 10, 2, 8, 2, 66, 2, 16, 13]).
+
+/** Returns reproducible ONNX bytes for one grayscale Identity graph. */
+grayscale_identity_onnx_bytes(): std.vm.Bytes.Bytes ->
+    Bytes.from_list([8, 8, 18, 18, 116, 101, 114, 108, 97, 110, 45, 111, 112, 101, 110, 99, 118, 45, 116, 101, 115, 116, 58, 130, 1, 10, 35, 10, 5, 105, 110, 112, 117, 116, 18, 6, 111, 117, 116, 112, 117, 116, 26, 8, 105, 100, 101, 110, 116, 105, 116, 121, 34, 8, 73, 100, 101, 110, 116, 105, 116, 121, 18, 24, 103, 114, 97, 121, 115, 99, 97, 108, 101, 95, 105, 100, 101, 110, 116, 105, 116, 121, 95, 103, 114, 97, 112, 104, 90, 31, 10, 5, 105, 110, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 1, 10, 2, 8, 2, 10, 2, 8, 2, 98, 32, 10, 6, 111, 117, 116, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 1, 10, 2, 8, 2, 10, 2, 8, 2, 66, 2, 16, 13]).
+
+/** Returns the official-protobuf bytes for one fixed-shape ONNX Flatten graph. */
+flatten_onnx_bytes(): std.vm.Bytes.Bytes ->
+    Bytes.from_list([8, 8, 18, 18, 116, 101, 114, 108, 97, 110, 45, 111, 112, 101, 110, 99, 118, 45, 116, 101, 115, 116, 58, 109, 10, 33, 10, 5, 105, 110, 112, 117, 116, 18, 6, 111, 117, 116, 112, 117, 116, 26, 7, 102, 108, 97, 116, 116, 101, 110, 34, 7, 70, 108, 97, 116, 116, 101, 110, 18, 13, 102, 108, 97, 116, 116, 101, 110, 95, 103, 114, 97, 112, 104, 90, 31, 10, 5, 105, 110, 112, 117, 116, 18, 22, 10, 20, 8, 1, 18, 16, 10, 2, 8, 1, 10, 2, 8, 3, 10, 2, 8, 2, 10, 2, 8, 2, 98, 24, 10, 6, 111, 117, 116, 112, 117, 116, 18, 14, 10, 12, 8, 1, 18, 8, 10, 2, 8, 1, 10, 2, 8, 12, 66, 2, 16, 13]).
+
+/** Validates bounded in-memory ONNX loading, repeatable CPU inference, and cleanup. */
+dnn_inference_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let model = Dnn.load_onnx(identity_onnx_bytes());
+    let output = Dnn.forward(model, blob);
+    let repeated = Dnn.forward(model, blob);
+    let grayscale_source = Bytes.from_list([0, 64, 128, 255]);
+    let grayscale_image = Mat.from_u8(grayscale_source, 2, 2, Atom["gray"]);
+    let grayscale_blob = Dnn.blob_from_grayscale(grayscale_image, 2, 2);
+    let grayscale_model = Dnn.load_onnx(grayscale_identity_onnx_bytes());
+    let grayscale_output = Dnn.forward(grayscale_model, grayscale_blob);
+    let repeated_grayscale = Dnn.forward(grayscale_model, grayscale_blob);
+    let expected = [1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0];
+    let output_slice = Dnn.output_values_slice(output, 3, 4);
+    let output_tail = Dnn.output_values_slice(output, 10, 99);
+    let output_end = Dnn.output_values_slice(output, 12, 1);
+    let grayscale_values = Dnn.output_values(grayscale_output);
+    let grayscale_slice = Dnn.output_values_slice(grayscale_output, 1, 2);
+    let binary_sigmoid = Dnn.sigmoid_class_probability_mask(grayscale_output, 0);
+    let binary_mask = Dnn.sigmoid_class_mask(grayscale_output, 0, 0.6);
+    let binary_any = Dnn.sigmoid_any_class_mask(grayscale_output, 0.6);
+    let binary_confidence = Dnn.sigmoid_class_confidence_mask(grayscale_output);
+    let valid = Dnn.output_rank(output) == 4 and Dnn.output_shape(output) == [1, 3, 2, 2] and Dnn.output_value_count(output) == 12 and Dnn.output_values(output) == expected and Dnn.output_values(repeated) == expected and output_slice == [1.0, 0.0, 1.0, 0.0] and Dnn.output_values_slice(output, 3, 4) == output_slice and output_tail == [1.0, 1.0] and output_end.length() == 0 and Dnn.output_rank(grayscale_output) == 4 and Dnn.output_shape(grayscale_output) == [1, 1, 2, 2] and Dnn.output_value_count(grayscale_output) == 4 and grayscale_values.length() == 4 and grayscale_values[0] == 0.0 and grayscale_values[1] > 0.25 and grayscale_values[1] < 0.251 and grayscale_values[2] > 0.501 and grayscale_values[2] < 0.502 and grayscale_values[3] == 1.0 and grayscale_slice.length() == 2 and grayscale_slice[0] == grayscale_values[1] and grayscale_slice[1] == grayscale_values[2] and Dnn.output_values(repeated_grayscale) == grayscale_values and Mat.to_u8(binary_sigmoid).to_list() == [128, 143, 159, 186] and Mat.to_u8(binary_mask).to_list() == [0, 0, 255, 255] and Mat.to_u8(binary_any).to_list() == [0, 0, 255, 255] and Mat.to_u8(binary_confidence).to_list() == [128, 143, 159, 186] and Dnn.live_model_count() == 2 and Dnn.live_output_count() == 4;
+    Mat.dispose(binary_confidence);
+    Mat.dispose(binary_any);
+    Mat.dispose(binary_mask);
+    Mat.dispose(binary_sigmoid);
+    Dnn.dispose_output(repeated_grayscale);
+    Dnn.dispose_output(grayscale_output);
+    Dnn.dispose_model(grayscale_model);
+    Dnn.dispose(grayscale_blob);
+    Mat.dispose(grayscale_image);
+    Dnn.dispose_output(repeated);
+    Dnn.dispose_output(output);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    valid and Dnn.live_model_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_count() == 0.
+
+/** Validates deterministic raw-score and stable-softmax classification. */
+dnn_classification_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 0, 0, 255, 0, 0, 0, 0, 0, 0, 0]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let model = Dnn.load_onnx(flatten_onnx_bytes());
+    let output = Dnn.forward(model, blob);
+    let result = Dnn.top_classification(output);
+    let repeated = Dnn.top_classification(output);
+    let rankings = Dnn.top_classifications(output, 3);
+    let repeated_rankings = Dnn.top_classifications(output, 3);
+    let top_one = Dnn.top_classifications(output, 1);
+    let candidates = Dnn.classification_candidates(output, 0.5, 3);
+    let inclusive_candidates = Dnn.classification_candidates(output, 1.0, 3);
+    let empty_candidates = Dnn.classification_candidates(output, 1.1, 3);
+    let limited_candidates = Dnn.classification_candidates(output, 0.0, 3);
+    let probabilities = Dnn.softmax_classifications(output, 3);
+    let probability_scores = Dnn.top_classification_scores(probabilities);
+    let probability_valid = Dnn.top_classification_indices(probabilities) == [5, 0, 1] and probability_scores.length() == 3 and probability_scores[0] > 0.198 and probability_scores[0] < 0.199 and probability_scores[1] > 0.072 and probability_scores[1] < 0.073 and probability_scores[2] > 0.072 and probability_scores[2] < 0.073;
+    let sigmoid = Dnn.sigmoid_classifications(output, 3);
+    let sigmoid_scores = Dnn.top_classification_scores(sigmoid);
+    let sigmoid_valid = Dnn.top_classification_indices(sigmoid) == [5, 0, 1] and sigmoid_scores.length() == 3 and sigmoid_scores[0] > 0.731 and sigmoid_scores[0] < 0.732 and sigmoid_scores[1] == 0.5 and sigmoid_scores[2] == 0.5;
+    let sigmoid_positive = Dnn.sigmoid_classification_candidates(output, 0.6, 3);
+    let sigmoid_inclusive = Dnn.sigmoid_classification_candidates(output, 0.5, 3);
+    let sigmoid_empty = Dnn.sigmoid_classification_candidates(output, 0.8, 3);
+    let sigmoid_candidates_valid = Dnn.top_classification_indices(sigmoid_positive) == [5] and Dnn.top_classification_scores(sigmoid_positive)[0] > 0.731 and Dnn.top_classification_scores(sigmoid_positive)[0] < 0.732 and Dnn.top_classification_indices(sigmoid_inclusive) == [5, 0, 1] and Dnn.top_classification_scores(sigmoid_inclusive) == sigmoid_scores and Dnn.top_classification_count(sigmoid_empty) == 0;
+    let valid = Dnn.output_shape(output) == [1, 12] and result.class_index == 5 and result.score == 1.0 and repeated == result and Dnn.top_classification_count(rankings) == 3 and Dnn.top_classification_indices(rankings) == [5, 0, 1] and Dnn.top_classification_scores(rankings) == [1.0, 0.0, 0.0] and Dnn.top_classification_indices(repeated_rankings) == [5, 0, 1] and Dnn.top_classification_scores(repeated_rankings) == [1.0, 0.0, 0.0] and Dnn.top_classification_indices(top_one) == [5] and Dnn.top_classification_scores(top_one) == [1.0] and Dnn.top_classification_indices(candidates) == [5] and Dnn.top_classification_scores(candidates) == [1.0] and Dnn.top_classification_indices(inclusive_candidates) == [5] and Dnn.top_classification_count(empty_candidates) == 0 and Dnn.top_classification_indices(empty_candidates) == [] and Dnn.top_classification_scores(empty_candidates) == [] and Dnn.top_classification_indices(limited_candidates) == [5, 0, 1] and Dnn.top_classification_scores(limited_candidates) == [1.0, 0.0, 0.0] and Dnn.live_classifications_count() == 12;
+    Dnn.dispose_output(output);
+    let retained = Dnn.top_classification_indices(rankings) == [5, 0, 1] and Dnn.top_classification_scores(rankings) == [1.0, 0.0, 0.0] and Dnn.top_classification_indices(candidates) == [5] and Dnn.top_classification_scores(candidates) == [1.0] and Dnn.top_classification_scores(probabilities) == probability_scores and Dnn.top_classification_scores(sigmoid) == sigmoid_scores and Dnn.top_classification_indices(sigmoid_positive) == [5];
+    Dnn.dispose_classifications(sigmoid_empty);
+    Dnn.dispose_classifications(sigmoid_inclusive);
+    Dnn.dispose_classifications(sigmoid_positive);
+    Dnn.dispose_classifications(sigmoid);
+    Dnn.dispose_classifications(probabilities);
+    Dnn.dispose_classifications(limited_candidates);
+    Dnn.dispose_classifications(empty_candidates);
+    Dnn.dispose_classifications(inclusive_candidates);
+    Dnn.dispose_classifications(candidates);
+    Dnn.dispose_classifications(top_one);
+    Dnn.dispose_classifications(repeated_rankings);
+    Dnn.dispose_classifications(rankings);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    valid and probability_valid and sigmoid_valid and sigmoid_candidates_valid and retained and Dnn.live_classifications_count() == 0 and Dnn.live_model_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_count() == 0.
+
+/** Validates deterministic channel-to-mask segmentation and independent owners. */
+dnn_segmentation_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let model = Dnn.load_onnx(identity_onnx_bytes());
+    let output = Dnn.forward(model, blob);
+    let green = Dnn.channel_mask(output, 1, 0.5);
+    let repeated = Dnn.channel_mask(output, 1, 0.5);
+    let strict = Dnn.channel_mask(output, 1, 1.0);
+    let valid = Mat.rows(green) == 2 and Mat.cols(green) == 2 and Mat.channels(green) == 1 and Mat.to_u8(green).to_list() == [0, 255, 0, 255] and Mat.to_u8(repeated).to_list() == [0, 255, 0, 255] and Mat.to_u8(strict).to_list() == [0, 0, 0, 0];
+    Mat.dispose(strict);
+    Mat.dispose(repeated);
+    Mat.dispose(green);
+    Dnn.dispose_output(output);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    valid and Dnn.live_model_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_count() == 0.
+
+/** Validates deterministic per-pixel class-index projection and cleanup. */
+dnn_class_index_mask_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let model = Dnn.load_onnx(identity_onnx_bytes());
+    let output = Dnn.forward(model, blob);
+    let mask = Dnn.class_index_mask(output);
+    let repeated = Dnn.class_index_mask(output);
+    let valid = Mat.rows(mask) == 2 and Mat.cols(mask) == 2 and Mat.channels(mask) == 1 and Mat.to_u8(mask).to_list() == [0, 1, 2, 0] and Mat.to_u8(repeated).to_list() == [0, 1, 2, 0];
+    Mat.dispose(repeated);
+    Mat.dispose(mask);
+    Dnn.dispose_output(output);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    valid and Dnn.live_model_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_count() == 0.
+
+/** Validates direct and stable-softmax per-pixel confidence scaling. */
+dnn_confidence_mask_valid(): Bool ->
+    let source = Bytes.from_list([0, 0, 255, 0, 128, 0, 64, 0, 0, 32, 32, 32]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
+    let model = Dnn.load_onnx(identity_onnx_bytes());
+    let output = Dnn.forward(model, blob);
+    let mask = Dnn.class_confidence_mask(output);
+    let repeated = Dnn.class_confidence_mask(output);
+    let softmax_mask = Dnn.softmax_class_confidence_mask(output);
+    let repeated_softmax = Dnn.softmax_class_confidence_mask(output);
+    let class_zero = Dnn.softmax_class_probability_mask(output, 0);
+    let class_two = Dnn.softmax_class_probability_mask(output, 2);
+    let softmax_binary_zero = Dnn.softmax_class_mask(output, 0, 0.5);
+    let softmax_binary_two = Dnn.softmax_class_mask(output, 2, 0.3);
+    let sigmoid_zero = Dnn.sigmoid_class_probability_mask(output, 0);
+    let sigmoid_two = Dnn.sigmoid_class_probability_mask(output, 2);
+    let sigmoid_mask = Dnn.sigmoid_class_mask(output, 2, 0.55);
+    let sigmoid_boundary = Dnn.sigmoid_class_mask(output, 2, 0.5);
+    let sigmoid_any = Dnn.sigmoid_any_class_mask(output, 0.55);
+    let sigmoid_confidence = Dnn.sigmoid_class_confidence_mask(output);
+    let valid = Mat.rows(mask) == 2 and Mat.cols(mask) == 2 and Mat.channels(mask) == 1 and Mat.to_u8(mask).to_list() == [255, 128, 64, 32] and Mat.to_u8(repeated).to_list() == [255, 128, 64, 32] and Mat.to_u8(softmax_mask).to_list() == [147, 115, 100, 85] and Mat.to_u8(repeated_softmax).to_list() == [147, 115, 100, 85] and Mat.to_u8(class_zero).to_list() == [147, 70, 78, 85] and Mat.to_u8(class_two).to_list() == [54, 70, 100, 85] and Mat.to_u8(softmax_binary_zero).to_list() == [255, 0, 0, 0] and Mat.to_u8(softmax_binary_two).to_list() == [0, 0, 255, 255] and Mat.to_u8(sigmoid_zero).to_list() == [186, 128, 128, 135] and Mat.to_u8(sigmoid_two).to_list() == [128, 128, 143, 135] and Mat.to_u8(sigmoid_mask).to_list() == [0, 0, 255, 0] and Mat.to_u8(sigmoid_boundary).to_list() == [255, 255, 255, 255] and Mat.to_u8(sigmoid_any).to_list() == [255, 255, 255, 0] and Mat.to_u8(sigmoid_confidence).to_list() == [186, 159, 143, 135];
+    Mat.dispose(sigmoid_confidence);
+    Mat.dispose(sigmoid_any);
+    Mat.dispose(sigmoid_boundary);
+    Mat.dispose(sigmoid_mask);
+    Mat.dispose(softmax_binary_two);
+    Mat.dispose(softmax_binary_zero);
+    Mat.dispose(sigmoid_two);
+    Mat.dispose(sigmoid_zero);
+    Mat.dispose(class_two);
+    Mat.dispose(class_zero);
+    Mat.dispose(repeated_softmax);
+    Mat.dispose(softmax_mask);
+    Mat.dispose(repeated);
+    Mat.dispose(mask);
+    Dnn.dispose_output(output);
+    Dnn.dispose_model(model);
+    Dnn.dispose(blob);
+    Mat.dispose(image);
+    valid and Dnn.live_model_count() == 0 and Dnn.live_output_count() == 0 and Dnn.live_count() == 0.
+
+/** Runs preprocessing, inference, classification, segmentation, and detection contracts. */
+@test
+pub dnn_contracts(): Bool ->
+    dnn_blob_valid() and dnn_inference_valid() and dnn_classification_valid() and dnn_segmentation_valid() and dnn_class_index_mask_valid() and dnn_confidence_mask_valid() and DnnDetectionChecks.valid().
+

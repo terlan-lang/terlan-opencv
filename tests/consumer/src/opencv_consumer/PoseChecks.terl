@@ -1,0 +1,55 @@
+/**
+ * Camera-pose checks consumed through the external OpenCV dependency.
+ */
+
+module opencv_consumer.PoseChecks.
+
+import opencv.Calib3d.
+import opencv.Types.
+
+/** Validates copied pose solving and refinement against synthetic observations. */
+pub camera_pose_valid(object_points: List[Float], image_points: List[Float], camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let solved = Calib3d.solve_pose(object_points, image_points, camera, distortion);
+    let solved_repeated = Calib3d.solve_pose(object_points, image_points, camera, distortion);
+    let solved_robust = Calib3d.solve_pose_robust(object_points, image_points, camera, distortion);
+    let solved_robust_repeated = Calib3d.solve_pose_robust(object_points, image_points, camera, distortion);
+    let initial = Types.camera_pose(0.15, -0.1, 0.1, 0.5, -0.2, 7.5);
+    let refined = Calib3d.refine_pose(object_points, image_points, initial, camera, distortion);
+    let refined_repeated = Calib3d.refine_pose(object_points, image_points, initial, camera, distortion);
+    let refined_vvs = Calib3d.refine_pose_vvs(object_points, image_points, initial, camera, distortion);
+    let refined_vvs_repeated = Calib3d.refine_pose_vvs(object_points, image_points, initial, camera, distortion);
+    let identity = Types.camera_pose(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let composed = Calib3d.compose_pose(solved, identity);
+    let composed_repeated = Calib3d.compose_pose(solved, identity);
+    let solved_valid = solved == solved_repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11;
+    let robust_valid = solved_robust == solved_robust_repeated and solved_robust.tz > 7.9 and solved_robust.tz < 8.1 and solved_robust.rx > 0.09 and solved_robust.rx < 0.11;
+    let lm_valid = refined == refined_repeated and refined.tz > 7.9 and refined.tz < 8.1 and refined.rx > 0.09 and refined.rx < 0.11;
+    let vvs_valid = refined_vvs == refined_vvs_repeated and refined_vvs.tz > 7.9 and refined_vvs.tz < 8.1 and refined_vvs.rx > 0.09 and refined_vvs.rx < 0.11;
+    let composed_valid = composed == composed_repeated and composed.tz > 7.9 and composed.tz < 8.1 and composed.rx > 0.09 and composed.rx < 0.11;
+    solved_valid and robust_valid and lm_valid and vvs_valid and composed_valid.
+
+/** Validates fixed four-correspondence AP3P pose selection. */
+pub minimal_camera_pose_valid(camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let object_points = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 0.0, 0.0, 1.0];
+    let rotation = Types.vector3(0.1, -0.2, 0.05);
+    let translation = Types.vector3(0.25, -0.4, 8.0);
+    let image_points = Calib3d.project_points(object_points, rotation, translation, camera, distortion);
+    let solved = Calib3d.solve_pose_minimal(object_points, image_points, camera, distortion);
+    let repeated = Calib3d.solve_pose_minimal(object_points, image_points, camera, distortion);
+    solved == repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11.
+
+/** Validates lowest-error fixed-IPPE pose selection for a planar target. */
+pub planar_camera_pose_valid(camera: opencv.Types.CameraIntrinsics, distortion: opencv.Types.DistortionCoefficients): Bool ->
+    let object_points = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -0.5, 0.0, 0.0, 0.5, 0.0, 0.0];
+    let rotation = Types.vector3(0.1, -0.2, 0.05);
+    let translation = Types.vector3(0.25, -0.4, 8.0);
+    let image_points = Calib3d.project_points(object_points, rotation, translation, camera, distortion);
+    let solved = Calib3d.solve_pose_planar(object_points, image_points, camera, distortion);
+    let repeated = Calib3d.solve_pose_planar(object_points, image_points, camera, distortion);
+    let square_objects = [-1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, -1.0, 0.0, -1.0, -1.0, 0.0];
+    let square_images = Calib3d.project_points(square_objects, rotation, translation, camera, distortion);
+    let square = Calib3d.solve_square_marker_pose(square_images, 2.0, camera, distortion);
+    let square_repeated = Calib3d.solve_square_marker_pose(square_images, 2.0, camera, distortion);
+    let planar_valid = solved == repeated and solved.tz > 7.9 and solved.tz < 8.1 and solved.rx > 0.09 and solved.rx < 0.11;
+    let square_valid = square == square_repeated and square.tz > 7.9 and square.tz < 8.1 and square.rx > 0.09 and square.rx < 0.11;
+    planar_valid and square_valid.
