@@ -1,17 +1,76 @@
-/** Demonstrates bounded probabilistic Hough line detection. */
+/**
+ * Demonstrates bounded probabilistic Hough line detection.
+ */
 module samples.imgproc.HoughDetection.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the bounded Hough line example. */
+/**
+ * Runs the bounded Hough line example.
+ */
 pub main(): Unit ->
-    // Hough transforms vote for geometric parameters. The package fixes the
-    // pixel and angle resolutions and returns copied, bounded line endpoints.
-    let edges = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 7, 7, Gray);
+    let edges =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
+            ),
+            7,
+            7,
+            Gray,
+        );
     let segments = Imgproc.line_segments(edges, 3, 4, 0);
     let valid = segments == [1, 3, 5, 3];
     Mat.dispose(edges);

@@ -1,20 +1,24 @@
-/** Demonstrates BGR image conversion into one normalized DNN blob. */
+/**
+ * Demonstrates BGR image conversion into one normalized DNN blob.
+ */
 module samples.dnn.BlobPreprocessing.
 
-import opencv.Dnn.
-import opencv.Mat.
 import opencv.Types.{Bgr}.
+import opencv.{Dnn, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the DNN preprocessing example. */
+/**
+ * Runs the DNN preprocessing example.
+ */
 pub main(): Unit ->
     let image = Mat.from_u8(Bytes.from_list([0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255]), 2, 2, Bgr);
-    // Create a four-dimensional input blob from the image frame.
     let blob = Dnn.blob_from_bgr_rgb(image, 2, 2);
-    // Network loading, input assignment, and the forward pass are separate
-    // steps demonstrated by the inference package tests.
-    let valid = Dnn.batch_count(blob) == 1 and Dnn.channel_count(blob) == 3 and Dnn.height(blob) == 2 and Dnn.width(blob) == 2;
+    let valid =
+        Dnn.batch_count(blob) == 1
+            and Dnn.channel_count(blob) == 3
+            and Dnn.height(blob) == 2
+            and Dnn.width(blob) == 2;
     Dnn.dispose(blob);
     Mat.dispose(image);
     if {

@@ -39,12 +39,8 @@ pub(super) fn run(helper: &mut NativeHelper) -> Result<(), String> {
     }
 
     for (scale, offset) in [
-        (65_536.0, 0.0),
-        (-65_536.0, 0.0),
         (f64::NAN, 0.0),
         (f64::INFINITY, 0.0),
-        (1.0, 65_536.0),
-        (1.0, -65_536.0),
         (1.0, f64::NAN),
         (1.0, f64::NEG_INFINITY),
     ] {

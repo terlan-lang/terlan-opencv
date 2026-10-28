@@ -12,8 +12,23 @@ namespace validation {
 /// Maximum byte size of one image allocation owned by this package.
 constexpr std::size_t kMaxOwnedImageBytes = 256U * 1024U * 1024U;
 
+/// Maximum channel count encoded by OpenCV's public matrix type representation.
+constexpr int kMaxMatrixChannels = 512;
+
 /// Maximum byte size of one encoded image entering or leaving this package.
 constexpr std::size_t kMaxEncodedImageBytes = 64U * 1024U * 1024U;
+
+/// Deterministic JPEG quality used by the package encoder.
+constexpr int kJpegEncodeQuality = 90;
+
+/// Deterministic PNG compression level used by the package encoder.
+constexpr int kPngCompressionLevel = 3;
+
+/// Deterministic WebP quality used by the package encoder.
+constexpr int kWebpEncodeQuality = 90;
+
+/// Deterministic uncompressed TIFF policy used by the package encoder.
+constexpr int kTiffCompressionNone = 1;
 
 /// Maximum supported Gaussian-kernel dimension.
 constexpr std::int64_t kMaxKernelDimension = 255;
@@ -34,7 +49,6 @@ constexpr double kMaxMeanShiftRadius = 65535.0;
 constexpr std::int64_t kMaxMeanShiftPyramidLevel = 8;
 
 /// Maximum magnitude of one scale-and-absolute-value parameter.
-constexpr double kMaxScaleAbsParameter = 65535.0;
 
 /// Maximum accepted semantic sharpening amount.
 constexpr double kMaxSharpenAmount = 16.0;
@@ -113,13 +127,15 @@ constexpr int layout_channels(std::int64_t layout) noexcept {
   return layout == 1 ? 1 : (layout == 3 ? 3 : (layout == 4 ? 4 : 0));
 }
 
-/// Checks dimensions and computes an overflow-safe, policy-bounded byte count.
-inline ImageShape image_shape(std::int64_t rows, std::int64_t cols,
-                              int channels) noexcept {
+/// Checks typed dimensions and computes an overflow-safe storage byte count.
+constexpr ImageShape matrix_shape(std::int64_t rows, std::int64_t cols,
+                                  int channels,
+                                  std::size_t element_size) noexcept {
   const auto max_dimension =
       static_cast<std::int64_t>(std::numeric_limits<int>::max());
   if (rows <= 0 || cols <= 0 || rows > max_dimension ||
-      cols > max_dimension || channels <= 0) {
+      cols > max_dimension || channels <= 0 ||
+      channels > kMaxMatrixChannels || element_size == 0) {
     return {false, 0, 0};
   }
   const auto row_count = static_cast<std::size_t>(rows);
@@ -132,7 +148,17 @@ inline ImageShape image_shape(std::int64_t rows, std::int64_t cols,
   if (pixel_count > kMaxOwnedImageBytes / channel_count) {
     return {false, 0, 0};
   }
-  return {true, pixel_count * channel_count, channels};
+  const auto scalar_count = pixel_count * channel_count;
+  if (scalar_count > kMaxOwnedImageBytes / element_size) {
+    return {false, 0, 0};
+  }
+  return {true, scalar_count * element_size, channels};
+}
+
+/// Checks dimensions and computes an overflow-safe, policy-bounded byte count.
+inline ImageShape image_shape(std::int64_t rows, std::int64_t cols,
+                              int channels) noexcept {
+  return matrix_shape(rows, cols, channels, 1);
 }
 
 /// Checks dimensions using one public pixel-layout discriminant.
@@ -175,15 +201,36 @@ constexpr bool valid_decode_mode(std::int64_t mode) noexcept {
 
 /// Checks the finite image-format discriminants exposed by the package.
 constexpr bool valid_image_format(std::int64_t format) noexcept {
-  return format == 0;
+  return format >= 0 && format <= 4;
 }
 
-/// Checks the bounded encoded payload and BMP signature.
-inline bool valid_bmp_input(const std::uint8_t* bytes,
-                            std::size_t size) noexcept {
-  return bytes != nullptr && size >= 2 && size <= kMaxEncodedImageBytes &&
-         bytes[0] == static_cast<std::uint8_t>('B') &&
-         bytes[1] == static_cast<std::uint8_t>('M');
+/// Checks a bounded encoded payload for one reviewed image signature.
+inline bool valid_encoded_image_input(const std::uint8_t* bytes,
+                                      std::size_t size) noexcept {
+  if (bytes == nullptr || size < 2 || size > kMaxEncodedImageBytes) {
+    return false;
+  }
+  const bool bmp = bytes[0] == static_cast<std::uint8_t>('B') &&
+                   bytes[1] == static_cast<std::uint8_t>('M');
+  const bool jpeg = size >= 3 && bytes[0] == 0xffU && bytes[1] == 0xd8U &&
+                    bytes[2] == 0xffU;
+  const std::uint8_t png_signature[] = {0x89U, 0x50U, 0x4eU, 0x47U,
+                                        0x0dU, 0x0aU, 0x1aU, 0x0aU};
+  bool png = size >= sizeof(png_signature);
+  for (std::size_t index = 0; png && index < sizeof(png_signature); ++index) {
+    png = bytes[index] == png_signature[index];
+  }
+  const bool webp = size >= 12 && bytes[0] == 'R' && bytes[1] == 'I' &&
+                    bytes[2] == 'F' && bytes[3] == 'F' &&
+                    bytes[8] == 'W' && bytes[9] == 'E' &&
+                    bytes[10] == 'B' && bytes[11] == 'P';
+  const bool little_endian_tiff =
+      size >= 4 && bytes[0] == 'I' && bytes[1] == 'I' && bytes[2] == 42U &&
+      bytes[3] == 0U;
+  const bool big_endian_tiff =
+      size >= 4 && bytes[0] == 'M' && bytes[1] == 'M' && bytes[2] == 0U &&
+      bytes[3] == 42U;
+  return bmp || png || jpeg || webp || little_endian_tiff || big_endian_tiff;
 }
 
 /// Checks one encoded output size against package policy.
@@ -396,14 +443,6 @@ inline bool valid_lookup_table(std::int64_t rows, std::int64_t cols,
                                int channels,
                                std::size_t table_size) noexcept {
   return valid_u8_image(rows, cols, channels) && table_size == 256U;
-}
-
-/// Checks one public image and bounded finite scale/offset parameters.
-inline bool valid_scale_abs(std::int64_t rows, std::int64_t cols, int channels,
-                            double scale, double offset) noexcept {
-  return valid_u8_image(rows, cols, channels) && std::isfinite(scale) &&
-         std::abs(scale) <= kMaxScaleAbsParameter && std::isfinite(offset) &&
-         std::abs(offset) <= kMaxScaleAbsParameter;
 }
 
 /// Checks one public image and a bounded nonnegative sharpening amount.
@@ -826,13 +865,6 @@ inline bool valid_canny(std::int64_t rows, std::int64_t cols, int channels,
          valid_canny_threshold(high_threshold) &&
          low_threshold <= high_threshold &&
          valid_canny_aperture(aperture_size);
-}
-
-/// Checks an ordered unsigned-byte output range for min/max normalization.
-inline bool valid_normalization_range(double minimum,
-                                      double maximum) noexcept {
-  return valid_threshold_value(minimum) &&
-         valid_threshold_value(maximum) && minimum < maximum;
 }
 
 /// Checks six finite, bounded coefficients for one 2D affine transform.

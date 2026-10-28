@@ -1,16 +1,17 @@
-/** Demonstrates selecting pixels that fall inside a bounded value range. */
+/**
+ * Demonstrates selecting pixels that fall inside a bounded value range.
+ */
 module samples.imgproc.RangeMask.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the range-mask example. */
+/**
+ * Runs the range-mask example.
+ */
 pub main(): Unit ->
-    // The upstream color-threshold tutorial converts to HSV before applying
-    // inRange. This deterministic grayscale input isolates the same mask step.
     let image = Mat.from_u8(Bytes.from_list([0, 64, 127, 200]), 2, 2, Gray);
     let mask = Imgproc.in_range(image, 60, 150);
     let valid = Mat.to_u8(mask).to_list() == [0, 255, 255, 0];

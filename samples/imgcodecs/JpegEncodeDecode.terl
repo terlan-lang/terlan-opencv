@@ -1,0 +1,25 @@
+/**
+ * Demonstrates deterministic bounded-quality JPEG encoding and decoding.
+ */
+module samples.imgcodecs.JpegEncodeDecode.
+
+import opencv.Types.{Gray, Grayscale, Jpeg}.
+import opencv.{Codecs, Mat}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/**
+ * Runs the in-memory JPEG codec example.
+ */
+pub main(): Unit ->
+    let source = Mat.from_u8(Bytes.from_list([64, 64, 64, 64]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Jpeg);
+    let repeated = Codecs.encode(source, Jpeg);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid = encoded.to_list() == repeated.to_list() and Mat.to_u8(decoded).to_list() == [64, 64, 64, 64];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("JPEG codec example complete");
+        true -> println("JPEG codec example failed")
+    }.

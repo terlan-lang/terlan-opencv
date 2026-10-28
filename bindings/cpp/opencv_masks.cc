@@ -10,31 +10,6 @@
 #include <utility>
 
 namespace terlan_opencv {
-namespace {
-
-/// Reports whether one matrix has valid unsigned-byte mask storage.
-bool valid_mask_storage(const cv::Mat& mask) noexcept {
-  return validation::valid_grayscale_image(
-             mask.rows, mask.cols, mask.channels()) &&
-         mask.type() == CV_8UC1;
-}
-
-/// Reports whether one matrix can serve as an unsigned-byte image mask.
-bool compatible_mask(const cv::Mat& image, const cv::Mat& mask) noexcept {
-  return validation::valid_mask_pair(
-             image.rows, image.cols, image.channels(), mask.rows, mask.cols,
-             mask.channels()) &&
-         image.depth() == CV_8U && mask.type() == CV_8UC1;
-}
-
-/// Reports whether two matrices can participate in binary mask operations.
-bool compatible_masks(const cv::Mat& first, const cv::Mat& second) noexcept {
-  return valid_mask_storage(first) && valid_mask_storage(second) &&
-         first.rows == second.rows && first.cols == second.cols;
-}
-
-}  // namespace
-
 std::unique_ptr<OpenCvMat> OpenCvMat::apply_mask_owned(
     const OpenCvMat& mask) const noexcept {
   failure::clear();
@@ -54,7 +29,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::select_mask_owned(
     const OpenCvMat& other, const OpenCvMat& mask) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr || mask.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value) ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
       !compatible_mask(impl_->value, mask.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;

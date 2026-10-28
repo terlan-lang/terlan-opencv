@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cmath>
 #include <cstring>
+#include <limits>
 #include <utility>
 
 namespace terlan_opencv {
@@ -31,6 +32,29 @@ int mat_type(std::int64_t layout) noexcept {
   }
 }
 
+int matrix_depth(std::int64_t depth) noexcept {
+  return depth >= CV_8U && depth <= CV_16F ? static_cast<int>(depth) : -1;
+}
+
+std::size_t matrix_element_size(std::int64_t depth) noexcept {
+  switch (matrix_depth(depth)) {
+    case CV_8U:
+    case CV_8S:
+      return 1;
+    case CV_16U:
+    case CV_16S:
+    case CV_16F:
+      return 2;
+    case CV_32S:
+    case CV_32F:
+      return 4;
+    case CV_64F:
+      return 8;
+    default:
+      return 0;
+  }
+}
+
 int interpolation_code(std::int64_t interpolation) noexcept {
   switch (interpolation) {
     case static_cast<std::int64_t>(Interpolation::Nearest):
@@ -41,6 +65,12 @@ int interpolation_code(std::int64_t interpolation) noexcept {
       return cv::INTER_AREA;
     case static_cast<std::int64_t>(Interpolation::Cubic):
       return cv::INTER_CUBIC;
+    case static_cast<std::int64_t>(Interpolation::Lanczos4):
+      return cv::INTER_LANCZOS4;
+    case static_cast<std::int64_t>(Interpolation::LinearExact):
+      return cv::INTER_LINEAR_EXACT;
+    case static_cast<std::int64_t>(Interpolation::NearestExact):
+      return cv::INTER_NEAREST_EXACT;
     default:
       return -1;
   }
@@ -75,8 +105,37 @@ int decode_mode_code(std::int64_t mode) noexcept {
 }
 
 const char* image_extension(std::int64_t format) noexcept {
-  return format == static_cast<std::int64_t>(ImageFormat::Bmp) ? ".bmp"
-                                                               : nullptr;
+  switch (format) {
+    case static_cast<std::int64_t>(ImageFormat::Bmp):
+      return ".bmp";
+    case static_cast<std::int64_t>(ImageFormat::Png):
+      return ".png";
+    case static_cast<std::int64_t>(ImageFormat::Jpeg):
+      return ".jpg";
+    case static_cast<std::int64_t>(ImageFormat::Webp):
+      return ".webp";
+    case static_cast<std::int64_t>(ImageFormat::Tiff):
+      return ".tiff";
+    default:
+      return nullptr;
+  }
+}
+
+std::vector<int> image_encode_parameters(std::int64_t format) {
+  switch (format) {
+    case static_cast<std::int64_t>(ImageFormat::Png):
+      return {cv::IMWRITE_PNG_COMPRESSION,
+              validation::kPngCompressionLevel};
+    case static_cast<std::int64_t>(ImageFormat::Jpeg):
+      return {cv::IMWRITE_JPEG_QUALITY, validation::kJpegEncodeQuality};
+    case static_cast<std::int64_t>(ImageFormat::Webp):
+      return {cv::IMWRITE_WEBP_QUALITY, validation::kWebpEncodeQuality};
+    case static_cast<std::int64_t>(ImageFormat::Tiff):
+      return {cv::IMWRITE_TIFF_COMPRESSION,
+              validation::kTiffCompressionNone};
+    default:
+      return {};
+  }
 }
 
 int border_code(std::int64_t mode) noexcept {
@@ -272,8 +331,154 @@ std::int64_t OpenCvMat::channels() const noexcept {
   return impl_ == nullptr ? 0 : impl_->value.channels();
 }
 
+std::int64_t OpenCvMat::depth_code() const noexcept {
+  return impl_ == nullptr ? -1 : impl_->value.depth();
+}
+
+std::int64_t OpenCvMat::element_size() const noexcept {
+  return impl_ == nullptr
+             ? 0
+             : static_cast<std::int64_t>(impl_->value.elemSize1());
+}
+
+std::int64_t OpenCvMat::pixel_size() const noexcept {
+  return impl_ == nullptr
+             ? 0
+             : static_cast<std::int64_t>(impl_->value.elemSize());
+}
+
+std::int64_t OpenCvMat::type_code() const noexcept {
+  return impl_ == nullptr ? -1 : impl_->value.type();
+}
+
+std::int64_t OpenCvMat::dimension_count() const noexcept {
+  return impl_ == nullptr ? 0 : impl_->value.dims;
+}
+
+std::int64_t OpenCvMat::element_count() const noexcept {
+  if (impl_ == nullptr ||
+      impl_->value.total() >
+          static_cast<std::size_t>(std::numeric_limits<std::int64_t>::max())) {
+    return 0;
+  }
+  return static_cast<std::int64_t>(impl_->value.total());
+}
+
+std::int64_t OpenCvMat::step_scalars(std::int64_t dimension) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || dimension < 0 || dimension >= impl_->value.dims) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return 0;
+  }
+  const auto step = impl_->value.step1(static_cast<int>(dimension));
+  if (step > static_cast<std::size_t>(
+                 std::numeric_limits<std::int64_t>::max())) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return 0;
+  }
+  return static_cast<std::int64_t>(step);
+}
+
+std::int64_t OpenCvMat::byte_count() const noexcept {
+  if (impl_ == nullptr ||
+      impl_->value.total() >
+          static_cast<std::size_t>(std::numeric_limits<std::int64_t>::max()) /
+              impl_->value.elemSize()) {
+    return 0;
+  }
+  return static_cast<std::int64_t>(impl_->value.total() *
+                                   impl_->value.elemSize());
+}
+
+bool OpenCvMat::empty() const noexcept {
+  return impl_ == nullptr || impl_->value.empty();
+}
+
+bool OpenCvMat::is_submatrix() const noexcept {
+  return impl_ != nullptr && impl_->value.isSubmatrix();
+}
+
 bool OpenCvMat::is_contiguous() const noexcept {
   return impl_ != nullptr && impl_->value.isContinuous();
+}
+
+std::unique_ptr<OpenCvMat> OpenCvMat::row_range_copy_owned(
+    std::int64_t start, std::int64_t end) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) || start < 0 ||
+      end <= start || end > impl_->value.rows) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, start, end] {
+    return own(impl_->value.rowRange(static_cast<int>(start),
+                                     static_cast<int>(end))
+                   .clone());
+  });
+}
+
+std::unique_ptr<OpenCvMat> OpenCvMat::col_range_copy_owned(
+    std::int64_t start, std::int64_t end) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) || start < 0 ||
+      end <= start || end > impl_->value.cols) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, start, end] {
+    return own(impl_->value.colRange(static_cast<int>(start),
+                                     static_cast<int>(end))
+                   .clone());
+  });
+}
+
+std::unique_ptr<OpenCvMat> OpenCvMat::diagonal_copy_owned(
+    std::int64_t offset) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) ||
+      offset <= -static_cast<std::int64_t>(impl_->value.rows) ||
+      offset >= impl_->value.cols) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, offset] {
+    return own(impl_->value.diag(static_cast<int>(offset)).clone());
+  });
+}
+
+std::unique_ptr<OpenCvMat> OpenCvMat::reshape_copy_owned(
+    std::int64_t rows, std::int64_t channels) const noexcept {
+  failure::clear();
+  const auto max_dimension =
+      static_cast<std::int64_t>(std::numeric_limits<int>::max());
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) ||
+      !impl_->value.isContinuous() || rows <= 0 || rows > max_dimension ||
+      channels <= 0 || channels > CV_CN_MAX) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  const auto scalar_count =
+      impl_->value.total() * static_cast<std::size_t>(impl_->value.channels());
+  const auto row_width =
+      static_cast<std::size_t>(rows) * static_cast<std::size_t>(channels);
+  if (scalar_count % row_width != 0 ||
+      scalar_count / row_width >
+          static_cast<std::size_t>(std::numeric_limits<int>::max())) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  const auto cols = static_cast<std::int64_t>(scalar_count / row_width);
+  if (!validation::matrix_shape(rows, cols, channels,
+                                impl_->value.elemSize1())
+           .valid) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, rows, channels] {
+    return own(impl_->value
+                   .reshape(static_cast<int>(channels), static_cast<int>(rows))
+                   .clone());
+  });
 }
 
 std::unique_ptr<OpenCvMat> OpenCvMat::clone_owned() const noexcept {
@@ -286,7 +491,27 @@ std::unique_ptr<OpenCvMat> OpenCvMat::clone_owned() const noexcept {
       [this] { return own(impl_->value.clone()); });
 }
 
+std::unique_ptr<OpenCvMat> OpenCvMat::convert_depth_owned(
+    std::int64_t depth, double scale, double offset) const noexcept {
+  failure::clear();
+  const int checked_depth = matrix_depth(depth);
+  if (impl_ == nullptr || checked_depth < 0 || !std::isfinite(scale) ||
+      !std::isfinite(offset)) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, checked_depth, scale, offset] {
+    cv::Mat converted;
+    impl_->value.convertTo(converted, checked_depth, scale, offset);
+    return own(std::move(converted));
+  });
+}
+
 std::unique_ptr<std::vector<std::uint8_t>> OpenCvMat::to_u8() const noexcept {
+  return to_bytes();
+}
+
+std::unique_ptr<std::vector<std::uint8_t>> OpenCvMat::to_bytes() const noexcept {
   failure::clear();
   if (impl_ == nullptr) {
     failure::set(failure::NativeFailure::InvalidArgument);
@@ -310,8 +535,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::resize_owned(
   const int code = interpolation_code(interpolation);
   const auto shape = impl_ == nullptr
                          ? validation::ImageShape{false, 0, 0}
-                         : validation::image_shape(height, width,
-                                                   impl_->value.channels());
+                         : resized_matrix_shape(impl_->value, height, width);
   if (!shape.valid || code < 0) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
@@ -378,9 +602,10 @@ std::unique_ptr<std::vector<std::uint8_t>> OpenCvMat::encode_owned(
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
-  return failure::contain<std::vector<std::uint8_t>>([this, extension] {
+  return failure::contain<std::vector<std::uint8_t>>([this, extension, format] {
     auto encoded = std::make_unique<std::vector<std::uint8_t>>();
-    if (!cv::imencode(extension, impl_->value, *encoded)) {
+    if (!cv::imencode(extension, impl_->value, *encoded,
+                      image_encode_parameters(format))) {
       failure::set(failure::NativeFailure::CodecUnavailable);
       return std::unique_ptr<std::vector<std::uint8_t>>{};
     }
@@ -397,9 +622,10 @@ std::unique_ptr<OpenCvMat> OpenCvMat::crop_owned(
     std::int64_t height) const noexcept {
   failure::clear();
   if (impl_ == nullptr ||
+      !valid_owned_matrix(impl_->value) ||
       !validation::valid_crop_region(impl_->value.rows, impl_->value.cols, x,
                                      y, width, height) ||
-      !validation::image_shape(height, width, impl_->value.channels()).valid) {
+      !resized_matrix_shape(impl_->value, height, width).valid) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -415,12 +641,21 @@ std::unique_ptr<OpenCvMat> OpenCvMat::pad_owned(
     std::int64_t right, std::int64_t border_mode) const noexcept {
   failure::clear();
   const int code = border_code(border_mode);
-  const auto shape = impl_ == nullptr
-                         ? validation::ImageShape{false, 0, 0}
-                         : validation::padded_image_shape(
-                               impl_->value.rows, impl_->value.cols,
-                               impl_->value.channels(), top, bottom, left,
-                               right);
+  const auto max_dimension =
+      static_cast<std::int64_t>(std::numeric_limits<int>::max());
+  const bool dimensions_valid =
+      impl_ != nullptr && valid_owned_matrix(impl_->value) && top >= 0 &&
+      bottom >= 0 && left >= 0 && right >= 0 &&
+      top <= max_dimension - impl_->value.rows &&
+      left <= max_dimension - impl_->value.cols &&
+      bottom <= max_dimension - (impl_->value.rows + top) &&
+      right <= max_dimension - (impl_->value.cols + left);
+  const auto shape =
+      dimensions_valid
+          ? resized_matrix_shape(impl_->value,
+                                 impl_->value.rows + top + bottom,
+                                 impl_->value.cols + left + right)
+          : validation::ImageShape{false, 0, 0};
   if (!shape.valid || code < 0 ||
       !validation::valid_border_mode(border_mode)) {
     failure::set(failure::NativeFailure::InvalidArgument);
@@ -441,9 +676,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::flip_owned(
     std::int64_t mode) const noexcept {
   failure::clear();
   if (impl_ == nullptr || !validation::valid_flip_mode(mode) ||
-      !validation::image_shape(impl_->value.rows, impl_->value.cols,
-                               impl_->value.channels())
-           .valid) {
+      !valid_owned_matrix(impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -458,13 +691,8 @@ std::unique_ptr<OpenCvMat> OpenCvMat::flip_owned(
 std::unique_ptr<OpenCvMat> OpenCvMat::rotate_owned(
     std::int64_t mode) const noexcept {
   failure::clear();
-  const auto shape = impl_ == nullptr
-                         ? validation::ImageShape{false, 0, 0}
-                         : validation::rotated_image_shape(
-                               impl_->value.rows, impl_->value.cols,
-                               impl_->value.channels(), mode);
   const int code = rotate_code(mode);
-  if (!shape.valid || code < 0) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) || code < 0) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -621,20 +849,16 @@ std::unique_ptr<OpenCvMat> OpenCvMat::canny_owned(
 std::unique_ptr<OpenCvMat> OpenCvMat::normalize_min_max_owned(
     double minimum, double maximum) const noexcept {
   failure::clear();
-  const auto shape = impl_ == nullptr
-                         ? validation::ImageShape{false, 0, 0}
-                         : validation::image_shape(
-                               impl_->value.rows, impl_->value.cols,
-                               impl_->value.channels());
-  if (!shape.valid ||
-      !validation::valid_normalization_range(minimum, maximum)) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) ||
+      !std::isfinite(minimum) || !std::isfinite(maximum) ||
+      minimum >= maximum) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
   return failure::contain<OpenCvMat>([this, minimum, maximum] {
     cv::Mat result;
     cv::normalize(impl_->value, result, minimum, maximum, cv::NORM_MINMAX, -1);
-    return own(std::move(result));
+    return own_matching_mat(std::move(result), impl_->value);
   });
 }
 
@@ -776,6 +1000,34 @@ std::unique_ptr<OpenCvMat> mat_from_u8(
   });
 }
 
+std::unique_ptr<OpenCvMat> mat_from_bytes(
+    rust::Slice<const std::uint8_t> bytes, std::int64_t rows,
+    std::int64_t cols, std::int64_t channels,
+    std::int64_t depth) noexcept {
+  failure::clear();
+  const int checked_depth = matrix_depth(depth);
+  const int checked_channels =
+      channels > 0 && channels <= validation::kMaxMatrixChannels
+          ? static_cast<int>(channels)
+          : 0;
+  const auto scalar_size = matrix_element_size(depth);
+  const auto shape = validation::matrix_shape(
+      rows, cols, checked_channels, scalar_size);
+  if (!validation::valid_buffer_size(shape, bytes.size()) ||
+      checked_depth < 0 || checked_channels == 0) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>(
+      [bytes, rows, cols, checked_channels, checked_depth, shape] {
+        cv::Mat result(
+            static_cast<int>(rows), static_cast<int>(cols),
+            CV_MAKETYPE(checked_depth, checked_channels));
+        std::memcpy(result.data, bytes.data(), shape.byte_count);
+        return own(std::move(result));
+      });
+}
+
 std::unique_ptr<OpenCvMat> mat_zeros(
     std::int64_t rows, std::int64_t cols, std::int64_t layout) noexcept {
   failure::clear();
@@ -791,6 +1043,29 @@ std::unique_ptr<OpenCvMat> mat_zeros(
   });
 }
 
+std::unique_ptr<OpenCvMat> mat_zeros_typed(
+    std::int64_t rows, std::int64_t cols, std::int64_t channels,
+    std::int64_t depth) noexcept {
+  failure::clear();
+  const int checked_depth = matrix_depth(depth);
+  const int checked_channels =
+      channels > 0 && channels <= validation::kMaxMatrixChannels
+          ? static_cast<int>(channels)
+          : 0;
+  const auto shape = validation::matrix_shape(
+      rows, cols, checked_channels, matrix_element_size(depth));
+  if (!shape.valid || checked_depth < 0 || checked_channels == 0) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>(
+      [rows, cols, checked_channels, checked_depth] {
+        return own(cv::Mat::zeros(
+            static_cast<int>(rows), static_cast<int>(cols),
+            CV_MAKETYPE(checked_depth, checked_channels)));
+      });
+}
+
 std::unique_ptr<OpenCvMat> decode_image(
     rust::Slice<const std::uint8_t> bytes, std::int64_t mode) noexcept {
   failure::clear();
@@ -798,7 +1073,7 @@ std::unique_ptr<OpenCvMat> decode_image(
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
-  if (!validation::valid_bmp_input(bytes.data(), bytes.size())) {
+  if (!validation::valid_encoded_image_input(bytes.data(), bytes.size())) {
     failure::set(bytes.size() > validation::kMaxEncodedImageBytes
                      ? failure::NativeFailure::EncodedImageTooLarge
                      : failure::NativeFailure::InvalidEncodedImage);

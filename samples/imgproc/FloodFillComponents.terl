@@ -1,21 +1,24 @@
-/** Demonstrates flood filling and connected-component analysis. */
+/**
+ * Demonstrates flood filling and connected-component analysis.
+ */
 module samples.imgproc.FloodFillComponents.
 
-import opencv.Components.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Eight, Four, Gray}.
+import opencv.{Components, Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the flood-fill and component-labeling example. */
+/**
+ * Runs the flood-fill and component-labeling example.
+ */
 pub main(): Unit ->
-    // Four-neighbor labeling keeps the last diagonal pixel separate, while
-    // eight-neighbor flood fill follows the complete diagonal foreground.
     let source = Mat.from_u8(Bytes.from_list([0, 255, 0, 0, 255, 0, 0, 0, 255]), 3, 3, Gray);
     let filled = Imgproc.flood_fill(source, 1, 0, 128, Eight);
     let components = Imgproc.connected_components(source, Four);
-    let valid = Mat.to_u8(filled).to_list() == [0, 128, 0, 0, 128, 0, 0, 0, 128] and Components.foreground_count(components) == 2 and Components.areas(components) == [2, 1];
+    let valid =
+        Mat.to_u8(filled).to_list() == [0, 128, 0, 0, 128, 0, 0, 0, 128]
+            and Components.foreground_count(components) == 2
+            and Components.areas(components) == [2, 1];
     Components.dispose(components);
     Mat.dispose(filled);
     Mat.dispose(source);

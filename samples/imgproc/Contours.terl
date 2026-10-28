@@ -1,24 +1,65 @@
-/** Demonstrates external contour extraction and copied contour geometry. */
+/**
+ * Demonstrates external contour extraction and copied contour geometry.
+ */
 module samples.imgproc.Contours.
 
-import opencv.Imgproc.
-import opencv.Mat.
+import opencv.Contours.{bounds, count, dispose, live_count, outline_mask, points}.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the contour extraction example. */
+/**
+ * Runs the contour extraction example.
+ */
 pub main(): Unit ->
-    // Begin with a deterministic binary image instead of GUI threshold input.
-    let mask = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]), 5, 5, Gray);
-    // Find external contours and inspect copied points and bounds.
+    let mask =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
+            ),
+            5,
+            5,
+            Gray,
+        );
     let contours = Imgproc.find_external_contours(mask);
-    let outline = opencv.Contours.outline_mask(contours, 255, 1);
-    let valid = opencv.Contours.count(contours) == 1 and opencv.Contours.points(contours).length() >= 8 and opencv.Contours.bounds(contours) == [1, 1, 3, 3] and Mat.rows(outline) == 5;
+    let outline = outline_mask(contours, 255, 1);
+    let valid =
+        count(contours) == 1
+            and points(contours).length() >= 8
+            and bounds(contours) == [1, 1, 3, 3]
+            and Mat.rows(outline) == 5;
     Mat.dispose(outline);
-    opencv.Contours.dispose(contours);
+    dispose(contours);
     Mat.dispose(mask);
     if {
-        valid and opencv.Contours.live_count() == 0 and Mat.live_count() == 0 -> println("Contours example complete");
+        valid and live_count() == 0 and Mat.live_count() == 0 -> println("Contours example complete");
         true -> println("Contours example failed")
     }.

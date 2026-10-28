@@ -86,6 +86,49 @@ fn bitwise_operations_preserve_inputs_and_layouts() {
     assert_eq!(ffi::live_mat_count(), 0);
 }
 
+/// Proves one mask selects complete multichannel pixels.
+#[test]
+fn masked_bitwise_operations_select_multichannel_pixels() {
+    assert_eq!(ffi::live_mat_count(), 0);
+    let first = ffi::mat_from_u8(&[0, 15, 240, 170, 85, 255], 1, 2, 3);
+    let second = ffi::mat_from_u8(&[255, 51, 15, 85, 170, 0], 1, 2, 3);
+    let mask = ffi::mat_from_u8(&[255, 0], 1, 2, 1);
+    let first_ref = first.as_ref().expect("first BGR source");
+    let second_ref = second.as_ref().expect("second BGR source");
+    let mask_ref = mask.as_ref().expect("BGR pixel mask");
+
+    let inverted = first_ref.invert_masked_owned(mask_ref);
+    let conjunction = first_ref.bitwise_and_masked_owned(second_ref, mask_ref);
+    let disjunction = first_ref.bitwise_or_masked_owned(second_ref, mask_ref);
+    let exclusive_or = first_ref.bitwise_xor_masked_owned(second_ref, mask_ref);
+
+    assert_eq!(
+        mat_bytes(inverted.as_ref().expect("masked BGR invert")),
+        [255, 240, 15, 0, 0, 0]
+    );
+    assert_eq!(
+        mat_bytes(conjunction.as_ref().expect("masked BGR and")),
+        [0, 3, 0, 0, 0, 0]
+    );
+    assert_eq!(
+        mat_bytes(disjunction.as_ref().expect("masked BGR or")),
+        [255, 63, 255, 0, 0, 0]
+    );
+    assert_eq!(
+        mat_bytes(exclusive_or.as_ref().expect("masked BGR xor")),
+        [255, 60, 255, 0, 0, 0]
+    );
+
+    drop(exclusive_or);
+    drop(disjunction);
+    drop(conjunction);
+    drop(inverted);
+    drop(mask);
+    drop(second);
+    drop(first);
+    assert_eq!(ffi::live_mat_count(), 0);
+}
+
 /// Copies one native matrix into a Rust byte vector.
 fn mat_bytes(image: &ffi::OpenCvMat) -> Vec<u8> {
     image

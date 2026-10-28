@@ -19,5 +19,7 @@ fn main() {
         eprintln!("opencv-codec-policy-check: {error}");
         std::process::exit(1);
     }
-    println!("opencv-codec-policy-check: copied-byte BMP policy is complete and filesystem-free");
+    println!(
+        "opencv-codec-policy-check: copied-byte BMP, PNG, JPEG, WebP, and TIFF policy is complete and filesystem-free"
+    );
 }

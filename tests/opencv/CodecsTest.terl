@@ -1,17 +1,90 @@
 module opencv.CodecsTest.
 
-import opencv.Codecs.
-import opencv.Mat.
+import opencv.Types.{Bmp, Gray, Grayscale, Jpeg, Png, Tiff, Webp}.
+import opencv.{Codecs, Mat}.
+import std.collections.List.{length}.
 import std.vm.Bytes.
 
-/** Validates deterministic in-memory BMP encoding, grayscale decoding, and cleanup. */
+/**
+ * Validates deterministic in-memory BMP encoding and lossless decoding.
+ */
 @test
-pub codec_contracts(): Bool ->
-    let source = Mat.from_u8(Bytes.from_list([0]), 1, 1, Atom["gray"]);
-    let encoded = Codecs.encode(source, Atom["bmp"]);
-    let decoded = Codecs.decode(encoded, Atom["grayscale"]);
-    let valid = encoded.length() > 0 and Mat.rows(decoded) == 1 and Mat.cols(decoded) == 1 and Mat.channels(decoded) == 1 and Mat.to_u8(decoded).to_list() == [0];
+pub bmp_round_trip(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0]), 1, 1, Gray);
+    let encoded = Codecs.encode(source, Bmp);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid =
+        encoded.length() > 0
+            and Mat.rows(decoded) == 1
+            and Mat.cols(decoded) == 1
+            and Mat.channels(decoded) == 1
+            and Mat.to_u8(decoded).to_list() == [0];
     Mat.dispose(decoded);
     Mat.dispose(source);
     valid and Mat.live_count() == 0.
 
+/**
+ * Validates deterministic in-memory PNG encoding and lossless decoding.
+ */
+@test
+pub png_round_trip(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Png);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid = encoded.length() > 8 and Mat.to_u8(decoded).to_list() == [0, 64, 128, 255];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates deterministic bounded-quality JPEG encoding and decoding.
+ */
+@test
+pub jpeg_round_trip(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([64, 64, 64, 64]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Jpeg);
+    let repeated = Codecs.encode(source, Jpeg);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid =
+        encoded.to_list() == repeated.to_list()
+            and Mat.rows(decoded) == 2
+            and Mat.cols(decoded) == 2
+            and Mat.channels(decoded) == 1
+            and Mat.to_u8(decoded).to_list() == [64, 64, 64, 64];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates deterministic bounded-quality WebP encoding and decoding.
+ */
+@test
+pub webp_round_trip(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([64, 64, 64, 64]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Webp);
+    let repeated = Codecs.encode(source, Webp);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid =
+        encoded.to_list() == repeated.to_list()
+            and Mat.rows(decoded) == 2
+            and Mat.cols(decoded) == 2
+            and Mat.channels(decoded) == 1;
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates deterministic uncompressed TIFF encoding and lossless decoding.
+ */
+@test
+pub tiff_round_trip(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Tiff);
+    let repeated = Codecs.encode(source, Tiff);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid =
+        encoded.to_list() == repeated.to_list()
+            and Mat.to_u8(decoded).to_list() == [0, 64, 128, 255];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.

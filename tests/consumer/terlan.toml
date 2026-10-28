@@ -4,7 +4,7 @@ version = "0.0.0"
 namespace = "opencv_consumer"
 
 [build]
-source_roots = ["src"]
+source_roots = ["src_smoke"]
 artifact = "terlan-vm"
 
 [dependencies]

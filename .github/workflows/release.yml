@@ -1,0 +1,199 @@
+name: OpenCV Package Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Stable package tag to validate without publishing
+        required: true
+        type: string
+
+concurrency:
+  group: opencv-package-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  TARGET: x86_64-unknown-linux-gnu
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+
+jobs:
+  build:
+    name: Build immutable release inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      archive: ${{ steps.plan.outputs.archive }}
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout package revision
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            clang \
+            cmake \
+            g++ \
+            git \
+            libclang-dev \
+            llvm-dev \
+            ninja-build \
+            protobuf-compiler \
+            zstd
+
+      - name: Install Rust toolchain
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Resolve reviewed release inputs
+        id: plan
+        run: |
+          mkdir -p _build/release
+          package_revision=$(git rev-parse HEAD)
+          cargo run --locked --quiet \
+            --manifest-path tools/package_artifact/Cargo.toml -- \
+            release-plan "$GITHUB_WORKSPACE" "$RELEASE_TAG" "$package_revision" "$TARGET" \
+            > _build/release/release-plan.json
+          echo "archive=$(jq -r .archive _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "package_revision=$(jq -r .revision _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "compiler_repository=$(jq -r .compiler_repository _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "compiler_revision=$(jq -r .compiler_revision _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "opencv_repository=$(jq -r .opencv_repository _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+          echo "opencv_revision=$(jq -r .opencv_revision _build/release/release-plan.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout pinned compiler
+        env:
+          REPOSITORY: ${{ steps.plan.outputs.compiler_repository }}
+          REVISION: ${{ steps.plan.outputs.compiler_revision }}
+        run: |
+          git init --quiet _build/terlan
+          git -C _build/terlan remote add origin "$REPOSITORY"
+          git -C _build/terlan fetch --quiet --depth 1 origin "$REVISION"
+          git -C _build/terlan checkout --quiet --detach FETCH_HEAD
+
+      - name: Build pinned compiler tools
+        run: |
+          cargo build --quiet --manifest-path _build/terlan/Cargo.toml \
+            -p terlan --bin terlc --bin terlan-vm
+          cmake \
+            -S _build/terlan/tools/cpp_metadata_extractor \
+            -B _build/terlan/target/cpp-metadata-extractor \
+            -G Ninja
+          cmake --build _build/terlan/target/cpp-metadata-extractor --parallel
+
+      - name: Checkout pinned OpenCV
+        env:
+          REPOSITORY: ${{ steps.plan.outputs.opencv_repository }}
+          REVISION: ${{ steps.plan.outputs.opencv_revision }}
+        run: |
+          git init --quiet upstream/opencv
+          git -C upstream/opencv remote add origin "$REPOSITORY"
+          git -C upstream/opencv fetch --quiet --depth 1 origin "$REVISION"
+          git -C upstream/opencv checkout --quiet --detach FETCH_HEAD
+
+      - name: Build and replay target artifact
+        run: |
+          make opencv-package-artifact-check \
+            TERLC="$GITHUB_WORKSPACE/_build/terlan/target/debug/terlc" \
+            CPP_METADATA_EXTRACTOR="$GITHUB_WORKSPACE/_build/terlan/target/cpp-metadata-extractor/terlan-cpp-metadata-extractor"
+
+      - name: Bind artifact to release identity
+        env:
+          ARCHIVE: ${{ steps.plan.outputs.archive }}
+          PACKAGE_REVISION: ${{ steps.plan.outputs.package_revision }}
+        run: |
+          cargo run --offline --locked --quiet \
+            --manifest-path tools/package_artifact/Cargo.toml -- \
+            release-verify \
+            "$GITHUB_WORKSPACE/_build/artifacts/$ARCHIVE" \
+            "$GITHUB_WORKSPACE/_build/release/extracted" \
+            "$RELEASE_TAG" \
+            "$PACKAGE_REVISION" \
+            "$TARGET"
+
+      - name: Record promotion evidence
+        env:
+          OPENCV_REVISION: ${{ steps.plan.outputs.opencv_revision }}
+        run: |
+          cargo run --quiet --manifest-path tools/promotion_check/Cargo.toml -- \
+            --compiler "$GITHUB_WORKSPACE/_build/terlan" \
+            --package "$GITHUB_WORKSPACE" \
+            --opencv "$GITHUB_WORKSPACE/upstream/opencv" \
+            --expected-opencv-commit "$OPENCV_REVISION" \
+            --report "$GITHUB_WORKSPACE/_build/release/promotion.json" \
+            --verified
+
+      - name: Stage release assets
+        env:
+          ARCHIVE: ${{ steps.plan.outputs.archive }}
+        run: |
+          cp "_build/artifacts/$ARCHIVE" _build/release/
+          cp "_build/artifacts/$ARCHIVE.sha256" _build/release/
+
+      - name: Upload validated release inputs
+        uses: actions/upload-artifact@v6
+        with:
+          name: terlan-opencv-${{ env.RELEASE_TAG }}-${{ env.TARGET }}
+          path: |
+            _build/release/${{ steps.plan.outputs.archive }}
+            _build/release/${{ steps.plan.outputs.archive }}.sha256
+            _build/release/release-plan.json
+            _build/release/promotion.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+  publish:
+    name: Publish immutable GitHub release
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      artifact-metadata: write
+
+    steps:
+      - name: Download validated release inputs
+        uses: actions/download-artifact@v6
+        with:
+          name: terlan-opencv-${{ env.RELEASE_TAG }}-${{ env.TARGET }}
+          path: release
+
+      - name: Attest release archive
+        uses: actions/attest@v4
+        with:
+          subject-path: release/${{ needs.build.outputs.archive }}
+
+      - name: Refuse replacement and create complete draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $RELEASE_TAG already exists and will not be replaced" >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" \
+            release/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --verify-tag \
+            --draft \
+            --generate-notes \
+            --title "Terlan OpenCV $RELEASE_TAG"
+
+      - name: Publish complete draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release edit "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --draft=false

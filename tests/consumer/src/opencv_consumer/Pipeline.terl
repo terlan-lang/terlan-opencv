@@ -1,20 +1,11 @@
 /**
  * OpenCV pipeline consumed through an external package dependency.
  */
-
 module opencv_consumer.Pipeline.
 
-import opencv.Calib3d.
-import opencv.Codecs.
-import opencv.Components.
-import opencv.Contours.
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
-import opencv.Types.
-import opencv_consumer.DnnChecks.
-import opencv_consumer.MlChecks.
-import opencv_consumer.PoseChecks.
+import opencv.{Calib3d, Codecs, Components, Contours, Features, Imgproc, Mat, Types}.
+import opencv_consumer.{DnnChecks, MlChecks, PoseChecks}.
+import std.collections.List.{length}.
 import std.range.Range.{inclusive, to_list}.
 import std.test.Test.{assert}.
 import std.vm.Bytes.
@@ -37,37 +28,101 @@ pub execute(): Bool ->
     let channel_gradient_magnitude = Imgproc.gradient_magnitude(red_channel, blue_channel);
     let merged_bgr = Imgproc.merge_bgr(blue_channel, green_channel, red_channel);
     let replaced_red = Imgproc.replace_channel(mat, blue_channel, 2);
-    let extract_channel_valid = Mat.rows(red_channel) == 2 and Mat.cols(red_channel) == 2 and Mat.channels(red_channel) == 1 and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0] and Mat.to_u8(mat).to_list() == source.to_list();
-    let comparison_valid = Mat.rows(channel_equality) == 2 and Mat.cols(channel_equality) == 2 and Mat.channels(channel_equality) == 1 and Mat.to_u8(channel_equality).to_list() == [255, 255, 0, 255] and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0] and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
-    let gradient_magnitude_valid = Mat.rows(channel_gradient_magnitude) == 2 and Mat.cols(channel_gradient_magnitude) == 2 and Mat.channels(channel_gradient_magnitude) == 1 and Mat.to_u8(channel_gradient_magnitude).to_list() == [0, 255, 255, 0] and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0] and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
-    let merge_channels_valid = Mat.rows(merged_bgr) == 2 and Mat.cols(merged_bgr) == 2 and Mat.channels(merged_bgr) == 3 and Mat.to_u8(merged_bgr).to_list() == source.to_list();
-    let replace_channel_valid = Mat.rows(replaced_red) == 2 and Mat.cols(replaced_red) == 2 and Mat.channels(replaced_red) == 3 and Mat.to_u8(replaced_red).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 255, 0] and Mat.to_u8(mat).to_list() == source.to_list() and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
+    let extract_channel_valid =
+        Mat.rows(red_channel) == 2
+            and Mat.cols(red_channel) == 2
+            and Mat.channels(red_channel) == 1
+            and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0]
+            and Mat.to_u8(mat).to_list() == source.to_list();
+    let comparison_valid =
+        Mat.rows(channel_equality) == 2
+            and Mat.cols(channel_equality) == 2
+            and Mat.channels(channel_equality) == 1
+            and Mat.to_u8(channel_equality).to_list() == [255, 255, 0, 255]
+            and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0]
+            and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
+    let gradient_magnitude_valid =
+        Mat.rows(channel_gradient_magnitude) == 2
+            and Mat.cols(channel_gradient_magnitude) == 2
+            and Mat.channels(channel_gradient_magnitude) == 1
+            and Mat.to_u8(channel_gradient_magnitude).to_list() == [0, 255, 255, 0]
+            and Mat.to_u8(red_channel).to_list() == [0, 255, 255, 0]
+            and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
+    let merge_channels_valid =
+        Mat.rows(merged_bgr) == 2
+            and Mat.cols(merged_bgr) == 2
+            and Mat.channels(merged_bgr) == 3
+            and Mat.to_u8(merged_bgr).to_list() == source.to_list();
+    let replace_channel_valid =
+        Mat.rows(replaced_red) == 2
+            and Mat.cols(replaced_red) == 2
+            and Mat.channels(replaced_red) == 3
+            and Mat.to_u8(replaced_red).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 255, 0]
+            and Mat.to_u8(mat).to_list() == source.to_list()
+            and Mat.to_u8(blue_channel).to_list() == [0, 255, 0, 0];
     let zero_mat = Mat.zeros(2, 2, Atom["bgr"]);
     let selected_channels = Imgproc.select_mask(mat, zero_mat, channel_equality);
-    let mask_selection_valid = Mat.rows(selected_channels) == 2 and Mat.cols(selected_channels) == 2 and Mat.channels(selected_channels) == 3 and Mat.to_u8(selected_channels).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 255, 0] and Mat.to_u8(mat).to_list() == source.to_list() and Mat.to_u8(zero_mat).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.to_u8(channel_equality).to_list() == [255, 255, 0, 255];
+    let mask_selection_valid =
+        Mat.rows(selected_channels) == 2
+            and Mat.cols(selected_channels) == 2
+            and Mat.channels(selected_channels) == 3
+            and Mat.to_u8(selected_channels).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 255, 0]
+            and Mat.to_u8(mat).to_list() == source.to_list()
+            and Mat.to_u8(zero_mat).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(channel_equality).to_list() == [255, 255, 0, 255];
     let blend_first = Mat.from_u8(Bytes.from_list([200, 200, 200]), 1, 3, Atom["gray"]);
     let blend_second = Mat.from_u8(Bytes.from_list([100, 100, 100]), 1, 3, Atom["gray"]);
     let blend_weights = Mat.from_u8(Bytes.from_list([0, 128, 255]), 1, 3, Atom["gray"]);
     let mask_blended = Imgproc.blend_mask(blend_first, blend_second, blend_weights);
-    let blend_mask_valid = Mat.to_u8(mask_blended).to_list() == [100, 150, 200] and Mat.to_u8(blend_first).to_list() == [200, 200, 200] and Mat.to_u8(blend_second).to_list() == [100, 100, 100] and Mat.to_u8(blend_weights).to_list() == [0, 128, 255];
+    let blend_mask_valid =
+        Mat.to_u8(mask_blended).to_list() == [100, 150, 200]
+            and Mat.to_u8(blend_first).to_list() == [200, 200, 200]
+            and Mat.to_u8(blend_second).to_list() == [100, 100, 100]
+            and Mat.to_u8(blend_weights).to_list() == [0, 128, 255];
     let saturated_sum = Imgproc.add_saturated(mat, mat);
     let saturated_difference = Imgproc.subtract_saturated(mat, mat);
-    let saturated_arithmetic_valid = Mat.to_u8(saturated_sum).to_list() == source.to_list() and Mat.to_u8(saturated_difference).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.to_u8(mat).to_list() == source.to_list();
+    let saturated_arithmetic_valid =
+        Mat.to_u8(saturated_sum).to_list() == source.to_list()
+            and Mat.to_u8(saturated_difference).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(mat).to_list() == source.to_list();
     let multiplied = Imgproc.multiply_scaled(mat, mat, 1.0);
-    let multiply_valid = Mat.to_u8(multiplied).to_list() == source.to_list() and Mat.to_u8(mat).to_list() == source.to_list();
+    let multiply_valid =
+        Mat.to_u8(multiplied).to_list() == source.to_list()
+            and Mat.to_u8(mat).to_list() == source.to_list();
     let divided = Imgproc.divide_scaled(mat, mat, 255.0);
-    let divide_valid = Mat.to_u8(divided).to_list() == source.to_list() and Mat.to_u8(mat).to_list() == source.to_list();
+    let divide_valid =
+        Mat.to_u8(divided).to_list() == source.to_list()
+            and Mat.to_u8(mat).to_list() == source.to_list();
     let minimum_image = Imgproc.minimum(mat, zero_mat);
     let maximum_image = Imgproc.maximum(mat, zero_mat);
-    let extrema_valid = Mat.to_u8(minimum_image).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.to_u8(maximum_image).to_list() == source.to_list() and Mat.to_u8(mat).to_list() == source.to_list() and Mat.to_u8(zero_mat).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let extrema_valid =
+        Mat.to_u8(minimum_image).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(maximum_image).to_list() == source.to_list()
+            and Mat.to_u8(mat).to_list() == source.to_list()
+            and Mat.to_u8(zero_mat).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let concatenated_horizontal = Imgproc.concat_horizontal(mat, zero_mat);
     let concatenated_vertical = Imgproc.concat_vertical(mat, zero_mat);
-    let concatenation_valid = Mat.rows(concatenated_horizontal) == 2 and Mat.cols(concatenated_horizontal) == 4 and Mat.to_u8(concatenated_horizontal).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0] and Mat.rows(concatenated_vertical) == 4 and Mat.cols(concatenated_vertical) == 2 and Mat.to_u8(concatenated_vertical).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let concatenation_valid =
+        Mat.rows(concatenated_horizontal) == 2
+            and Mat.cols(concatenated_horizontal) == 4
+            and Mat.to_u8(concatenated_horizontal).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.rows(concatenated_vertical) == 4
+            and Mat.cols(concatenated_vertical) == 2
+            and Mat.to_u8(concatenated_vertical).to_list() == [0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let transpose_source = Mat.from_u8(Bytes.from_list([1, 2, 3, 4, 5, 6]), 2, 3, Atom["gray"]);
     let transposed = Imgproc.transpose(transpose_source);
-    let transpose_valid = Mat.rows(transposed) == 3 and Mat.cols(transposed) == 2 and Mat.channels(transposed) == 1 and Mat.to_u8(transposed).to_list() == [1, 4, 2, 5, 3, 6] and Mat.to_u8(transpose_source).to_list() == [1, 2, 3, 4, 5, 6];
+    let transpose_valid =
+        Mat.rows(transposed) == 3
+            and Mat.cols(transposed) == 2
+            and Mat.channels(transposed) == 1
+            and Mat.to_u8(transposed).to_list() == [1, 4, 2, 5, 3, 6]
+            and Mat.to_u8(transpose_source).to_list() == [1, 2, 3, 4, 5, 6];
     let tiled = Imgproc.tile(transpose_source, 2, 2);
-    let tile_valid = Mat.rows(tiled) == 4 and Mat.cols(tiled) == 6 and Mat.channels(tiled) == 1 and Mat.to_u8(tiled).to_list() == [1, 2, 3, 1, 2, 3, 4, 5, 6, 4, 5, 6, 1, 2, 3, 1, 2, 3, 4, 5, 6, 4, 5, 6];
+    let tile_valid =
+        Mat.rows(tiled) == 4
+            and Mat.cols(tiled) == 6
+            and Mat.channels(tiled) == 1
+            and Mat.to_u8(tiled).to_list() == [1, 2, 3, 1, 2, 3, 4, 5, 6, 4, 5, 6, 1, 2, 3, 1, 2, 3, 4, 5, 6, 4, 5, 6];
     let mean_absolute_errors = Imgproc.mean_absolute_error_channels(mat, zero_mat);
     let mean_absolute_error_valid = mean_absolute_errors == channel_means;
     let mean_shifted = Imgproc.mean_shift_filter(zero_mat, 1.0, 1.0, 0);
@@ -80,9 +135,13 @@ pub execute(): Bool ->
     let grayscale = Imgproc.cvt_color(mat, Atom["bgr_to_gray"]);
     let otsu_source = Mat.from_u8(Bytes.from_list([0, 0, 255, 255]), 2, 2, Atom["gray"]);
     let otsu_thresholded = Imgproc.otsu_threshold(otsu_source, 200.0, Atom["binary_threshold"]);
-    let otsu_valid = Mat.to_u8(otsu_thresholded).to_list() == [0, 0, 200, 200] and Mat.to_u8(otsu_source).to_list() == [0, 0, 255, 255];
+    let otsu_valid =
+        Mat.to_u8(otsu_thresholded).to_list() == [0, 0, 200, 200]
+            and Mat.to_u8(otsu_source).to_list() == [0, 0, 255, 255];
     let triangle_thresholded = Imgproc.triangle_threshold(otsu_source, 200.0, Atom["binary_threshold"]);
-    let triangle_valid = Mat.to_u8(triangle_thresholded).to_list() == [0, 0, 200, 200] and Mat.to_u8(otsu_source).to_list() == [0, 0, 255, 255];
+    let triangle_valid =
+        Mat.to_u8(triangle_thresholded).to_list() == [0, 0, 200, 200]
+            and Mat.to_u8(otsu_source).to_list() == [0, 0, 255, 255];
     let sharpened = Imgproc.sharpen(grayscale, 1.0);
     let sharpen_valid = Mat.to_u8(sharpened).to_list() == [0, 255, 78, 119];
     let scaled_absolute = Imgproc.scale_abs(grayscale, 2.0, -20.0);
@@ -102,76 +161,432 @@ pub execute(): Bool ->
     let mask_inverse = Imgproc.mask_not(range_mask);
     let equalized = Imgproc.equalize_hist(grayscale);
     let adaptive_equalized = Imgproc.adaptive_equalize_hist(grayscale, 2.0, 2, 2);
-    let adaptive_equalization_valid = Mat.rows(adaptive_equalized) == 2 and Mat.cols(adaptive_equalized) == 2 and Mat.channels(adaptive_equalized) == 1 and Mat.to_u8(grayscale).to_list() == [0, 255, 76, 150];
+    let adaptive_equalization_valid =
+        Mat.rows(adaptive_equalized) == 2
+            and Mat.cols(adaptive_equalized) == 2
+            and Mat.channels(adaptive_equalized) == 1
+            and Mat.to_u8(grayscale).to_list() == [0, 255, 76, 150];
     let histogram = Imgproc.histogram(grayscale);
     let component_mask = Mat.from_u8(Bytes.from_list([0, 255, 0, 0, 255, 0, 0, 0, 255]), 3, 3, Atom["gray"]);
     let component_bounds = Imgproc.non_zero_bounds(component_mask);
-    let non_zero_bounds_valid = component_bounds == [1, 0, 2, 3] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let non_zero_bounds_valid =
+        component_bounds == [1, 0, 2, 3]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let component_centroid = Imgproc.non_zero_centroid(component_mask);
-    let non_zero_centroid_valid = component_centroid.length() == 2 and component_centroid[0] > 1.333 and component_centroid[0] < 1.334 and component_centroid[1] == 1.0 and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let non_zero_centroid_valid =
+        component_centroid.length() == 2
+            and component_centroid[0] > 1.333
+            and component_centroid[0] < 1.334
+            and component_centroid[1] == 1.0
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let shape_scores = Imgproc.shape_match_scores(component_mask, component_mask);
-    let shape_match_valid = shape_scores == [0.0, 0.0, 0.0] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
-    let line_mask = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]), 7, 7, Atom["gray"]);
+    let shape_match_valid =
+        shape_scores == [0.0, 0.0, 0.0]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let line_mask =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
+            ),
+            7,
+            7,
+            Atom["gray"],
+        );
     let line_segments = Imgproc.line_segments(line_mask, 3, 4, 0);
-    let line_segments_valid = line_segments == [1, 3, 5, 3] and Mat.to_u8(line_mask).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let draw_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 3, 5, Atom["gray"]);
+    let line_segments_valid =
+        line_segments == [1, 3, 5, 3]
+            and Mat.to_u8(line_mask).to_list() == [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+];
+    let draw_source =
+        Mat.from_u8(
+            Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]),
+            3,
+            5,
+            Atom["gray"],
+        );
     let drawn_line = Imgproc.draw_line(draw_source, 0, 1, 4, 1, 7, 1);
-    let draw_line_valid = Mat.to_u8(drawn_line).to_list() == [1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1] and Mat.to_u8(draw_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let rectangle_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 6, Atom["gray"]);
+    let draw_line_valid =
+        Mat.to_u8(drawn_line).to_list() == [1, 1, 1, 1, 1, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1]
+            and Mat.to_u8(draw_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let rectangle_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                ],
+            ),
+            5,
+            6,
+            Atom["gray"],
+        );
     let drawn_rectangle = Imgproc.draw_rectangle(rectangle_source, 1, 1, 4, 3, 7, 1);
-    let draw_rectangle_valid = Mat.to_u8(drawn_rectangle).to_list() == [1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 7, 1, 1, 7, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(rectangle_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let circle_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 5, Atom["gray"]);
+    let draw_rectangle_valid =
+        Mat.to_u8(drawn_rectangle).to_list() == [1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 7, 1, 1, 7, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(rectangle_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let circle_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let drawn_circle = Imgproc.draw_circle(circle_source, 2, 2, 1, 9, 1);
-    let draw_circle_valid = Mat.to_u8(drawn_circle).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(circle_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let fill_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 6, Atom["gray"]);
+    let draw_circle_valid =
+        Mat.to_u8(drawn_circle).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(circle_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let fill_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                ],
+            ),
+            5,
+            6,
+            Atom["gray"],
+        );
     let filled_rectangle = Imgproc.fill_rectangle(fill_source, 1, 1, 4, 3, 7);
-    let fill_rectangle_valid = Mat.to_u8(filled_rectangle).to_list() == [1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 7, 7, 7, 7, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(fill_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let circle_fill_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 5, Atom["gray"]);
+    let fill_rectangle_valid =
+        Mat.to_u8(filled_rectangle).to_list() == [1, 1, 1, 1, 1, 1, 1, 7, 7, 7, 7, 1, 1, 7, 7, 7, 7, 1, 1, 7, 7, 7, 7, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(fill_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let circle_fill_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let filled_circle = Imgproc.fill_circle(circle_fill_source, 2, 2, 1, 9);
-    let fill_circle_valid = Mat.to_u8(filled_circle).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(circle_fill_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let fill_circle_valid =
+        Mat.to_u8(filled_circle).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(circle_fill_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     let invert_source = Mat.from_u8(Bytes.from_list([0, 10, 20, 255, 128, 64]), 1, 2, Atom["bgr"]);
     let inverted = Imgproc.invert(invert_source);
-    let invert_valid = Mat.to_u8(inverted).to_list() == [255, 245, 235, 0, 127, 191] and Mat.to_u8(invert_source).to_list() == [0, 10, 20, 255, 128, 64];
+    let invert_valid =
+        Mat.to_u8(inverted).to_list() == [255, 245, 235, 0, 127, 191]
+            and Mat.to_u8(invert_source).to_list() == [0, 10, 20, 255, 128, 64];
     let bitwise_first = Mat.from_u8(Bytes.from_list([0, 15, 240, 170, 85, 255]), 1, 2, Atom["bgr"]);
     let bitwise_second = Mat.from_u8(Bytes.from_list([255, 51, 15, 85, 170, 0]), 1, 2, Atom["bgr"]);
     let bitwise_and = Imgproc.bitwise_and(bitwise_first, bitwise_second);
     let bitwise_or = Imgproc.bitwise_or(bitwise_first, bitwise_second);
     let bitwise_xor = Imgproc.bitwise_xor(bitwise_first, bitwise_second);
-    let bitwise_valid = Mat.to_u8(bitwise_and).to_list() == [0, 3, 0, 0, 0, 0] and Mat.to_u8(bitwise_or).to_list() == [255, 63, 255, 255, 255, 255] and Mat.to_u8(bitwise_xor).to_list() == [255, 60, 255, 255, 255, 255] and Mat.to_u8(bitwise_first).to_list() == [0, 15, 240, 170, 85, 255] and Mat.to_u8(bitwise_second).to_list() == [255, 51, 15, 85, 170, 0];
-    let cross_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 5, Atom["gray"]);
+    let bitwise_valid =
+        Mat.to_u8(bitwise_and).to_list() == [0, 3, 0, 0, 0, 0]
+            and Mat.to_u8(bitwise_or).to_list() == [255, 63, 255, 255, 255, 255]
+            and Mat.to_u8(bitwise_xor).to_list() == [255, 60, 255, 255, 255, 255]
+            and Mat.to_u8(bitwise_first).to_list() == [0, 15, 240, 170, 85, 255]
+            and Mat.to_u8(bitwise_second).to_list() == [255, 51, 15, 85, 170, 0];
+    let cross_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let drawn_cross = Imgproc.draw_cross(cross_source, 2, 2, 3, 9, 1);
-    let draw_cross_valid = Mat.to_u8(drawn_cross).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(cross_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-    let ellipse_source = Mat.from_u8(Bytes.from_list([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]), 5, 5, Atom["gray"]);
+    let draw_cross_valid =
+        Mat.to_u8(drawn_cross).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(cross_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let ellipse_source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let drawn_ellipse = Imgproc.draw_ellipse(ellipse_source, 2, 2, 1, 1, 9, 1);
     let filled_ellipse = Imgproc.fill_ellipse(ellipse_source, 2, 2, 1, 1, 9);
-    let ellipse_valid = Mat.to_u8(drawn_ellipse).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(filled_ellipse).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1] and Mat.to_u8(ellipse_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    let ellipse_valid =
+        Mat.to_u8(drawn_ellipse).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 1, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(filled_ellipse).to_list() == [1, 1, 1, 1, 1, 1, 1, 9, 1, 1, 1, 9, 9, 9, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1]
+            and Mat.to_u8(ellipse_source).to_list() == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
     let component_circle = Imgproc.non_zero_enclosing_circle(component_mask);
-    let non_zero_circle_valid = component_circle.length() == 3 and component_circle[0] > 1.499 and component_circle[0] < 1.501 and component_circle[1] > 0.999 and component_circle[1] < 1.001 and component_circle[2] > 1.118 and component_circle[2] < 1.119 and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let non_zero_circle_valid =
+        component_circle.length() == 3
+            and component_circle[0] > 1.499
+            and component_circle[0] < 1.501
+            and component_circle[1] > 0.999
+            and component_circle[1] < 1.001
+            and component_circle[2] > 1.118
+            and component_circle[2] < 1.119
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let component_triangle = Imgproc.non_zero_enclosing_triangle(component_mask);
-    let non_zero_triangle_valid = component_triangle == [1.0, 0.0, 2.0, 2.0, 1.0, 1.0] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let non_zero_triangle_valid =
+        component_triangle == [1.0, 0.0, 2.0, 2.0, 1.0, 1.0]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let fit_line_mask = Mat.from_u8(Bytes.from_list([2, 7, 9]), 1, 3, Atom["gray"]);
     let fitted_line = Imgproc.non_zero_fit_line(fit_line_mask);
-    let fit_line_valid = fitted_line.length() == 4 and fitted_line[0] > 0.999 and fitted_line[0] <= 1.0 and fitted_line[1] == 0.0 and fitted_line[2] == 1.0 and fitted_line[3] == 0.0 and Mat.to_u8(fit_line_mask).to_list() == [2, 7, 9];
-    let fit_ellipse_mask = Mat.from_u8(Bytes.from_list([0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 4, 0, 0, 0, 5, 0, 6, 0, 7, 0, 0, 0, 8, 0, 0]), 5, 5, Atom["gray"]);
+    let fit_line_valid =
+        fitted_line.length() == 4
+            and fitted_line[0] > 0.999
+            and fitted_line[0] <= 1.0
+            and fitted_line[1] == 0.0
+            and fitted_line[2] == 1.0
+            and fitted_line[3] == 0.0
+            and Mat.to_u8(fit_line_mask).to_list() == [2, 7, 9];
+    let fit_ellipse_mask =
+        Mat.from_u8(
+            Bytes.from_list(
+                [0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 4, 0, 0, 0, 5, 0, 6, 0, 7, 0, 0, 0, 8, 0, 0],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let fitted_ellipse = Imgproc.non_zero_fit_ellipse(fit_ellipse_mask);
-    let fit_ellipse_valid = fitted_ellipse.length() == 5 and fitted_ellipse[0] > 1.999 and fitted_ellipse[0] < 2.001 and fitted_ellipse[1] > 1.999 and fitted_ellipse[1] < 2.001 and fitted_ellipse[2] >= fitted_ellipse[3] and fitted_ellipse[3] > 0.0 and fitted_ellipse[4] >= 0.0 and fitted_ellipse[4] < 180.0 and Mat.to_u8(fit_ellipse_mask).to_list() == [0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 4, 0, 0, 0, 5, 0, 6, 0, 7, 0, 0, 0, 8, 0, 0];
+    let fit_ellipse_valid =
+        fitted_ellipse.length() == 5
+            and fitted_ellipse[0] > 1.999
+            and fitted_ellipse[0] < 2.001
+            and fitted_ellipse[1] > 1.999
+            and fitted_ellipse[1] < 2.001
+            and fitted_ellipse[2] >= fitted_ellipse[3]
+            and fitted_ellipse[3] > 0.0
+            and fitted_ellipse[4] >= 0.0
+            and fitted_ellipse[4] < 180.0
+            and Mat.to_u8(fit_ellipse_mask).to_list() == [0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 4, 0, 0, 0, 5, 0, 6, 0, 7, 0, 0, 0, 8, 0, 0];
     let hull_mask = Mat.from_u8(Bytes.from_list([1, 0, 2, 0, 9, 0, 3, 0, 4]), 3, 3, Atom["gray"]);
     let component_hull = Imgproc.non_zero_convex_hull(hull_mask);
-    let non_zero_hull_valid = component_hull == [0, 0, 2, 0, 2, 2, 0, 2] and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
+    let non_zero_hull_valid =
+        component_hull == [0, 0, 2, 0, 2, 2, 0, 2]
+            and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
     let approximated_hull = Imgproc.non_zero_approximate_hull(hull_mask, 0.0);
-    let approximate_hull_valid = approximated_hull == [0, 0, 2, 0, 2, 2, 0, 2] and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
+    let approximate_hull_valid =
+        approximated_hull == [0, 0, 2, 0, 2, 2, 0, 2]
+            and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
     let component_box = Imgproc.non_zero_min_area_box(hull_mask);
-    let non_zero_box_valid = component_box == [0.0, 0.0, 2.0, 0.0, 2.0, 2.0, 0.0, 2.0] and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
+    let non_zero_box_valid =
+        component_box == [0.0, 0.0, 2.0, 0.0, 2.0, 2.0, 0.0, 2.0]
+            and Mat.to_u8(hull_mask).to_list() == [1, 0, 2, 0, 9, 0, 3, 0, 4];
     let filled_component_mask = Imgproc.flood_fill(component_mask, 1, 1, 128, Atom["eight"]);
-    let flood_fill_valid = Mat.to_u8(filled_component_mask).to_list() == [0, 128, 0, 0, 128, 0, 0, 0, 128] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let flood_fill_valid =
+        Mat.to_u8(filled_component_mask).to_list() == [0, 128, 0, 0, 128, 0, 0, 0, 128]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let component_distances = Imgproc.manhattan_distance_transform(component_mask);
-    let distance_transform_valid = Mat.to_u8(component_distances).to_list() == [0, 1, 0, 0, 1, 0, 0, 0, 1] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let distance_transform_valid =
+        Mat.to_u8(component_distances).to_list() == [0, 1, 0, 0, 1, 0, 0, 0, 1]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let component_euclidean_distances = Imgproc.euclidean_distance_transform(component_mask);
-    let euclidean_distance_valid = component_euclidean_distances == [0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0] and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
+    let euclidean_distance_valid =
+        component_euclidean_distances == [0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+            and Mat.to_u8(component_mask).to_list() == [0, 255, 0, 0, 255, 0, 0, 0, 255];
     let components_four = Imgproc.connected_components(component_mask, Atom["four"]);
     let components_eight = Imgproc.connected_components(component_mask, Atom["eight"]);
-    let components_valid = Components.foreground_count(components_four) == 2 and Components.labels(components_four) == [0, 1, 0, 0, 1, 0, 0, 0, 2] and Components.areas(components_four) == [2, 1] and Components.bounds(components_four) == [1, 0, 1, 2, 2, 2, 1, 1] and Components.centroids(components_four) == [1.0, 0.5, 2.0, 2.0] and Components.foreground_count(components_eight) == 1 and Components.labels(components_eight) == [0, 1, 0, 0, 1, 0, 0, 0, 1] and Components.areas(components_eight) == [3] and Components.bounds(components_eight) == [1, 0, 2, 3] and Components.centroids(components_eight).length() == 2 and Components.centroids(components_eight)[0] > 1.333 and Components.centroids(components_eight)[0] < 1.334 and Components.centroids(components_eight)[1] == 1.0 and Components.live_count() == 2;
-    let contour_mask = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]), 5, 5, Atom["gray"]);
+    let components_valid =
+        Components.foreground_count(components_four) == 2
+            and Components.labels(components_four) == [0, 1, 0, 0, 1, 0, 0, 0, 2]
+            and Components.areas(components_four) == [2, 1]
+            and Components.bounds(components_four) == [1, 0, 1, 2, 2, 2, 1, 1]
+            and Components.centroids(components_four) == [1.0, 0.5, 2.0, 2.0]
+            and Components.foreground_count(components_eight) == 1
+            and Components.labels(components_eight) == [0, 1, 0, 0, 1, 0, 0, 0, 1]
+            and Components.areas(components_eight) == [3]
+            and Components.bounds(components_eight) == [1, 0, 2, 3]
+            and Components.centroids(components_eight).length() == 2
+            and Components.centroids(components_eight)[0] > 1.333
+            and Components.centroids(components_eight)[0] < 1.334
+            and Components.centroids(components_eight)[1] == 1.0
+            and Components.live_count() == 2;
+    let contour_mask =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let contours = Imgproc.find_external_contours(contour_mask);
     let hu_moments = Imgproc.hu_moments(contour_mask);
     let contour_circularities = Contours.circularities(contours);
@@ -190,8 +605,49 @@ pub execute(): Bool ->
     let filled_contour_mask = Contours.filled_mask(contours, 255);
     let outlined_contour_mask = Contours.outline_mask(contours, 255, 1);
     let selected_contour_mask = Contours.selected_filled_mask(contours, 0, 255);
-    let contour_rasterization_valid = Mat.to_u8(filled_contour_mask).to_list() == Mat.to_u8(contour_mask).to_list() and Mat.to_u8(outlined_contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0] and Mat.to_u8(selected_contour_mask).to_list() == Mat.to_u8(filled_contour_mask).to_list();
-    let contours_valid = Contours.count(contours) == 1 and Contours.points(contours) == [1, 1, 1, 3, 3, 3, 3, 1] and Contours.offsets(contours) == [0, 4] and Contours.bounds(contours) == [1, 1, 3, 3] and Contours.areas(contours) == [4.0] and Contours.perimeters(contours) == [8.0] and Contours.convex_areas(contours) == [4.0] and Contours.solidities(contours) == [1.0] and Contours.centroids(contours) == [2.0, 2.0] and contour_circularities.length() == 1 and contour_circularities[0] > 0.785 and contour_circularities[0] < 0.786 and contour_extents.length() == 1 and contour_extents[0] > 0.444 and contour_extents[0] < 0.445 and contour_hu_moments.length() == 7 and contour_hu_moments[0] > 0.0 and contour_minimum_area_boxes.length() == 8 and contour_minimum_area_boxes[0] == 1.0 and contour_minimum_area_boxes[1] == 1.0 and contour_minimum_enclosing_circles.length() == 3 and contour_minimum_enclosing_circles[0] == 2.0 and contour_minimum_enclosing_circles[1] == 2.0 and contour_minimum_enclosing_circles[2] > 1.414 and contour_minimum_enclosing_circles[2] < 1.415 and contour_minimum_enclosing_triangles.length() == 6 and contour_fitted_lines.length() == 4 and contour_fitted_ellipses == [2.0, 2.0, 0.0, 0.0, 0.0] and contour_match_scores == [0.0, 0.0, 0.0] and Contours.points(approximated_contours) == Contours.points(contours) and Contours.areas(convex_contours) == Contours.convex_areas(contours) and contour_convexity_defects == [] and contour_signed_distances == [1.0] and contour_rasterization_valid and hu_moments.length() == 7 and hu_moments[0] > 0.0 and Mat.to_u8(contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0] and Contours.live_count() == 3;
+    let contour_rasterization_valid =
+        Mat.to_u8(filled_contour_mask).to_list() == Mat.to_u8(contour_mask).to_list()
+            and Mat.to_u8(outlined_contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(selected_contour_mask).to_list() == Mat.to_u8(filled_contour_mask).to_list();
+    let contours_valid =
+        Contours.count(contours) == 1
+            and Contours.points(contours) == [1, 1, 1, 3, 3, 3, 3, 1]
+            and Contours.offsets(contours) == [0, 4]
+            and Contours.bounds(contours) == [1, 1, 3, 3]
+            and Contours.areas(contours) == [4.0]
+            and Contours.perimeters(contours) == [8.0]
+            and Contours.convex_areas(contours) == [4.0]
+            and Contours.solidities(contours) == [1.0]
+            and Contours.centroids(contours) == [2.0, 2.0]
+            and contour_circularities.length() == 1
+            and contour_circularities[0] > 0.785
+            and contour_circularities[0] < 0.786
+            and contour_extents.length() == 1
+            and contour_extents[0] > 0.444
+            and contour_extents[0] < 0.445
+            and contour_hu_moments.length() == 7
+            and contour_hu_moments[0] > 0.0
+            and contour_minimum_area_boxes.length() == 8
+            and contour_minimum_area_boxes[0] == 1.0
+            and contour_minimum_area_boxes[1] == 1.0
+            and contour_minimum_enclosing_circles.length() == 3
+            and contour_minimum_enclosing_circles[0] == 2.0
+            and contour_minimum_enclosing_circles[1] == 2.0
+            and contour_minimum_enclosing_circles[2] > 1.414
+            and contour_minimum_enclosing_circles[2] < 1.415
+            and contour_minimum_enclosing_triangles.length() == 6
+            and contour_fitted_lines.length() == 4
+            and contour_fitted_ellipses == [2.0, 2.0, 0.0, 0.0, 0.0]
+            and contour_match_scores == [0.0, 0.0, 0.0]
+            and Contours.points(approximated_contours) == Contours.points(contours)
+            and Contours.areas(convex_contours) == Contours.convex_areas(contours)
+            and contour_convexity_defects == []
+            and contour_signed_distances == [1.0]
+            and contour_rasterization_valid
+            and hu_moments.length() == 7
+            and hu_moments[0] > 0.0
+            and Mat.to_u8(contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+            and Contours.live_count() == 3;
     let thresholded = Imgproc.threshold(grayscale, 100.0, 200.0, Atom["binary_threshold"]);
     let normalized = Imgproc.normalize_min_max(thresholded, 0.0, 255.0);
     let eroded = Imgproc.erode(thresholded, 3, 3, 1);
@@ -210,7 +666,15 @@ pub execute(): Bool ->
     let stack_blur_valid = Mat.to_u8(stack_blurred).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0];
     let median_filtered = Imgproc.median_blur(edge_source, 3);
     let bilateral_filtered = Imgproc.bilateral_filter(edge_source, 3, 10.0, 10.0);
-    let adaptive_thresholded = Imgproc.adaptive_threshold(edge_source, 200.0, Atom["mean"], Atom["binary_threshold"], 3, 0.0);
+    let adaptive_thresholded =
+        Imgproc.adaptive_threshold(
+            edge_source,
+            200.0,
+            Atom["mean"],
+            Atom["binary_threshold"],
+            3,
+            0.0,
+        );
     let adaptive_valid = Mat.to_u8(adaptive_thresholded).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0];
     let laplacian_edges = Imgproc.laplacian_edges(edge_source, 1);
     let laplacian_valid = Mat.to_u8(laplacian_edges).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -218,7 +682,13 @@ pub execute(): Bool ->
     let morphology_valid = Mat.to_u8(morphology_opened).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pyramid_down = Imgproc.pyr_down(edge_source);
     let pyramid_up = Imgproc.pyr_up(pyramid_down);
-    let pyramid_valid = Mat.rows(pyramid_down) == 2 and Mat.cols(pyramid_down) == 2 and Mat.to_u8(pyramid_down).to_list() == [0, 0, 0, 0] and Mat.rows(pyramid_up) == 4 and Mat.cols(pyramid_up) == 4 and Mat.to_u8(pyramid_up).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let pyramid_valid =
+        Mat.rows(pyramid_down) == 2
+            and Mat.cols(pyramid_down) == 2
+            and Mat.to_u8(pyramid_down).to_list() == [0, 0, 0, 0]
+            and Mat.rows(pyramid_up) == 4
+            and Mat.cols(pyramid_up) == 4
+            and Mat.to_u8(pyramid_up).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let edges = Imgproc.canny(edge_source, 10.0, 20.0, 3, true);
     let corners = Imgproc.good_features_to_track(edge_source, 8, 0.01, 1.0);
     let fast_keypoints = Imgproc.fast_keypoints(edge_source, 10, true, 8);
@@ -227,50 +697,212 @@ pub execute(): Bool ->
     let camera = Types.camera_intrinsics(64.0, 64.0, 31.5, 31.5);
     let distortion = Types.distortion_coefficients(0.0, 0.0, 0.0, 0.0, 0.0);
     let undistorted = Calib3d.undistort(orb_source, camera, distortion);
-    let undistort_valid = Mat.rows(undistorted) == 64 and Mat.cols(undistorted) == 64 and Mat.channels(undistorted) == 1 and Mat.to_u8(undistorted).to_list() == Mat.to_u8(orb_source).to_list();
+    let undistort_valid =
+        Mat.rows(undistorted) == 64
+            and Mat.cols(undistorted) == 64
+            and Mat.channels(undistorted) == 1
+            and Mat.to_u8(undistorted).to_list() == Mat.to_u8(orb_source).to_list();
     let optimal_undistorted = Calib3d.undistort_optimal(orb_source, camera, distortion, 0.5, true);
-    let optimal_undistort_valid = Mat.rows(optimal_undistorted) == 64 and Mat.cols(optimal_undistorted) == 64 and Mat.channels(optimal_undistorted) == 1 and Mat.to_u8(optimal_undistorted).to_list() == Mat.to_u8(orb_source).to_list();
+    let optimal_undistort_valid =
+        Mat.rows(optimal_undistorted) == 64
+            and Mat.cols(optimal_undistorted) == 64
+            and Mat.channels(optimal_undistorted) == 1
+            and Mat.to_u8(optimal_undistorted).to_list() == Mat.to_u8(orb_source).to_list();
     let undistorted_points = Calib3d.undistort_points([31.5, 31.5], camera, distortion);
-    let undistort_points_valid = undistorted_points == [31.5, 31.5] and Calib3d.undistort_points([], camera, distortion) == [];
+    let undistort_points_valid =
+        undistorted_points == [31.5, 31.5]
+            and Calib3d.undistort_points([], camera, distortion) == [];
     let orb_features = Features.detect_orb(orb_source, 8);
-    let orb_valid = Features.count(orb_features) == 0 and Features.keypoints(orb_features) == [] and Features.descriptor_width(orb_features) == 32 and Features.descriptors(orb_features).to_list() == [] and Features.live_count() == 1;
+    let orb_valid =
+        Features.count(orb_features) == 0
+            and Features.keypoints(orb_features) == []
+            and Features.descriptor_width(orb_features) == 32
+            and Features.descriptors(orb_features).to_list() == []
+            and Features.live_count() == 1;
     let brisk_features = Features.detect_brisk(orb_source, 30, 3, 8);
-    let brisk_valid = Features.brisk_count(brisk_features) == 0 and Features.brisk_keypoints(brisk_features) == [] and Features.brisk_descriptor_width(brisk_features) == 64 and Features.brisk_descriptors(brisk_features).to_list() == [] and Features.live_brisk_count() == 1;
+    let brisk_valid =
+        Features.brisk_count(brisk_features) == 0
+            and Features.brisk_keypoints(brisk_features) == []
+            and Features.brisk_descriptor_width(brisk_features) == 64
+            and Features.brisk_descriptors(brisk_features).to_list() == []
+            and Features.live_brisk_count() == 1;
     let brisk_matches = Features.match_brisk(brisk_features, brisk_features, 8);
-    let brisk_matching_valid = Features.brisk_match_count(brisk_matches) == 0 and Features.brisk_match_indices(brisk_matches) == [] and Features.brisk_match_distances(brisk_matches) == [] and Features.brisk_match_coordinates(brisk_matches) == [] and Features.live_brisk_match_count() == 1;
+    let brisk_matching_valid =
+        Features.brisk_match_count(brisk_matches) == 0
+            and Features.brisk_match_indices(brisk_matches) == []
+            and Features.brisk_match_distances(brisk_matches) == []
+            and Features.brisk_match_coordinates(brisk_matches) == []
+            and Features.live_brisk_match_count() == 1;
     let akaze_features = Features.detect_akaze(orb_source, 0.001, 8);
-    let akaze_valid = Features.akaze_count(akaze_features) == 0 and Features.akaze_keypoints(akaze_features) == [] and Features.akaze_descriptor_width(akaze_features) == 61 and Features.akaze_descriptors(akaze_features).to_list() == [] and Features.live_akaze_count() == 1;
+    let akaze_valid =
+        Features.akaze_count(akaze_features) == 0
+            and Features.akaze_keypoints(akaze_features) == []
+            and Features.akaze_descriptor_width(akaze_features) == 61
+            and Features.akaze_descriptors(akaze_features).to_list() == []
+            and Features.live_akaze_count() == 1;
     let akaze_matches = Features.match_akaze(akaze_features, akaze_features, 8);
-    let akaze_matching_valid = Features.akaze_match_count(akaze_matches) == 0 and Features.akaze_match_indices(akaze_matches) == [] and Features.akaze_match_distances(akaze_matches) == [] and Features.akaze_match_coordinates(akaze_matches) == [] and Features.live_akaze_match_count() == 1;
+    let akaze_matching_valid =
+        Features.akaze_match_count(akaze_matches) == 0
+            and Features.akaze_match_indices(akaze_matches) == []
+            and Features.akaze_match_distances(akaze_matches) == []
+            and Features.akaze_match_coordinates(akaze_matches) == []
+            and Features.live_akaze_match_count() == 1;
     let sift_features = Features.detect_sift(orb_source, 0.04, 8);
-    let sift_valid = Features.sift_count(sift_features) == 0 and Features.sift_keypoints(sift_features) == [] and Features.sift_descriptor_width(sift_features) == 128 and Features.sift_descriptors(sift_features) == [] and Features.live_sift_count() == 1;
+    let sift_valid =
+        Features.sift_count(sift_features) == 0
+            and Features.sift_keypoints(sift_features) == []
+            and Features.sift_descriptor_width(sift_features) == 128
+            and Features.sift_descriptors(sift_features) == []
+            and Features.live_sift_count() == 1;
     let affine_sift_features = Features.detect_affine_sift(orb_source, 0.04, 8);
-    let affine_sift_valid = Features.sift_count(affine_sift_features) == 0 and Features.sift_keypoints(affine_sift_features) == [] and Features.sift_descriptor_width(affine_sift_features) == 128 and Features.sift_descriptors(affine_sift_features) == [] and Features.live_sift_count() == 2;
+    let affine_sift_valid =
+        Features.sift_count(affine_sift_features) == 0
+            and Features.sift_keypoints(affine_sift_features) == []
+            and Features.sift_descriptor_width(affine_sift_features) == 128
+            and Features.sift_descriptors(affine_sift_features) == []
+            and Features.live_sift_count() == 2;
     let sift_matches = Features.match_sift(sift_features, sift_features, 8);
-    let sift_matching_valid = Features.sift_match_count(sift_matches) == 0 and Features.sift_match_indices(sift_matches) == [] and Features.sift_match_distances(sift_matches) == [] and Features.sift_match_coordinates(sift_matches) == [] and Features.live_sift_match_count() == 1;
+    let sift_matching_valid =
+        Features.sift_match_count(sift_matches) == 0
+            and Features.sift_match_indices(sift_matches) == []
+            and Features.sift_match_distances(sift_matches) == []
+            and Features.sift_match_coordinates(sift_matches) == []
+            and Features.live_sift_match_count() == 1;
     let kaze_features = Features.detect_kaze(orb_source, 0.001, 8);
-    let kaze_valid = Features.kaze_count(kaze_features) == 0 and Features.kaze_keypoints(kaze_features) == [] and Features.kaze_descriptor_width(kaze_features) == 64 and Features.kaze_descriptors(kaze_features) == [] and Features.live_kaze_count() == 1;
+    let kaze_valid =
+        Features.kaze_count(kaze_features) == 0
+            and Features.kaze_keypoints(kaze_features) == []
+            and Features.kaze_descriptor_width(kaze_features) == 64
+            and Features.kaze_descriptors(kaze_features) == []
+            and Features.live_kaze_count() == 1;
     let kaze_matches = Features.match_kaze(kaze_features, kaze_features, 8);
-    let kaze_matching_valid = Features.kaze_match_count(kaze_matches) == 0 and Features.kaze_match_indices(kaze_matches) == [] and Features.kaze_match_distances(kaze_matches) == [] and Features.kaze_match_coordinates(kaze_matches) == [] and Features.live_kaze_match_count() == 1;
+    let kaze_matching_valid =
+        Features.kaze_match_count(kaze_matches) == 0
+            and Features.kaze_match_indices(kaze_matches) == []
+            and Features.kaze_match_distances(kaze_matches) == []
+            and Features.kaze_match_coordinates(kaze_matches) == []
+            and Features.live_kaze_match_count() == 1;
     let mser_regions = Features.detect_mser(orb_source, 5, 16, 4096, 8);
-    let mser_valid = Features.mser_count(mser_regions) == 0 and Features.mser_points(mser_regions) == [] and Features.mser_offsets(mser_regions) == [0] and Features.mser_bounds(mser_regions) == [] and Features.live_mser_count() == 1;
+    let mser_valid =
+        Features.mser_count(mser_regions) == 0
+            and Features.mser_points(mser_regions) == []
+            and Features.mser_offsets(mser_regions) == [0]
+            and Features.mser_bounds(mser_regions) == []
+            and Features.live_mser_count() == 1;
     let blob_keypoints = Features.simple_blob_keypoints(orb_source, 255, 1, 4096, 1.0, 8);
     let blob_valid = blob_keypoints == [];
     let orb_matches = Features.match_orb(orb_features, orb_features, 8);
-    let orb_matching_valid = Features.match_count(orb_matches) == 0 and Features.match_indices(orb_matches) == [] and Features.match_distances(orb_matches) == [] and Features.match_coordinates(orb_matches) == [] and Features.live_match_count() == 1;
+    let orb_matching_valid =
+        Features.match_count(orb_matches) == 0
+            and Features.match_indices(orb_matches) == []
+            and Features.match_distances(orb_matches) == []
+            and Features.match_coordinates(orb_matches) == []
+            and Features.live_match_count() == 1;
     let harris_source = Mat.zeros(5, 5, Atom["gray"]);
     let harris_response = Imgproc.harris_response(harris_source, 3, 3, 0.04);
-    let harris_valid = harris_response == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let harris_valid =
+        harris_response == [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+]
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let corner_min_eigenvalues = Imgproc.corner_min_eigenvalue(harris_source, 3, 3);
-    let corner_min_eigenvalue_valid = corner_min_eigenvalues == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let corner_min_eigenvalue_valid =
+        corner_min_eigenvalues == [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+]
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let pre_corner_response = Imgproc.pre_corner_response(harris_source, 3);
-    let pre_corner_response_valid = pre_corner_response == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let pre_corner_response_valid =
+        pre_corner_response == [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+]
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let corner_eigensystems = Imgproc.corner_eigensystem(harris_source, 3, 3);
-    let corner_eigensystem_valid = corner_eigensystems.length() == 150 and corner_eigensystems[0] == 0.0 and corner_eigensystems[1] == 0.0 and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let corner_eigensystem_valid =
+        corner_eigensystems.length() == 150
+            and corner_eigensystems[0] == 0.0
+            and corner_eigensystems[1] == 0.0
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let detected_circles = Imgproc.detect_circles(harris_source, 1.0, 100.0, 8.0, 1, 2);
-    let circle_detection_valid = detected_circles == [] and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let circle_detection_valid =
+        detected_circles == []
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let detected_lines = Imgproc.detect_lines(harris_source, 1);
-    let line_detection_valid = detected_lines == [] and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let line_detection_valid =
+        detected_lines == []
+            and Mat.to_u8(harris_source).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     let resized = Imgproc.resize(grayscale, 1, 1, Atom["nearest"]);
     let blurred = Imgproc.gaussian_blur(resized, 1, 1, 0.0);
     let encoded = Codecs.encode(blurred, Atom["bmp"]);
@@ -282,36 +914,168 @@ pub execute(): Bool ->
     let identity = Types.affine_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     let affine = Imgproc.warp_affine(mat, identity, 2, 2, Atom["nearest"], Atom["constant"]);
     let affine_points = Calib3d.affine_transform_points([0.0, 0.0, 4.0, 4.0], identity);
-    let affine_points_valid = affine_points == [0.0, 0.0, 4.0, 4.0] and Calib3d.affine_transform_points([], identity) == [];
+    let affine_points_valid =
+        affine_points == [0.0, 0.0, 4.0, 4.0]
+            and Calib3d.affine_transform_points([], identity) == [];
     let perspective_identity = Types.perspective_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
     let perspective = Imgproc.warp_perspective(mat, perspective_identity, 2, 2, Atom["nearest"], Atom["constant"]);
     let perspective_points = Calib3d.perspective_transform_points([0.0, 0.0, 4.0, 4.0], perspective_identity);
-    let perspective_points_valid = perspective_points == [0.0, 0.0, 4.0, 4.0] and Calib3d.perspective_transform_points([], perspective_identity) == [];
+    let perspective_points_valid =
+        perspective_points == [0.0, 0.0, 4.0, 4.0]
+            and Calib3d.perspective_transform_points([], perspective_identity) == [];
     let correspondence_points = [0.0, 0.0, 4.0, 0.0, 4.0, 4.0, 0.0, 4.0];
     let translated_points = [2.0, -1.0, 6.0, -1.0, 6.0, 3.0, 2.0, 3.0];
     let estimated_perspective = Calib3d.estimate_perspective_transform(correspondence_points, translated_points);
     let estimated_perspective_repeated = Calib3d.estimate_perspective_transform(correspondence_points, translated_points);
-    let perspective_estimation_valid = Calib3d.perspective_transform_points(correspondence_points, estimated_perspective) == translated_points and Calib3d.perspective_transform_points(correspondence_points, estimated_perspective_repeated) == translated_points;
+    let perspective_estimation_valid =
+        Calib3d.perspective_transform_points(correspondence_points, estimated_perspective) == translated_points
+            and Calib3d.perspective_transform_points(correspondence_points, estimated_perspective_repeated) == translated_points;
     let affine_correspondence_points = [0.0, 0.0, 4.0, 0.0, 0.0, 4.0];
     let affine_translated_points = [2.0, -1.0, 6.0, -1.0, 2.0, 3.0];
     let estimated_affine = Calib3d.estimate_affine_transform(affine_correspondence_points, affine_translated_points);
     let estimated_affine_repeated = Calib3d.estimate_affine_transform(affine_correspondence_points, affine_translated_points);
-    let affine_estimation_valid = Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine) == affine_translated_points and Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine_repeated) == affine_translated_points;
+    let affine_estimation_valid =
+        Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine) == affine_translated_points
+            and Calib3d.affine_transform_points(affine_correspondence_points, estimated_affine_repeated) == affine_translated_points;
     let zero_vector = Types.vector3(0.0, 0.0, 0.0);
     let projection_camera = Types.camera_intrinsics(2.0, 2.0, 1.0, 1.0);
     let object_points = [0.0, 0.0, 2.0, 1.0, 0.0, 2.0, 0.0, 1.0, 2.0];
-    let projected_points = Calib3d.project_points(object_points, zero_vector, zero_vector, projection_camera, distortion);
-    let projected_points_repeated = Calib3d.project_points(object_points, zero_vector, zero_vector, projection_camera, distortion);
-    let projection_valid = projected_points == [1.0, 1.0, 2.0, 1.0, 1.0, 2.0] and projected_points_repeated == projected_points and Calib3d.project_points([], zero_vector, zero_vector, projection_camera, distortion) == [];
-    let pose_objects = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -0.5, -0.5, 1.0, 0.5, -0.5, 1.0, -0.5, 0.5, 1.0, 0.5, 0.5, 1.0];
+    let projected_points =
+        Calib3d.project_points(
+            object_points,
+            zero_vector,
+            zero_vector,
+            projection_camera,
+            distortion,
+        );
+    let projected_points_repeated =
+        Calib3d.project_points(
+            object_points,
+            zero_vector,
+            zero_vector,
+            projection_camera,
+            distortion,
+        );
+    let projection_valid =
+        projected_points == [1.0, 1.0, 2.0, 1.0, 1.0, 2.0]
+            and projected_points_repeated == projected_points
+            and Calib3d.project_points([], zero_vector, zero_vector, projection_camera, distortion) == [];
+    let pose_objects =
+        [
+            -1.0,
+            -1.0,
+            0.0,
+            1.0,
+            -1.0,
+            0.0,
+            -1.0,
+            1.0,
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            -0.5,
+            -0.5,
+            1.0,
+            0.5,
+            -0.5,
+            1.0,
+            -0.5,
+            0.5,
+            1.0,
+            0.5,
+            0.5,
+            1.0,
+        ];
     let pose_rotation = Types.vector3(0.1, -0.2, 0.05);
     let pose_translation = Types.vector3(0.25, -0.4, 8.0);
     let pose_camera = Types.camera_intrinsics(100.0, 100.0, 50.0, 50.0);
-    let pose_images = Calib3d.project_points(pose_objects, pose_rotation, pose_translation, pose_camera, distortion);
-    let pose_valid = PoseChecks.camera_pose_valid(pose_objects, pose_images, pose_camera, distortion) and MlChecks.knn_classifier_valid() and DnnChecks.blob_valid() and DnnChecks.inference_valid() and DnnChecks.classification_valid() and DnnChecks.segmentation_valid() and DnnChecks.class_index_mask_valid() and DnnChecks.confidence_mask_valid() and DnnChecks.ssd_detections_valid() and DnnChecks.xyxy_detections_valid() and DnnChecks.center_xywh_detections_valid() and DnnChecks.top_left_xywh_detections_valid() and DnnChecks.objectness_detections_valid() and DnnChecks.class_score_detections_valid() and DnnChecks.transposed_class_score_detections_valid() and DnnChecks.transposed_objectness_detections_valid();
+    let pose_images =
+        Calib3d.project_points(
+            pose_objects,
+            pose_rotation,
+            pose_translation,
+            pose_camera,
+            distortion,
+        );
+    let pose_valid =
+        PoseChecks.camera_pose_valid(pose_objects, pose_images, pose_camera, distortion)
+            and MlChecks.knn_classifier_valid()
+            and DnnChecks.blob_valid()
+            and DnnChecks.inference_valid()
+            and DnnChecks.classification_valid()
+            and DnnChecks.segmentation_valid()
+            and DnnChecks.class_index_mask_valid()
+            and DnnChecks.confidence_mask_valid()
+            and DnnChecks.ssd_detections_valid()
+            and DnnChecks.xyxy_detections_valid()
+            and DnnChecks.center_xywh_detections_valid()
+            and DnnChecks.top_left_xywh_detections_valid()
+            and DnnChecks.objectness_detections_valid()
+            and DnnChecks.class_score_detections_valid()
+            and DnnChecks.transposed_class_score_detections_valid()
+            and DnnChecks.transposed_objectness_detections_valid();
     let minimal_pose_valid = PoseChecks.minimal_camera_pose_valid(pose_camera, distortion);
     let planar_pose_valid = PoseChecks.planar_camera_pose_valid(pose_camera, distortion);
-    let valid = channel_means == [63.75, 127.5, 127.5] and channel_stddevs.length() == 3 and channel_stddevs[0] > 110.0 and channel_stddevs[0] < 111.0 and channel_stddevs[1] == 127.5 and channel_stddevs[2] == 127.5 and channel_nonzero_counts == [1, 2, 2] and grayscale_min_max == [0.0, 255.0] and Mat.to_u8(absolute_difference).to_list() == source.to_list() and Mat.to_u8(aliased_difference).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.to_u8(weighted).to_list() == [10, 10, 10, 74, 74, 74, 10, 10, 74, 10, 74, 10] and Mat.to_u8(masked).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0] and Mat.to_u8(range_mask).to_list() == [0, 0, 255, 255] and range_points == [0, 1, 1, 1] and Mat.to_u8(range_selected).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 0] and Mat.to_u8(mask_intersection).to_list() == [0, 0, 0, 255] and Mat.to_u8(mask_union).to_list() == [255, 0, 255, 255] and Mat.to_u8(mask_inverse).to_list() == [255, 255, 0, 0] and contours_valid and components_valid and corners.length() == 0 and fast_keypoints == [] and agast_keypoints == [] and histogram.length() == 256 and histogram[0] == 1 and histogram[76] == 1 and histogram[150] == 1 and histogram[255] == 1 and Mat.rows(blurred) == 1 and Mat.cols(blurred) == 1 and Mat.channels(blurred) == 1 and Mat.to_u8(equalized).to_list() == [0, 255, 85, 170] and Mat.to_u8(blurred).to_list() == [0] and Mat.to_u8(thresholded).to_list() == [0, 200, 0, 200] and Mat.to_u8(normalized).to_list() == [0, 255, 0, 255] and Mat.to_u8(eroded).to_list() == [0, 0, 0, 0] and Mat.to_u8(dilated).to_list() == [200, 200, 200, 200] and Mat.to_u8(median_filtered).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.to_u8(bilateral_filtered).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.rows(edges) == 3 and Mat.cols(edges) == 3 and Mat.channels(edges) == 1 and Mat.to_u8(edges).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.rows(decoded) == 1 and Mat.cols(decoded) == 1 and Mat.channels(decoded) == 1 and Mat.to_u8(decoded).to_list() == [0] and Mat.rows(cropped) == 2 and Mat.cols(cropped) == 1 and Mat.to_u8(cropped).to_list() == [255, 255, 255, 0, 255, 0] and Mat.rows(padded) == 3 and Mat.cols(padded) == 2 and Mat.to_u8(flipped).to_list() == [255, 255, 255, 0, 0, 0, 0, 255, 0, 0, 0, 255] and Mat.rows(rotated) == 1 and Mat.cols(rotated) == 2 and Mat.to_u8(rotated).to_list() == [0, 255, 0, 255, 255, 255] and Mat.to_u8(affine).to_list() == source.to_list() and Mat.to_u8(perspective).to_list() == source.to_list();
+    let valid =
+        channel_means == [63.75, 127.5, 127.5]
+            and channel_stddevs.length() == 3
+            and channel_stddevs[0] > 110.0
+            and channel_stddevs[0] < 111.0
+            and channel_stddevs[1] == 127.5
+            and channel_stddevs[2] == 127.5
+            and channel_nonzero_counts == [1, 2, 2]
+            and grayscale_min_max == [0.0, 255.0]
+            and Mat.to_u8(absolute_difference).to_list() == source.to_list()
+            and Mat.to_u8(aliased_difference).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(weighted).to_list() == [10, 10, 10, 74, 74, 74, 10, 10, 74, 10, 74, 10]
+            and Mat.to_u8(masked).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 0]
+            and Mat.to_u8(range_mask).to_list() == [0, 0, 255, 255]
+            and range_points == [0, 1, 1, 1]
+            and Mat.to_u8(range_selected).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 255, 0, 255, 0]
+            and Mat.to_u8(mask_intersection).to_list() == [0, 0, 0, 255]
+            and Mat.to_u8(mask_union).to_list() == [255, 0, 255, 255]
+            and Mat.to_u8(mask_inverse).to_list() == [255, 255, 0, 0]
+            and contours_valid
+            and components_valid
+            and corners.length() == 0
+            and fast_keypoints == []
+            and agast_keypoints == []
+            and histogram.length() == 256
+            and histogram[0] == 1
+            and histogram[76] == 1
+            and histogram[150] == 1
+            and histogram[255] == 1
+            and Mat.rows(blurred) == 1
+            and Mat.cols(blurred) == 1
+            and Mat.channels(blurred) == 1
+            and Mat.to_u8(equalized).to_list() == [0, 255, 85, 170]
+            and Mat.to_u8(blurred).to_list() == [0]
+            and Mat.to_u8(thresholded).to_list() == [0, 200, 0, 200]
+            and Mat.to_u8(normalized).to_list() == [0, 255, 0, 255]
+            and Mat.to_u8(eroded).to_list() == [0, 0, 0, 0]
+            and Mat.to_u8(dilated).to_list() == [200, 200, 200, 200]
+            and Mat.to_u8(median_filtered).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(bilateral_filtered).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.rows(edges) == 3
+            and Mat.cols(edges) == 3
+            and Mat.channels(edges) == 1
+            and Mat.to_u8(edges).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.rows(decoded) == 1
+            and Mat.cols(decoded) == 1
+            and Mat.channels(decoded) == 1
+            and Mat.to_u8(decoded).to_list() == [0]
+            and Mat.rows(cropped) == 2
+            and Mat.cols(cropped) == 1
+            and Mat.to_u8(cropped).to_list() == [255, 255, 255, 0, 255, 0]
+            and Mat.rows(padded) == 3
+            and Mat.cols(padded) == 2
+            and Mat.to_u8(flipped).to_list() == [255, 255, 255, 0, 0, 0, 0, 255, 0, 0, 0, 255]
+            and Mat.rows(rotated) == 1
+            and Mat.cols(rotated) == 2
+            and Mat.to_u8(rotated).to_list() == [0, 255, 0, 255, 255, 255]
+            and Mat.to_u8(affine).to_list() == source.to_list()
+            and Mat.to_u8(perspective).to_list() == source.to_list();
     Contours.dispose(convex_contours);
     Contours.dispose(approximated_contours);
     Contours.dispose(contours);
@@ -438,33 +1202,33 @@ pub execute(): Bool ->
     Mat.dispose(blue_channel);
     Mat.dispose(zero_mat);
     Mat.dispose(mat);
-    line_detection_valid and
-    blob_valid and
-    mser_valid and
-    Features.live_mser_count() == 0 and
-    kaze_matching_valid and
-    kaze_valid and
-    Features.live_kaze_match_count() == 0 and
-    Features.live_kaze_count() == 0 and
-    circle_detection_valid and
-    corner_eigensystem_valid and
-    pre_corner_response_valid and
-    corner_min_eigenvalue_valid and
-    harris_valid and
-    affine_sift_valid and
-    sift_matching_valid and
-    sift_valid and
-    Features.live_sift_match_count() == 0 and
-    Features.live_sift_count() == 0 and
-    akaze_matching_valid and
-    akaze_valid and
-    Features.live_akaze_match_count() == 0 and
-    Features.live_akaze_count() == 0 and
-    brisk_matching_valid and
-    brisk_valid and
-    Features.live_brisk_match_count() == 0 and
-    Features.live_brisk_count() == 0 and
-    assert(perspective_points_valid);
+    line_detection_valid
+        and blob_valid
+        and mser_valid
+        and Features.live_mser_count() == 0
+        and kaze_matching_valid
+        and kaze_valid
+        and Features.live_kaze_match_count() == 0
+        and Features.live_kaze_count() == 0
+        and circle_detection_valid
+        and corner_eigensystem_valid
+        and pre_corner_response_valid
+        and corner_min_eigenvalue_valid
+        and harris_valid
+        and affine_sift_valid
+        and sift_matching_valid
+        and sift_valid
+        and Features.live_sift_match_count() == 0
+        and Features.live_sift_count() == 0
+        and akaze_matching_valid
+        and akaze_valid
+        and Features.live_akaze_match_count() == 0
+        and Features.live_akaze_count() == 0
+        and brisk_matching_valid
+        and brisk_valid
+        and Features.live_brisk_match_count() == 0
+        and Features.live_brisk_count() == 0
+        and assert(perspective_points_valid);
     assert(perspective_estimation_valid);
     assert(affine_points_valid);
     assert(affine_estimation_valid);
@@ -472,5 +1236,71 @@ pub execute(): Bool ->
     assert(pose_valid);
     assert(minimal_pose_valid);
     assert(planar_pose_valid);
-    undistort_points_valid and
-    optimal_undistort_valid and undistort_valid and orb_matching_valid and orb_valid and valid and adaptive_equalization_valid and mask_selection_valid and blend_mask_valid and comparison_valid and shape_match_valid and line_segments_valid and draw_line_valid and draw_rectangle_valid and draw_circle_valid and fill_rectangle_valid and fill_circle_valid and invert_valid and bitwise_valid and draw_cross_valid and ellipse_valid and gradient_magnitude_valid and distance_transform_valid and euclidean_distance_valid and flood_fill_valid and non_zero_bounds_valid and non_zero_centroid_valid and non_zero_circle_valid and non_zero_triangle_valid and fit_line_valid and fit_ellipse_valid and non_zero_hull_valid and approximate_hull_valid and non_zero_box_valid and multiply_valid and divide_valid and extrema_valid and saturated_arithmetic_valid and replace_channel_valid and merge_channels_valid and extract_channel_valid and tile_valid and transpose_valid and concatenation_valid and otsu_valid and triangle_valid and template_match_valid and mean_absolute_error_valid and mask_xor_valid and channel_sums_valid and integral_valid and mean_shift_valid and sharpen_valid and scale_abs_valid and lookup_valid and sobel_valid and scharr_valid and box_blur_valid and stack_blur_valid and adaptive_valid and laplacian_valid and morphology_valid and pyramid_valid and Features.live_match_count() == 0 and Features.live_count() == 0 and Contours.live_count() == 0 and Components.live_count() == 0 and Mat.live_count() == 0.
+    undistort_points_valid
+        and optimal_undistort_valid
+        and undistort_valid
+        and orb_matching_valid
+        and orb_valid
+        and valid
+        and adaptive_equalization_valid
+        and mask_selection_valid
+        and blend_mask_valid
+        and comparison_valid
+        and shape_match_valid
+        and line_segments_valid
+        and draw_line_valid
+        and draw_rectangle_valid
+        and draw_circle_valid
+        and fill_rectangle_valid
+        and fill_circle_valid
+        and invert_valid
+        and bitwise_valid
+        and draw_cross_valid
+        and ellipse_valid
+        and gradient_magnitude_valid
+        and distance_transform_valid
+        and euclidean_distance_valid
+        and flood_fill_valid
+        and non_zero_bounds_valid
+        and non_zero_centroid_valid
+        and non_zero_circle_valid
+        and non_zero_triangle_valid
+        and fit_line_valid
+        and fit_ellipse_valid
+        and non_zero_hull_valid
+        and approximate_hull_valid
+        and non_zero_box_valid
+        and multiply_valid
+        and divide_valid
+        and extrema_valid
+        and saturated_arithmetic_valid
+        and replace_channel_valid
+        and merge_channels_valid
+        and extract_channel_valid
+        and tile_valid
+        and transpose_valid
+        and concatenation_valid
+        and otsu_valid
+        and triangle_valid
+        and template_match_valid
+        and mean_absolute_error_valid
+        and mask_xor_valid
+        and channel_sums_valid
+        and integral_valid
+        and mean_shift_valid
+        and sharpen_valid
+        and scale_abs_valid
+        and lookup_valid
+        and sobel_valid
+        and scharr_valid
+        and box_blur_valid
+        and stack_blur_valid
+        and adaptive_valid
+        and laplacian_valid
+        and morphology_valid
+        and pyramid_valid
+        and Features.live_match_count() == 0
+        and Features.live_count() == 0
+        and Contours.live_count() == 0
+        and Components.live_count() == 0
+        and Mat.live_count() == 0.

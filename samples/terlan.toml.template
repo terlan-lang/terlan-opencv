@@ -5,7 +5,7 @@ namespace = "samples"
 
 [build]
 source_roots = ["src"]
-artifact = "library"
+artifact = "terlan-vm"
 
 [dependencies]
 opencv = { path = ".." }

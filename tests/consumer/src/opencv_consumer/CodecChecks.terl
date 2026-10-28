@@ -1,0 +1,45 @@
+/**
+ * Independent consumer checks for every admitted copied-byte image codec.
+ */
+module opencv_consumer.CodecChecks.
+
+import opencv.Types.{Bmp, Gray, Grayscale, Jpeg, Png, Tiff, Webp}.
+import opencv.{Codecs, Mat}.
+import std.vm.Bytes.
+
+/**
+ * Executes every admitted codec round trip through the installed package.
+ */
+pub execute(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([64, 64, 64, 64]), 2, 2, Gray);
+    let bmp = Codecs.encode(source, Bmp);
+    let png = Codecs.encode(source, Png);
+    let jpeg = Codecs.encode(source, Jpeg);
+    let repeated_jpeg = Codecs.encode(source, Jpeg);
+    let webp = Codecs.encode(source, Webp);
+    let repeated_webp = Codecs.encode(source, Webp);
+    let tiff = Codecs.encode(source, Tiff);
+    let repeated_tiff = Codecs.encode(source, Tiff);
+    let decoded_bmp = Codecs.decode(bmp, Grayscale);
+    let decoded_png = Codecs.decode(png, Grayscale);
+    let decoded_jpeg = Codecs.decode(jpeg, Grayscale);
+    let decoded_webp = Codecs.decode(webp, Grayscale);
+    let decoded_tiff = Codecs.decode(tiff, Grayscale);
+    let expected = [64, 64, 64, 64];
+    let valid =
+        Mat.to_u8(decoded_bmp).to_list() == expected
+            and Mat.to_u8(decoded_png).to_list() == expected
+            and Mat.to_u8(decoded_jpeg).to_list() == expected
+            and Mat.rows(decoded_webp) == 2
+            and Mat.cols(decoded_webp) == 2
+            and Mat.to_u8(decoded_tiff).to_list() == expected
+            and jpeg.to_list() == repeated_jpeg.to_list()
+            and webp.to_list() == repeated_webp.to_list()
+            and tiff.to_list() == repeated_tiff.to_list();
+    Mat.dispose(decoded_tiff);
+    Mat.dispose(decoded_webp);
+    Mat.dispose(decoded_jpeg);
+    Mat.dispose(decoded_png);
+    Mat.dispose(decoded_bmp);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.

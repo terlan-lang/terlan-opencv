@@ -35,6 +35,7 @@ using terlan_opencv::validation::kMaxTransformCoefficient;
 using terlan_opencv::validation::kMaxCopiedPointCount;
 using terlan_opencv::validation::kMaxMorphologyIterations;
 using terlan_opencv::validation::layout_channels;
+using terlan_opencv::validation::matrix_shape;
 using terlan_opencv::validation::padded_image_shape;
 using terlan_opencv::validation::rotated_image_shape;
 using terlan_opencv::validation::valid_border_mode;
@@ -79,7 +80,7 @@ using terlan_opencv::validation::valid_cross_drawing;
 using terlan_opencv::validation::valid_ellipse_drawing;
 using terlan_opencv::validation::valid_ellipse_fill;
 using terlan_opencv::validation::valid_connectivity;
-using terlan_opencv::validation::valid_bmp_input;
+using terlan_opencv::validation::valid_encoded_image_input;
 using terlan_opencv::validation::valid_decode_mode;
 using terlan_opencv::validation::valid_decoded_storage;
 using terlan_opencv::validation::valid_encoded_output_size;
@@ -87,7 +88,6 @@ using terlan_opencv::validation::valid_image_format;
 using terlan_opencv::validation::valid_kernel_dimension;
 using terlan_opencv::validation::valid_morphology;
 using terlan_opencv::validation::valid_morphology_iterations;
-using terlan_opencv::validation::valid_normalization_range;
 using terlan_opencv::validation::valid_automatic_threshold;
 using terlan_opencv::validation::valid_affine_transform;
 using terlan_opencv::validation::valid_perspective_transform;
@@ -110,7 +110,6 @@ using terlan_opencv::validation::valid_scharr_edges;
 using terlan_opencv::validation::valid_stack_blur;
 using terlan_opencv::validation::valid_mean_shift_filter;
 using terlan_opencv::validation::valid_lookup_table;
-using terlan_opencv::validation::valid_scale_abs;
 using terlan_opencv::validation::valid_sharpen;
 using terlan_opencv::validation::valid_weighted_addition;
 using terlan_opencv::validation::valid_rotate_mode;
@@ -129,6 +128,18 @@ static_assert(layout_channels(1) == 1, "gray layout");
 static_assert(layout_channels(3) == 3, "BGR layout");
 static_assert(layout_channels(4) == 4, "BGRA layout");
 static_assert(layout_channels(0) == 0, "invalid layout");
+static_assert(matrix_shape(2, 3, 4, 8).valid, "typed matrix shape");
+static_assert(matrix_shape(2, 3, 4, 8).byte_count == 192,
+              "typed matrix byte count");
+static_assert(!matrix_shape(0, 3, 4, 8).valid, "zero matrix rows");
+static_assert(!matrix_shape(2, 0, 4, 8).valid, "zero matrix columns");
+static_assert(!matrix_shape(2, 3, 0, 8).valid, "zero matrix channels");
+static_assert(!matrix_shape(2, 3, 513, 8).valid,
+              "excessive matrix channels");
+static_assert(!matrix_shape(2, 3, 4, 0).valid, "zero scalar width");
+static_assert(!matrix_shape(std::numeric_limits<std::int64_t>::max(), 3, 4, 8)
+                   .valid,
+              "overflowing matrix rows");
 static_assert(valid_kernel_dimension(1), "one-pixel kernel");
 static_assert(valid_kernel_dimension(255), "maximum kernel");
 static_assert(!valid_kernel_dimension(0), "zero kernel");
@@ -151,7 +162,12 @@ static_assert(valid_decode_mode(0), "grayscale decode mode");
 static_assert(valid_decode_mode(1), "color decode mode");
 static_assert(!valid_decode_mode(2), "invalid decode mode");
 static_assert(valid_image_format(0), "BMP image format");
-static_assert(!valid_image_format(1), "invalid image format");
+static_assert(valid_image_format(1), "PNG image format");
+static_assert(valid_image_format(2), "JPEG image format");
+static_assert(valid_image_format(3), "WebP image format");
+static_assert(valid_image_format(4), "TIFF image format");
+static_assert(!valid_image_format(-1), "negative image format");
+static_assert(!valid_image_format(5), "invalid image format");
 static_assert(valid_encoded_output_size(1), "small encoded output");
 static_assert(valid_encoded_output_size(kMaxEncodedImageBytes),
               "maximum encoded output");
@@ -224,12 +240,24 @@ int main() {
   assert(valid_vector3(0.0, 1.0, -1.0));
   assert(!valid_vector3(0.0, std::numeric_limits<double>::infinity(), 0.0));
   const std::uint8_t bmp[] = {'B', 'M'};
-  const std::uint8_t png[] = {0x89, 'P', 'N', 'G'};
-  assert(valid_bmp_input(bmp, sizeof(bmp)));
-  assert(!valid_bmp_input(nullptr, sizeof(bmp)));
-  assert(!valid_bmp_input(bmp, 1));
-  assert(!valid_bmp_input(png, sizeof(png)));
-  assert(!valid_bmp_input(bmp, kMaxEncodedImageBytes + 1));
+  const std::uint8_t png[] = {0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a};
+  const std::uint8_t jpeg[] = {0xff, 0xd8, 0xff};
+  const std::uint8_t webp[] = {'R', 'I', 'F', 'F', 0, 0, 0, 0,
+                               'W', 'E', 'B', 'P'};
+  const std::uint8_t little_tiff[] = {'I', 'I', 42, 0};
+  const std::uint8_t big_tiff[] = {'M', 'M', 0, 42};
+  const std::uint8_t invalid_webp[] = {'R', 'I', 'F', 'F', 0, 0, 0, 0,
+                                       'W', 'A', 'V', 'E'};
+  assert(valid_encoded_image_input(bmp, sizeof(bmp)));
+  assert(valid_encoded_image_input(png, sizeof(png)));
+  assert(valid_encoded_image_input(jpeg, sizeof(jpeg)));
+  assert(valid_encoded_image_input(webp, sizeof(webp)));
+  assert(valid_encoded_image_input(little_tiff, sizeof(little_tiff)));
+  assert(valid_encoded_image_input(big_tiff, sizeof(big_tiff)));
+  assert(!valid_encoded_image_input(nullptr, sizeof(bmp)));
+  assert(!valid_encoded_image_input(bmp, 1));
+  assert(!valid_encoded_image_input(invalid_webp, sizeof(invalid_webp)));
+  assert(!valid_encoded_image_input(bmp, kMaxEncodedImageBytes + 1));
   assert(valid_threshold_value(0.0));
   assert(valid_threshold_value(127.5));
   assert(valid_threshold_value(255.0));
@@ -252,16 +280,6 @@ int main() {
   assert(!valid_canny(3, 3, 3, 10.0, 20.0, 3));
   assert(!valid_canny(3, 3, 1, 20.0, 10.0, 3));
   assert(!valid_canny(3, 3, 1, 10.0, 20.0, 9));
-  assert(valid_normalization_range(0.0, 255.0));
-  assert(valid_normalization_range(10.0, 20.0));
-  assert(!valid_normalization_range(-0.1, 255.0));
-  assert(!valid_normalization_range(0.0, 255.1));
-  assert(!valid_normalization_range(20.0, 20.0));
-  assert(!valid_normalization_range(20.0, 10.0));
-  assert(!valid_normalization_range(
-      std::numeric_limits<double>::quiet_NaN(), 255.0));
-  assert(!valid_normalization_range(
-      0.0, std::numeric_limits<double>::infinity()));
   assert(valid_affine_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0));
   assert(valid_affine_transform(kMaxTransformCoefficient,
                                 -kMaxTransformCoefficient, 0.0, 0.0, 1.0,
@@ -518,17 +536,6 @@ int main() {
   assert(!valid_lookup_table(3, 3, 1, 0));
   assert(!valid_lookup_table(3, 3, 1, 255));
   assert(!valid_lookup_table(3, 3, 1, 257));
-  assert(valid_scale_abs(3, 3, 1, 0.0, 0.0));
-  assert(valid_scale_abs(3, 3, 3, -65535.0, 65535.0));
-  assert(valid_scale_abs(3, 3, 4, 65535.0, -65535.0));
-  assert(!valid_scale_abs(0, 3, 1, 1.0, 0.0));
-  assert(!valid_scale_abs(3, 3, 2, 1.0, 0.0));
-  assert(!valid_scale_abs(3, 3, 1, 65536.0, 0.0));
-  assert(!valid_scale_abs(3, 3, 1, 1.0, -65536.0));
-  assert(!valid_scale_abs(3, 3, 1,
-                          std::numeric_limits<double>::quiet_NaN(), 0.0));
-  assert(!valid_scale_abs(3, 3, 1, 1.0,
-                          std::numeric_limits<double>::infinity()));
   assert(valid_sharpen(3, 3, 1, 0.0));
   assert(valid_sharpen(3, 3, 3, 1.0));
   assert(valid_sharpen(3, 3, 4, 16.0));

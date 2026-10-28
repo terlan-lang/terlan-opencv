@@ -15,6 +15,41 @@ const EXPECTED_MODULES: [&str; 7] = [
     "ml",
     "dnn",
 ];
+const EXPECTED_CPP_SHAPES: [&str; 21] = [
+    "borrowed_bytes_input",
+    "borrowed_float_list_input",
+    "borrowed_int_list_input",
+    "copied_value_record_input",
+    "cross_module_resource_result",
+    "deterministic_disposal",
+    "external_dynamic_linkage",
+    "finite_enum_input",
+    "free_function",
+    "immutable_method",
+    "multiple_resource_types",
+    "opaque_unique_resource",
+    "owned_bytes_output",
+    "owned_float_list_output",
+    "owned_int_list_output",
+    "owned_value_projection",
+    "primitive_bool",
+    "primitive_float",
+    "primitive_int",
+    "secondary_resource_borrow",
+    "stable_failure_translation",
+];
+const EXPECTED_CPP_REJECTIONS: [&str; 10] = [
+    "cpp.callback.unsupported",
+    "cpp.exception.crossing",
+    "cpp.inheritance.unsupported",
+    "cpp.lifetime.borrowed",
+    "cpp.overload.ambiguous",
+    "cpp.ownership.unknown",
+    "cpp.pointer.unsupported",
+    "cpp.template.unspecialized",
+    "cpp.type.unmapped",
+    "cpp.variadic.unsupported",
+];
 
 /// Resolve the package root from this tool's manifest directory.
 fn package_root() -> PathBuf {
@@ -160,16 +195,6 @@ fn validate_cmake(source: &str) -> Result<(), String> {
     require(
         source.contains("set(CMAKE_CXX_STANDARD 14"),
         "CMake policy must pin C++14",
-    )
-}
-
-/// Validates that package publication metadata selects the pinned module set.
-fn validate_package_modules(package: &Value) -> Result<(), String> {
-    let native = Value::Object(object(package, "native")?.clone());
-    let cpp = Value::Object(object(&native, "cpp")?.clone());
-    require(
-        string_set(&cpp, "modules")? == expected_modules(),
-        "terlan.toml native module scope differs from the pinned build",
     )
 }
 
@@ -346,21 +371,108 @@ fn validate_skipped(skipped: &Value) -> Result<(), String> {
     )
 }
 
+/// Validate real-package evidence for every admitted generic C++ binding shape.
+fn validate_cpp_shape_coverage(
+    root: &Path,
+    coverage: &Value,
+    native_manifest: &Value,
+) -> Result<(), String> {
+    require(
+        string(coverage, "schema")? == "terlan.opencv.cpp-binding-shapes.v1",
+        "invalid C++ binding-shape schema",
+    )?;
+    require(
+        string(coverage, "upstream_commit")? == EXPECTED_COMMIT,
+        "C++ binding-shape commit does not match the OpenCV pin",
+    )?;
+    require(
+        string(coverage, "compiler_gate")? == "make cpp-binding-generator-check",
+        "C++ binding-shape compiler gate drift",
+    )?;
+
+    let operations = array(native_manifest, "modules")?
+        .iter()
+        .flat_map(|module| {
+            module
+                .get("functions")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+        })
+        .map(|function| string(function, "operation").map(str::to_owned))
+        .collect::<Result<BTreeSet<_>, _>>()?;
+
+    let mut shapes = BTreeSet::new();
+    for shape in array(coverage, "shapes")? {
+        let id = string(shape, "id")?;
+        require(
+            shapes.insert(id.to_owned()),
+            format!("duplicate C++ binding shape: {id}"),
+        )?;
+        string(shape, "rationale").map_err(|error| format!("{id}: {error}"))?;
+        let shape_operations = string_set(shape, "operations")?;
+        require(
+            !shape_operations.is_empty(),
+            format!("{id}: at least one OpenCV operation is required"),
+        )?;
+        for operation in shape_operations {
+            require(
+                operations.contains(&operation),
+                format!("{id}: unknown OpenCV operation `{operation}`"),
+            )?;
+        }
+        let evidence = string_set(shape, "evidence")?;
+        require(
+            !evidence.is_empty(),
+            format!("{id}: executable evidence is required"),
+        )?;
+        for path in evidence {
+            require(
+                root.join(&path).is_file(),
+                format!("{id}: evidence path does not exist: {path}"),
+            )?;
+        }
+    }
+    require(
+        shapes == EXPECTED_CPP_SHAPES.into_iter().map(str::to_owned).collect(),
+        "generic C++ binding-shape coverage is incomplete or contains unknown shapes",
+    )?;
+
+    let mut rejections = BTreeSet::new();
+    for rejection in array(coverage, "rejections")? {
+        let family = string(rejection, "family")?;
+        require(
+            rejections.insert(family.to_owned()),
+            format!("duplicate C++ rejection family: {family}"),
+        )?;
+        string(rejection, "rationale").map_err(|error| format!("{family}: {error}"))?;
+    }
+    require(
+        rejections
+            == EXPECTED_CPP_REJECTIONS
+                .into_iter()
+                .map(str::to_owned)
+                .collect(),
+        "generic C++ rejection-family coverage is incomplete or contains unknown families",
+    )
+}
+
 /// Run every offline OCV0.1 contract validation.
 fn check_surface(root: &Path) -> Result<(), String> {
     let pin = read_toml(&root.join("upstream/opencv.lock.toml"))?;
     let metadata = read_json(&root.join("bindings/opencv.metadata.json"))?;
     let mapping = read_toml(&root.join("bindings/opencv.mapping.toml"))?;
     let skipped = read_json(&root.join("bindings/skipped-symbols.json"))?;
-    let package = read_toml(&root.join("terlan.toml"))?;
+    let shape_coverage = read_toml(&root.join("bindings/opencv.cpp-binding-shapes.toml"))?;
+    let native_manifest = read_json(&root.join("bindings/opencv.native-binding.json"))?;
     let cmake = fs::read_to_string(root.join("cmake/opencv-cpu.cmake"))
         .map_err(|error| format!("cmake/opencv-cpu.cmake: {error}"))?;
     validate_pin(&pin)?;
     validate_cmake(&cmake)?;
-    validate_package_modules(&package)?;
     let (symbols, types) = validate_metadata(&metadata)?;
     validate_mapping(&mapping, &symbols, &types)?;
-    validate_skipped(&skipped)
+    validate_skipped(&skipped)?;
+    validate_cpp_shape_coverage(root, &shape_coverage, &native_manifest)
 }
 
 /// Execute the surface checker as a command-line gate.
@@ -370,7 +482,7 @@ fn main() {
         std::process::exit(1);
     }
     println!(
-        "opencv-surface-check: OpenCV 4.13.0 core/imgproc/imgcodecs/features/calib3d/ml/dnn build scope is pinned and selected declarations are fully mapped"
+        "opencv-surface-check: OpenCV 4.13.0 scope is pinned, selected declarations are mapped, and all 21 admitted generic C++ binding shapes are proven"
     );
 }
 
@@ -410,14 +522,6 @@ mod tests {
     fn committed_cmake_policy_is_valid() {
         let source = fs::read_to_string(package_root().join("cmake/opencv-cpu.cmake")).unwrap();
         validate_cmake(&source).unwrap();
-    }
-
-    /// Reject package metadata that omits a pinned native module.
-    #[test]
-    fn package_module_drift_is_rejected() {
-        let mut package = committed_toml("terlan.toml");
-        package["native"]["cpp"]["modules"] = serde_json::json!(["core"]);
-        expect_error(validate_package_modules(&package), "terlan.toml");
     }
 
     /// Verify the full committed surface remains internally consistent.
@@ -578,6 +682,32 @@ mod tests {
         let mut skipped = committed_json("bindings/skipped-symbols.json");
         skipped["symbols"][0]["reason"] = serde_json::json!("");
         expect_error(validate_skipped(&skipped), "reason");
+    }
+
+    /// Reject missing real-package shape evidence and unknown operations.
+    #[test]
+    fn cpp_binding_shape_coverage_is_executable_and_complete() {
+        let native_manifest = committed_json("bindings/opencv.native-binding.json");
+        let coverage = committed_toml("bindings/opencv.cpp-binding-shapes.toml");
+        validate_cpp_shape_coverage(&package_root(), &coverage, &native_manifest).unwrap();
+
+        let mut missing_shape = coverage.clone();
+        missing_shape["shapes"]
+            .as_array_mut()
+            .expect("shapes")
+            .pop();
+        expect_error(
+            validate_cpp_shape_coverage(&package_root(), &missing_shape, &native_manifest),
+            "coverage is incomplete",
+        );
+
+        let mut unknown_operation = coverage;
+        unknown_operation["shapes"][0]["operations"] =
+            serde_json::json!(["opencv.missing.operation"]);
+        expect_error(
+            validate_cpp_shape_coverage(&package_root(), &unknown_operation, &native_manifest),
+            "unknown OpenCV operation",
+        );
     }
 
     /// Reject scope expansion and weakened CMake language policy.

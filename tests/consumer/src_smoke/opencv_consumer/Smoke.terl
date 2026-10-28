@@ -1,0 +1,27 @@
+/**
+ * Small external-consumer pipeline used to prove package resolution and
+ * compiler-native execution without folding the exhaustive package suite into
+ * one AOT compilation unit.
+ */
+module opencv_consumer.Smoke.
+
+import opencv.Types.{BgrToGray}.
+import opencv.{Imgproc, Mat}.
+import std.vm.Bytes.
+
+/**
+ * Executes one real image conversion through the installed dependency.
+ */
+pub execute(): Bool ->
+    let source = Bytes.from_list([0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0]);
+    let image = Mat.from_u8(source, 2, 2, Atom["bgr"]);
+    let grayscale = Imgproc.cvt_color(image, BgrToGray);
+    let pixels = Mat.to_u8(grayscale).to_list();
+    let valid =
+        Mat.rows(grayscale) == 2
+            and Mat.cols(grayscale) == 2
+            and Mat.channels(grayscale) == 1
+            and pixels == [0, 255, 76, 150];
+    Mat.dispose(grayscale);
+    Mat.dispose(image);
+    valid and Mat.live_count() == 0.

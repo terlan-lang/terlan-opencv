@@ -1,0 +1,14 @@
+/**
+ * Verifies codecs through a freshly extracted package artifact.
+ */
+module example.CodecRoundTripTest.
+
+import example.CodecRoundTrip.{round_trip}.
+import std.test.Test.{assert}.
+
+/**
+ * Proves the artifact carries working PNG and JPEG codecs.
+ */
+@test
+pub packaged_codecs_round_trip_copied_bytes(): Bool ->
+    assert(round_trip()).

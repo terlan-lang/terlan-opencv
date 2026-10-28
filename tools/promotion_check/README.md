@@ -14,7 +14,8 @@ This internal package validates the immutable inputs used to promote
 `make opencv-promotion-tool-check` runs the unit and documentation gates.
 `make opencv-promotion-inventory-check` applies the checker to the current
 repositories. `make opencv-fresh-workspace-check` owns cloning, rebuilding,
-consumer execution, and the final verified evidence flag.
+consumer execution, and the final verified evidence flag through the
+package-owned Terlan runner at `scripts/FreshWorkspaceCheck.terls`.
 
 The `fresh_workspace_verified` field is an orchestration result. This crate
 records it only when requested by the fresh-workspace runner; consumers must

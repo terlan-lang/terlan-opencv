@@ -1,14 +1,49 @@
 module opencv.ContoursTest.
 
-import opencv.Contours.
-import opencv.Imgproc.
-import opencv.Mat.
+import opencv.{Contours, Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.vm.Bytes.
 
-/** Validates contour geometry, projections, derived owners, rasterization, and cleanup. */
+/**
+ * Validates contour geometry, projections, derived owners, rasterization, and cleanup.
+ */
 @test
 pub contour_contracts(): Bool ->
-    let contour_mask = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]), 5, 5, Atom["gray"]);
+    let contour_mask =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                ],
+            ),
+            5,
+            5,
+            Atom["gray"],
+        );
     let contours = Imgproc.find_external_contours(contour_mask);
     let hu_moments = Imgproc.hu_moments(contour_mask);
     let contour_circularities = Contours.circularities(contours);
@@ -27,8 +62,49 @@ pub contour_contracts(): Bool ->
     let filled_contour_mask = Contours.filled_mask(contours, 255);
     let outlined_contour_mask = Contours.outline_mask(contours, 255, 1);
     let selected_contour_mask = Contours.selected_filled_mask(contours, 0, 255);
-    let contour_rasterization_valid = Mat.to_u8(filled_contour_mask).to_list() == Mat.to_u8(contour_mask).to_list() and Mat.to_u8(outlined_contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0] and Mat.to_u8(selected_contour_mask).to_list() == Mat.to_u8(filled_contour_mask).to_list();
-    let valid = Contours.count(contours) == 1 and Contours.points(contours) == [1, 1, 1, 3, 3, 3, 3, 1] and Contours.offsets(contours) == [0, 4] and Contours.bounds(contours) == [1, 1, 3, 3] and Contours.areas(contours) == [4.0] and Contours.perimeters(contours) == [8.0] and Contours.convex_areas(contours) == [4.0] and Contours.solidities(contours) == [1.0] and Contours.centroids(contours) == [2.0, 2.0] and contour_circularities.length() == 1 and contour_circularities[0] > 0.785 and contour_circularities[0] < 0.786 and contour_extents.length() == 1 and contour_extents[0] > 0.444 and contour_extents[0] < 0.445 and contour_hu_moments.length() == 7 and contour_hu_moments[0] > 0.0 and contour_minimum_area_boxes.length() == 8 and contour_minimum_area_boxes[0] == 1.0 and contour_minimum_area_boxes[1] == 1.0 and contour_minimum_enclosing_circles.length() == 3 and contour_minimum_enclosing_circles[0] == 2.0 and contour_minimum_enclosing_circles[1] == 2.0 and contour_minimum_enclosing_circles[2] > 1.414 and contour_minimum_enclosing_circles[2] < 1.415 and contour_minimum_enclosing_triangles.length() == 6 and contour_fitted_lines.length() == 4 and contour_fitted_ellipses == [2.0, 2.0, 0.0, 0.0, 0.0] and contour_match_scores == [0.0, 0.0, 0.0] and Contours.points(approximated_contours) == Contours.points(contours) and Contours.areas(convex_contours) == Contours.convex_areas(contours) and contour_convexity_defects == [] and contour_signed_distances == [1.0] and contour_rasterization_valid and hu_moments.length() == 7 and hu_moments[0] > 0.0 and Mat.to_u8(contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0] and Contours.live_count() == 3;
+    let contour_rasterization_valid =
+        Mat.to_u8(filled_contour_mask).to_list() == Mat.to_u8(contour_mask).to_list()
+            and Mat.to_u8(outlined_contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 0, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+            and Mat.to_u8(selected_contour_mask).to_list() == Mat.to_u8(filled_contour_mask).to_list();
+    let valid =
+        Contours.count(contours) == 1
+            and Contours.points(contours) == [1, 1, 1, 3, 3, 3, 3, 1]
+            and Contours.offsets(contours) == [0, 4]
+            and Contours.bounds(contours) == [1, 1, 3, 3]
+            and Contours.areas(contours) == [4.0]
+            and Contours.perimeters(contours) == [8.0]
+            and Contours.convex_areas(contours) == [4.0]
+            and Contours.solidities(contours) == [1.0]
+            and Contours.centroids(contours) == [2.0, 2.0]
+            and contour_circularities.length() == 1
+            and contour_circularities[0] > 0.785
+            and contour_circularities[0] < 0.786
+            and contour_extents.length() == 1
+            and contour_extents[0] > 0.444
+            and contour_extents[0] < 0.445
+            and contour_hu_moments.length() == 7
+            and contour_hu_moments[0] > 0.0
+            and contour_minimum_area_boxes.length() == 8
+            and contour_minimum_area_boxes[0] == 1.0
+            and contour_minimum_area_boxes[1] == 1.0
+            and contour_minimum_enclosing_circles.length() == 3
+            and contour_minimum_enclosing_circles[0] == 2.0
+            and contour_minimum_enclosing_circles[1] == 2.0
+            and contour_minimum_enclosing_circles[2] > 1.414
+            and contour_minimum_enclosing_circles[2] < 1.415
+            and contour_minimum_enclosing_triangles.length() == 6
+            and contour_fitted_lines.length() == 4
+            and contour_fitted_ellipses == [2.0, 2.0, 0.0, 0.0, 0.0]
+            and contour_match_scores == [0.0, 0.0, 0.0]
+            and Contours.points(approximated_contours) == Contours.points(contours)
+            and Contours.areas(convex_contours) == Contours.convex_areas(contours)
+            and contour_convexity_defects == []
+            and contour_signed_distances == [1.0]
+            and contour_rasterization_valid
+            and hu_moments.length() == 7
+            and hu_moments[0] > 0.0
+            and Mat.to_u8(contour_mask).to_list() == [0, 0, 0, 0, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 255, 255, 0, 0, 0, 0, 0, 0]
+            and Contours.live_count() == 3;
     Contours.dispose(convex_contours);
     Contours.dispose(approximated_contours);
     Contours.dispose(contours);
@@ -37,4 +113,3 @@ pub contour_contracts(): Bool ->
     Mat.dispose(filled_contour_mask);
     Mat.dispose(contour_mask);
     valid and Contours.live_count() == 0 and Mat.live_count() == 0.
-

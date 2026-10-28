@@ -1,65 +1,127 @@
 /**
  * Classical machine-learning checks consumed through the OpenCV dependency.
  */
-
 module opencv_consumer.MlChecks.
 
 import opencv.Ml.
 
-/** Validates copied CPU-only classical classification models. */
+/**
+ * Validates copied CPU-only classical classification models.
+ */
 pub knn_classifier_valid(): Bool ->
     let samples = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 10.0, 10.0, 10.0, 11.0, 11.0, 10.0, 11.0, 11.0];
     let labels = [0, 0, 0, 0, 1, 1, 1, 1];
     let model = Ml.train_knn_classifier(samples, labels, 2, 3);
     let predictions = Ml.predict(model, [0.2, 0.2, 10.2, 10.2], 3);
     let repeated = Ml.predict(model, [0.2, 0.2, 10.2, 10.2], 3);
-    let knn_valid = predictions == [0, 1] and repeated == predictions and Ml.sample_count(model) == 8 and Ml.feature_count(model) == 2 and Ml.live_count() == 1;
+    let knn_valid =
+        predictions == [0, 1]
+            and repeated == predictions
+            and Ml.sample_count(model) == 8
+            and Ml.feature_count(model) == 2
+            and Ml.live_count() == 1;
     Ml.dispose(model);
     let svm = Ml.train_linear_svm_classifier(samples, labels, 2);
     let svm_predictions = Ml.predict_linear_svm(svm, [0.2, 0.2, 10.2, 10.2]);
     let svm_repeated = Ml.predict_linear_svm(svm, [0.2, 0.2, 10.2, 10.2]);
-    let svm_valid = svm_predictions == [0, 1] and svm_repeated == svm_predictions and Ml.linear_svm_sample_count(svm) == 8 and Ml.linear_svm_feature_count(svm) == 2 and Ml.live_linear_svm_count() == 1;
-    Ml.dispose_linear_svm(svm);
-    let bayes = Ml.train_normal_bayes_classifier(samples, labels, 2);
-    let bayes_predictions = Ml.predict_normal_bayes(bayes, [0.2, 0.2, 10.2, 10.2]);
-    let bayes_repeated = Ml.predict_normal_bayes(bayes, [0.2, 0.2, 10.2, 10.2]);
-    let bayes_valid = bayes_predictions == [0, 1] and bayes_repeated == bayes_predictions and Ml.normal_bayes_sample_count(bayes) == 8 and Ml.normal_bayes_feature_count(bayes) == 2 and Ml.live_normal_bayes_count() == 1;
-    Ml.dispose_normal_bayes(bayes);
-    let logistic = Ml.train_logistic_classifier(samples, labels, 2);
-    let logistic_predictions = Ml.predict_logistic(logistic, [0.2, 0.2, 10.2, 10.2]);
-    let logistic_repeated = Ml.predict_logistic(logistic, [0.2, 0.2, 10.2, 10.2]);
-    let logistic_valid = logistic_predictions == [0, 1] and logistic_repeated == logistic_predictions and Ml.logistic_sample_count(logistic) == 8 and Ml.logistic_feature_count(logistic) == 2 and Ml.live_logistic_count() == 1;
-    Ml.dispose_logistic(logistic);
-    let tree = Ml.train_decision_tree_classifier(samples, labels, 2);
-    let tree_predictions = Ml.predict_decision_tree(tree, [0.2, 0.2, 10.2, 10.2]);
-    let tree_repeated = Ml.predict_decision_tree(tree, [0.2, 0.2, 10.2, 10.2]);
-    let tree_valid = tree_predictions == [0, 1] and tree_repeated == tree_predictions and Ml.decision_tree_sample_count(tree) == 8 and Ml.decision_tree_feature_count(tree) == 2 and Ml.live_decision_tree_count() == 1;
-    Ml.dispose_decision_tree(tree);
-    let boost = Ml.train_boost_classifier(samples, labels, 2);
-    let boost_predictions = Ml.predict_boost(boost, [0.2, 0.2, 10.2, 10.2]);
-    let boost_repeated = Ml.predict_boost(boost, [0.2, 0.2, 10.2, 10.2]);
-    let boost_valid = boost_predictions == [0, 1] and boost_repeated == boost_predictions and Ml.boost_sample_count(boost) == 8 and Ml.boost_feature_count(boost) == 2 and Ml.live_boost_count() == 1;
-    Ml.dispose_boost(boost);
-    let sgd_svm = Ml.train_sgd_svm_classifier(samples, labels, 2);
-    let sgd_svm_predictions = Ml.predict_sgd_svm(sgd_svm, [0.2, 0.2, 10.2, 10.2]);
-    let sgd_svm_repeated = Ml.predict_sgd_svm(sgd_svm, [0.2, 0.2, 10.2, 10.2]);
-    let sgd_svm_valid = sgd_svm_predictions == [0, 1] and sgd_svm_repeated == sgd_svm_predictions and Ml.sgd_svm_sample_count(sgd_svm) == 8 and Ml.sgd_svm_feature_count(sgd_svm) == 2 and Ml.live_sgd_svm_count() == 1;
-    Ml.dispose_sgd_svm(sgd_svm);
-    let forest = Ml.train_random_forest_classifier(samples, labels, 2);
-    let forest_predictions = Ml.predict_random_forest(forest, [0.2, 0.2, 10.2, 10.2]);
-    let forest_repeated = Ml.predict_random_forest(forest, [0.2, 0.2, 10.2, 10.2]);
-    let forest_valid = forest_predictions == [0, 1] and forest_repeated == forest_predictions and Ml.random_forest_sample_count(forest) == 8 and Ml.random_forest_feature_count(forest) == 2 and Ml.live_random_forest_count() == 1;
-    Ml.dispose_random_forest(forest);
-    let mlp_samples = [-1.0, -1.0, -1.0, -0.8, -0.8, -1.0, -0.8, -0.8, 0.8, 0.8, 0.8, 1.0, 1.0, 0.8, 1.0, 1.0];
-    let mlp = Ml.train_mlp_classifier(mlp_samples, labels, 2);
-    let mlp_predictions = Ml.predict_mlp(mlp, [-0.9, -0.9, 0.9, 0.9]);
-    let mlp_repeated = Ml.predict_mlp(mlp, [-0.9, -0.9, 0.9, 0.9]);
-    let mlp_valid = mlp_predictions == [0, 1] and mlp_repeated == mlp_predictions and Ml.mlp_sample_count(mlp) == 8 and Ml.mlp_feature_count(mlp) == 2 and Ml.live_mlp_count() == 1;
-    Ml.dispose_mlp(mlp);
-    let mixture = Ml.train_gaussian_mixture(mlp_samples, 2, 2);
-    let mixture_predictions = Ml.predict_gaussian_clusters(mixture, [-0.9, -0.9, 0.9, 0.9]);
-    let mixture_repeated = Ml.predict_gaussian_clusters(mixture, [-0.9, -0.9, 0.9, 0.9]);
-    let mixture_labels_valid = mixture_predictions == [0, 1] or mixture_predictions == [1, 0];
-    let mixture_valid = mixture_labels_valid and mixture_repeated == mixture_predictions and Ml.gaussian_mixture_sample_count(mixture) == 8 and Ml.gaussian_mixture_feature_count(mixture) == 2 and Ml.gaussian_mixture_cluster_count(mixture) == 2 and Ml.live_gaussian_mixture_count() == 1;
-    Ml.dispose_gaussian_mixture(mixture);
-    knn_valid and Ml.live_count() == 0 and svm_valid and Ml.live_linear_svm_count() == 0 and bayes_valid and Ml.live_normal_bayes_count() == 0 and logistic_valid and Ml.live_logistic_count() == 0 and tree_valid and Ml.live_decision_tree_count() == 0 and boost_valid and Ml.live_boost_count() == 0 and sgd_svm_valid and Ml.live_sgd_svm_count() == 0 and forest_valid and Ml.live_random_forest_count() == 0 and mlp_valid and Ml.live_mlp_count() == 0 and mixture_valid and Ml.live_gaussian_mixture_count() == 0.
+    let svm_valid =
+        svm_predictions == [0, 1]
+            and svm_repeated == svm_predictions
+            and Ml.linear_svm_sample_count(svm) == 8
+            and Ml.linear_svm_feature_count(svm) == 2
+            and Ml.live_linear_svm_count() == 1;
+    (Ml.dispose_linear_svm(svm); let bayes = Ml.train_normal_bayes_classifier(samples, labels, 2);
+let bayes_predictions = Ml.predict_normal_bayes(bayes, [0.2, 0.2, 10.2, 10.2]);
+let bayes_repeated = Ml.predict_normal_bayes(bayes, [0.2, 0.2, 10.2, 10.2]);
+let bayes_valid =
+    bayes_predictions == [0, 1]
+        and bayes_repeated == bayes_predictions
+        and Ml.normal_bayes_sample_count(bayes) == 8
+        and Ml.normal_bayes_feature_count(bayes) == 2
+        and Ml.live_normal_bayes_count() == 1;
+(Ml.dispose_normal_bayes(bayes); let logistic = Ml.train_logistic_classifier(samples, labels, 2);
+let logistic_predictions = Ml.predict_logistic(logistic, [0.2, 0.2, 10.2, 10.2]);
+let logistic_repeated = Ml.predict_logistic(logistic, [0.2, 0.2, 10.2, 10.2]);
+let logistic_valid =
+    logistic_predictions == [0, 1]
+        and logistic_repeated == logistic_predictions
+        and Ml.logistic_sample_count(logistic) == 8
+        and Ml.logistic_feature_count(logistic) == 2
+        and Ml.live_logistic_count() == 1;
+(Ml.dispose_logistic(logistic); let tree = Ml.train_decision_tree_classifier(samples, labels, 2);
+let tree_predictions = Ml.predict_decision_tree(tree, [0.2, 0.2, 10.2, 10.2]);
+let tree_repeated = Ml.predict_decision_tree(tree, [0.2, 0.2, 10.2, 10.2]);
+let tree_valid =
+    tree_predictions == [0, 1]
+        and tree_repeated == tree_predictions
+        and Ml.decision_tree_sample_count(tree) == 8
+        and Ml.decision_tree_feature_count(tree) == 2
+        and Ml.live_decision_tree_count() == 1;
+(Ml.dispose_decision_tree(tree); let boost = Ml.train_boost_classifier(samples, labels, 2);
+let boost_predictions = Ml.predict_boost(boost, [0.2, 0.2, 10.2, 10.2]);
+let boost_repeated = Ml.predict_boost(boost, [0.2, 0.2, 10.2, 10.2]);
+let boost_valid =
+    boost_predictions == [0, 1]
+        and boost_repeated == boost_predictions
+        and Ml.boost_sample_count(boost) == 8
+        and Ml.boost_feature_count(boost) == 2
+        and Ml.live_boost_count() == 1;
+(Ml.dispose_boost(boost); let sgd_svm = Ml.train_sgd_svm_classifier(samples, labels, 2);
+let sgd_svm_predictions = Ml.predict_sgd_svm(sgd_svm, [0.2, 0.2, 10.2, 10.2]);
+let sgd_svm_repeated = Ml.predict_sgd_svm(sgd_svm, [0.2, 0.2, 10.2, 10.2]);
+let sgd_svm_valid =
+    sgd_svm_predictions == [0, 1]
+        and sgd_svm_repeated == sgd_svm_predictions
+        and Ml.sgd_svm_sample_count(sgd_svm) == 8
+        and Ml.sgd_svm_feature_count(sgd_svm) == 2
+        and Ml.live_sgd_svm_count() == 1;
+(Ml.dispose_sgd_svm(sgd_svm); let forest = Ml.train_random_forest_classifier(samples, labels, 2);
+let forest_predictions = Ml.predict_random_forest(forest, [0.2, 0.2, 10.2, 10.2]);
+let forest_repeated = Ml.predict_random_forest(forest, [0.2, 0.2, 10.2, 10.2]);
+let forest_valid =
+    forest_predictions == [0, 1]
+        and forest_repeated == forest_predictions
+        and Ml.random_forest_sample_count(forest) == 8
+        and Ml.random_forest_feature_count(forest) == 2
+        and Ml.live_random_forest_count() == 1;
+(Ml.dispose_random_forest(forest); let mlp_samples = [-1.0, -1.0, -1.0, -0.8, -0.8, -1.0, -0.8, -0.8, 0.8, 0.8, 0.8, 1.0, 1.0, 0.8, 1.0, 1.0];
+let mlp = Ml.train_mlp_classifier(mlp_samples, labels, 2);
+let mlp_predictions = Ml.predict_mlp(mlp, [-0.9, -0.9, 0.9, 0.9]);
+let mlp_repeated = Ml.predict_mlp(mlp, [-0.9, -0.9, 0.9, 0.9]);
+let mlp_valid =
+    mlp_predictions == [0, 1]
+        and mlp_repeated == mlp_predictions
+        and Ml.mlp_sample_count(mlp) == 8
+        and Ml.mlp_feature_count(mlp) == 2
+        and Ml.live_mlp_count() == 1;
+(Ml.dispose_mlp(mlp); let mixture = Ml.train_gaussian_mixture(mlp_samples, 2, 2);
+let mixture_predictions = Ml.predict_gaussian_clusters(mixture, [-0.9, -0.9, 0.9, 0.9]);
+let mixture_repeated = Ml.predict_gaussian_clusters(mixture, [-0.9, -0.9, 0.9, 0.9]);
+let mixture_labels_valid = mixture_predictions == [0, 1] or mixture_predictions == [1, 0];
+let mixture_valid =
+    mixture_labels_valid
+        and mixture_repeated == mixture_predictions
+        and Ml.gaussian_mixture_sample_count(mixture) == 8
+        and Ml.gaussian_mixture_feature_count(mixture) == 2
+        and Ml.gaussian_mixture_cluster_count(mixture) == 2
+        and Ml.live_gaussian_mixture_count() == 1;
+(Ml.dispose_gaussian_mixture(mixture); knn_valid
+    and Ml.live_count() == 0
+    and svm_valid
+    and Ml.live_linear_svm_count() == 0
+    and bayes_valid
+    and Ml.live_normal_bayes_count() == 0
+    and logistic_valid
+    and Ml.live_logistic_count() == 0
+    and tree_valid
+    and Ml.live_decision_tree_count() == 0
+    and boost_valid
+    and Ml.live_boost_count() == 0
+    and sgd_svm_valid
+    and Ml.live_sgd_svm_count() == 0
+    and forest_valid
+    and Ml.live_random_forest_count() == 0
+    and mlp_valid
+    and Ml.live_mlp_count() == 0
+    and mixture_valid
+    and Ml.live_gaussian_mixture_count() == 0))))))))).

@@ -1,23 +1,25 @@
-/** Demonstrates affine and perspective image transformations. */
+/**
+ * Demonstrates affine and perspective image transformations.
+ */
 module samples.imgproc.GeometricTransforms.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Constant, Gray, Nearest, affine_transform, perspective_transform}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the geometric-transform example. */
+/**
+ * Runs the geometric-transform example.
+ */
 pub main(): Unit ->
     let source = Mat.from_u8(Bytes.from_list([1, 2, 3, 4]), 2, 2, Gray);
-    // Set the six coefficients of an affine transform and apply it to a
-    // destination with the same dimensions as the source image.
     let affine = affine_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0);
     let affine_result = Imgproc.warp_affine(source, affine, 2, 2, Nearest, Constant);
-    // Apply the equivalent identity perspective transform.
     let perspective = perspective_transform(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
     let perspective_result = Imgproc.warp_perspective(source, perspective, 2, 2, Nearest, Constant);
-    let valid = Mat.to_u8(affine_result).to_list() == Mat.to_u8(source).to_list() and Mat.to_u8(perspective_result).to_list() == Mat.to_u8(source).to_list();
+    let valid =
+        Mat.to_u8(affine_result).to_list() == Mat.to_u8(source).to_list()
+            and Mat.to_u8(perspective_result).to_list() == Mat.to_u8(source).to_list();
     Mat.dispose(perspective_result);
     Mat.dispose(affine_result);
     Mat.dispose(source);

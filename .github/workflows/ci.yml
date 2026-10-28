@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   contract:
-    name: Offline package contracts
+    name: Package contracts
     runs-on: ubuntu-latest
 
     steps:
@@ -28,19 +28,36 @@ jobs:
       - name: Install fixture and C++ tools
         run: |
           sudo apt-get update
-          sudo apt-get install --yes g++ protobuf-compiler
+          sudo apt-get install --yes g++ protobuf-compiler zstd
+
+      - name: Checkout pinned Terlan compiler
+        run: |
+          repository=$(sed -n 's/^repository = "\(.*\)"$/\1/p' upstream/terlan.lock.toml)
+          revision=$(sed -n 's/^commit = "\(.*\)"$/\1/p' upstream/terlan.lock.toml)
+          test -n "$repository"
+          test -n "$revision"
+          git init --quiet _build/terlan
+          git -C _build/terlan remote add origin "$repository"
+          git -C _build/terlan fetch --quiet --depth 1 origin "$revision"
+          git -C _build/terlan checkout --quiet --detach FETCH_HEAD
+
+      - name: Build pinned Terlan script runner
+        run: |
+          cargo build --quiet --manifest-path _build/terlan/Cargo.toml \
+            -p terlan --bin terlc
 
       - name: Validate package-owned contracts
         run: |
-          make \
+          make TERLC="$GITHUB_WORKSPACE/_build/terlan/target/debug/terlc" \
+            opencv-scripts-check \
             opencv-validation-check \
             opencv-onnx-fixture-check \
             opencv-surface-check \
+            opencv-api-parity-check \
+            opencv-behavioral-parity-check \
             opencv-codec-policy-check \
             opencv-metadata-check \
             opencv-install-layout-check \
             opencv-runtime-guard-check \
-            opencv-promotion-tool-check
-
-      - name: Validate promotion runner syntax
-        run: bash -n tools/run_fresh_workspace_check.sh
+            opencv-promotion-tool-check \
+            opencv-package-artifact-tool-check

@@ -1,19 +1,24 @@
-/** Demonstrates bounded ORB feature extraction and descriptor inspection. */
+/**
+ * Demonstrates bounded ORB feature extraction and descriptor inspection.
+ */
 module samples.features2d.OrbFeatures.
 
-import opencv.Features.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
+import std.vm.Bytes.
 
-/** Runs the ORB feature example. */
+/**
+ * Runs the ORB feature example.
+ */
 pub main(): Unit ->
     let image = Mat.zeros(64, 64, Gray);
-    // Step 1: detect bounded keypoints and compute ORB descriptors.
     let features = Features.detect_orb(image, 64);
-    // Step 2: inspect copied keypoint and descriptor metadata. Drawing is kept
-    // out because this package does not own a GUI window contract.
-    let valid = Features.count(features) == 0 and Features.descriptor_width(features) == 32 and Features.descriptors(features).length() == 0;
+    let valid =
+        Features.count(features) == 0
+            and Features.descriptor_width(features) == 32
+            and Features.descriptors(features).length() == 0;
     Features.dispose(features);
     Mat.dispose(image);
     if {

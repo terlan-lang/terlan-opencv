@@ -1,21 +1,20 @@
-/** Demonstrates Gaussian, median, and bilateral smoothing. */
+/**
+ * Demonstrates Gaussian, median, and bilateral smoothing.
+ */
 module samples.imgproc.Smoothing.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the smoothing example and releases every result matrix. */
+/**
+ * Runs the smoothing example and releases every result matrix.
+ */
 pub main(): Unit ->
-    // Load the source image from deterministic in-memory pixels.
     let source = Mat.from_u8(Bytes.from_list([0, 0, 0, 0, 255, 0, 0, 0, 0]), 3, 3, Gray);
-    // Apply Gaussian blur.
     let gaussian = Imgproc.gaussian_blur(source, 3, 3, 0.0);
-    // Apply median blur.
     let median = Imgproc.median_blur(source, 3);
-    // Apply bilateral filtering.
     let bilateral = Imgproc.bilateral_filter(source, 3, 10.0, 10.0);
     let valid = Mat.rows(gaussian) == 3 and Mat.rows(median) == 3 and Mat.rows(bilateral) == 3;
     Mat.dispose(bilateral);

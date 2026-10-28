@@ -1,19 +1,46 @@
-/** Demonstrates recovering a camera pose from 3D-to-2D correspondences. */
+/**
+ * Demonstrates recovering a camera pose from 3D-to-2D correspondences.
+ */
 module samples.calib3d.PoseEstimation.
 
-import opencv.Calib3d.
-import opencv.Types.
+import opencv.{Calib3d, Types}.
 import std.io.Console.{println}.
 
-/** Runs the deterministic perspective-n-point example. */
+/**
+ * Runs the deterministic perspective-n-point example.
+ */
 pub main(): Unit ->
-    // Define object points, camera intrinsics, and one known camera pose.
-    let objects = [-1.0, -1.0, 0.0, 1.0, -1.0, 0.0, -1.0, 1.0, 0.0, 1.0, 1.0, 0.0, -0.5, -0.5, 1.0, 0.5, -0.5, 1.0, -0.5, 0.5, 1.0, 0.5, 0.5, 1.0];
+    let objects =
+        [
+            -1.0,
+            -1.0,
+            0.0,
+            1.0,
+            -1.0,
+            0.0,
+            -1.0,
+            1.0,
+            0.0,
+            1.0,
+            1.0,
+            0.0,
+            -0.5,
+            -0.5,
+            1.0,
+            0.5,
+            -0.5,
+            1.0,
+            -0.5,
+            0.5,
+            1.0,
+            0.5,
+            0.5,
+            1.0,
+        ];
     let rotation = Types.vector3(0.1, -0.2, 0.05);
     let translation = Types.vector3(0.25, -0.4, 8.0);
     let camera = Types.camera_intrinsics(100.0, 100.0, 50.0, 50.0);
     let distortion = Types.distortion_coefficients(0.0, 0.0, 0.0, 0.0, 0.0);
-    // Project the points, then recover the pose from those copied image points.
     let images = Calib3d.project_points(objects, rotation, translation, camera, distortion);
     let pose = Calib3d.solve_pose(objects, images, camera, distortion);
     let valid = pose.tz > 7.9 and pose.tz < 8.1 and pose.rx > 0.09 and pose.rx < 0.11;

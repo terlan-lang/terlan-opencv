@@ -6,14 +6,25 @@ use std::env;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-use terlan_opencv_metadata_check::{package_root, validate_live, validate_offline};
+use terlan_opencv_metadata_check::{
+    package_root, refresh_metadata, validate_generated_aot_adapter, validate_live, validate_offline,
+};
 
 /// Runs offline validation or live LibTooling reproduction.
 fn main() -> ExitCode {
     let root = package_root();
-    let result = match env::args_os().nth(1) {
-        Some(extractor) => validate_live(&root, PathBuf::from(extractor).as_path()),
-        None => validate_offline(&root),
+    let arguments = env::args_os().skip(1).collect::<Vec<_>>();
+    let result = match arguments.as_slice() {
+        [argument] if argument == "--generated-aot" => validate_generated_aot_adapter(&root),
+        [flag, extractor] if flag == "--refresh" => {
+            refresh_metadata(&root, PathBuf::from(extractor).as_path())
+        }
+        [extractor] => validate_live(&root, PathBuf::from(extractor).as_path()),
+        [] => validate_offline(&root),
+        _ => Err(
+            "usage: terlan-opencv-metadata-check [--generated-aot | --refresh EXTRACTOR | EXTRACTOR]"
+                .to_string(),
+        ),
     };
     match result {
         Ok(()) => {

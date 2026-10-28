@@ -1,0 +1,17 @@
+/**
+ * Demonstrates one pipeline against the installed OpenCV package artifact.
+ */
+module example.Threshold.
+
+import opencv.Types.{BinaryThreshold, Gray}.
+import opencv.{Imgproc, Mat}.
+import std.vm.Bytes.
+
+/**
+ * Converts four grayscale pixels into one copied binary image.
+ */
+pub make_binary_image(): Bytes ->
+    Bytes.from_list([0, 64, 128, 255])
+    |> Mat.from_u8(2, 2, Gray)
+    |> Imgproc.threshold(100.0, 255.0, BinaryThreshold)
+    |> Mat.to_u8().

@@ -617,6 +617,90 @@ fn owned_matrix_lifecycle_and_first_surface_operations_work() {
         [0, 255, 76, 150]
     );
 
+    let png = gray_ref.encode_owned(1);
+    let png_ref = png.as_ref().expect("PNG bytes");
+    assert_eq!(&png_ref.as_slice()[..8], b"\x89PNG\r\n\x1a\n");
+    let decoded_png = ffi::decode_image(png_ref.as_slice(), 0);
+    let decoded_png_ref = decoded_png.as_ref().expect("decoded PNG matrix");
+    assert_eq!((decoded_png_ref.rows(), decoded_png_ref.cols()), (2, 2));
+    assert_eq!(decoded_png_ref.channels(), 1);
+    assert_eq!(
+        decoded_png_ref
+            .to_u8()
+            .as_ref()
+            .expect("decoded PNG bytes")
+            .as_slice(),
+        [0, 255, 76, 150]
+    );
+
+    let jpeg = gray_ref.encode_owned(2);
+    let jpeg_ref = jpeg.as_ref().expect("JPEG bytes");
+    assert_eq!(&jpeg_ref.as_slice()[..3], b"\xff\xd8\xff");
+    let repeated_jpeg = gray_ref.encode_owned(2);
+    assert_eq!(
+        jpeg_ref.as_slice(),
+        repeated_jpeg
+            .as_ref()
+            .expect("repeated JPEG bytes")
+            .as_slice()
+    );
+    let decoded_jpeg = ffi::decode_image(jpeg_ref.as_slice(), 0);
+    let decoded_jpeg_ref = decoded_jpeg.as_ref().expect("decoded JPEG matrix");
+    assert_eq!((decoded_jpeg_ref.rows(), decoded_jpeg_ref.cols()), (2, 2));
+    assert_eq!(decoded_jpeg_ref.channels(), 1);
+    assert_eq!(
+        decoded_jpeg_ref
+            .to_u8()
+            .as_ref()
+            .expect("decoded JPEG bytes")
+            .len(),
+        4
+    );
+
+    let webp = gray_ref.encode_owned(3);
+    let webp_ref = webp.as_ref().expect("WebP bytes");
+    assert_eq!(&webp_ref.as_slice()[..4], b"RIFF");
+    assert_eq!(&webp_ref.as_slice()[8..12], b"WEBP");
+    let repeated_webp = gray_ref.encode_owned(3);
+    assert_eq!(
+        webp_ref.as_slice(),
+        repeated_webp
+            .as_ref()
+            .expect("repeated WebP bytes")
+            .as_slice()
+    );
+    let decoded_webp = ffi::decode_image(webp_ref.as_slice(), 0);
+    let decoded_webp_ref = decoded_webp.as_ref().expect("decoded WebP matrix");
+    assert_eq!((decoded_webp_ref.rows(), decoded_webp_ref.cols()), (2, 2));
+    assert_eq!(decoded_webp_ref.channels(), 1);
+
+    let tiff = gray_ref.encode_owned(4);
+    let tiff_ref = tiff.as_ref().expect("TIFF bytes");
+    assert!(matches!(
+        &tiff_ref.as_slice()[..4],
+        b"II\x2a\x00" | b"MM\x00\x2a"
+    ));
+    let repeated_tiff = gray_ref.encode_owned(4);
+    assert_eq!(
+        tiff_ref.as_slice(),
+        repeated_tiff
+            .as_ref()
+            .expect("repeated TIFF bytes")
+            .as_slice()
+    );
+    let decoded_tiff = ffi::decode_image(tiff_ref.as_slice(), 0);
+    let decoded_tiff_ref = decoded_tiff.as_ref().expect("decoded TIFF matrix");
+    assert_eq!((decoded_tiff_ref.rows(), decoded_tiff_ref.cols()), (2, 2));
+    assert_eq!(decoded_tiff_ref.channels(), 1);
+    assert_eq!(
+        decoded_tiff_ref
+            .to_u8()
+            .as_ref()
+            .expect("decoded TIFF bytes")
+            .as_slice(),
+        [0, 255, 76, 150]
+    );
+
     let invalid_encoded = ffi::decode_image(b"not-bmp", 0);
     assert!(invalid_encoded.is_null());
     assert_eq!(ffi::take_last_failure(), 6);
@@ -697,8 +781,6 @@ fn owned_matrix_lifecycle_and_first_surface_operations_work() {
         assert_eq!(ffi::take_last_failure(), 1);
     }
     for (minimum, maximum) in [
-        (-0.1, 255.0),
-        (0.0, 255.1),
         (f64::NAN, 255.0),
         (0.0, f64::NAN),
         (f64::INFINITY, 255.0),
@@ -858,7 +940,7 @@ fn owned_matrix_lifecycle_and_first_surface_operations_work() {
     assert!(invalid_infinite_sigma.is_null());
     assert_eq!(ffi::take_last_failure(), 1);
     assert_eq!(ffi::take_last_failure(), 0);
-    assert_eq!(ffi::live_mat_count(), 21);
+    assert_eq!(ffi::live_mat_count(), 25);
     assert_eq!(ffi::live_component_analysis_count(), 2);
 
     drop(components_eight);
@@ -880,6 +962,17 @@ fn owned_matrix_lifecycle_and_first_surface_operations_work() {
     drop(flipped);
     drop(padded);
     drop(cropped);
+    drop(decoded_tiff);
+    drop(repeated_tiff);
+    drop(tiff);
+    drop(decoded_webp);
+    drop(repeated_webp);
+    drop(webp);
+    drop(decoded_jpeg);
+    drop(repeated_jpeg);
+    drop(jpeg);
+    drop(decoded_png);
+    drop(png);
     drop(decoded);
     drop(encoded);
     drop(blurred);

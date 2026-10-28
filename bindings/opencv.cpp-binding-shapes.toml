@@ -1,0 +1,169 @@
+schema = "terlan.opencv.cpp-binding-shapes.v1"
+upstream_commit = "fe38fc608f6acb8b68953438a62305d8318f4fcd"
+compiler_gate = "make cpp-binding-generator-check"
+
+[[shapes]]
+id = "external_dynamic_linkage"
+operations = ["opencv.codecs.decode"]
+evidence = ["tests/cpp/opencv_link_probe.cc", "tests/opencv/CodecsTest.terl"]
+rationale = "The generated package links the pinned external OpenCV module closure and executes it from Terlan."
+
+[[shapes]]
+id = "opaque_unique_resource"
+operations = ["opencv.mat.from_u8"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/MatTest.terl"]
+rationale = "Matrix construction transfers one unique C++ owner into a typed Terlan native handle."
+
+[[shapes]]
+id = "multiple_resource_types"
+operations = ["opencv.dnn.load_onnx", "opencv.dnn.forward"]
+evidence = ["tools/native_direct_check/tests/dnn_inference.rs", "tests/opencv/DnnTest.terl"]
+rationale = "The package stores matrices, blobs, models, and outputs under distinct generated resource identities."
+
+[[shapes]]
+id = "immutable_method"
+operations = ["opencv.mat.rows"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/MatTest.terl"]
+rationale = "A generated immutable method borrows one live matrix for the duration of the native call."
+
+[[shapes]]
+id = "free_function"
+operations = ["opencv.codecs.decode"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/CodecsTest.terl"]
+rationale = "A generated free function accepts copied bytes and returns a separately owned resource."
+
+[[shapes]]
+id = "cross_module_resource_result"
+operations = ["opencv.imgproc.resize"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/ImgprocTest.terl"]
+rationale = "An imgproc operation returns a matrix resource owned by the Mat module."
+
+[[shapes]]
+id = "secondary_resource_borrow"
+operations = ["opencv.features.match_orb"]
+evidence = ["tools/native_direct_check/tests/orb_matching.rs", "tests/opencv/FeaturesTest.terl"]
+rationale = "Feature matching validates and borrows two independent opaque resources for one call."
+
+[[shapes]]
+id = "primitive_int"
+operations = ["opencv.mat.rows"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/MatTest.terl"]
+rationale = "Matrix inspection copies a native signed integer into an ordinary Terlan Int."
+
+[[shapes]]
+id = "primitive_float"
+operations = ["opencv.imgproc.scale_abs"]
+evidence = ["tools/native_direct_check/tests/scale_abs.rs", "tests/opencv/ImgprocTest.terl"]
+rationale = "Scale and offset cross as finite doubles while the result remains independently owned."
+
+[[shapes]]
+id = "primitive_bool"
+operations = ["opencv.mat.is_contiguous"]
+evidence = ["tools/native_direct_check/tests/matrix_storage.rs", "tests/opencv/MatTest.terl"]
+rationale = "Matrix continuity copies a native boolean into an ordinary Terlan Bool."
+
+[[shapes]]
+id = "finite_enum_input"
+operations = ["opencv.imgproc.resize"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/ImgprocTest.terl"]
+rationale = "A finite Terlan atom union lowers through reviewed enum discriminants without exposing integer codes."
+
+[[shapes]]
+id = "copied_value_record_input"
+operations = ["opencv.calib3d.undistort"]
+evidence = ["tools/native_direct_check/tests/calib3d_undistort.rs", "tests/opencv/Calib3dTest.terl"]
+rationale = "Typed camera records are validated and flattened into ordered scalar parameters for one call."
+
+[[shapes]]
+id = "owned_value_projection"
+operations = ["opencv.calib3d.solve_pose"]
+evidence = ["tools/native_direct_check/tests/solve_pose.rs", "tests/opencv/Calib3dTest.terl"]
+rationale = "A temporary owned C++ result is projected into a copied Terlan record and destroyed before return."
+
+[[shapes]]
+id = "borrowed_bytes_input"
+operations = ["opencv.codecs.decode"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/CodecsTest.terl"]
+rationale = "Terlan-owned bytes remain borrowed only for the duration of image decoding."
+
+[[shapes]]
+id = "owned_bytes_output"
+operations = ["opencv.codecs.encode"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/CodecsTest.terl"]
+rationale = "Encoded native bytes are copied into Terlan ownership before the temporary vector is dropped."
+
+[[shapes]]
+id = "borrowed_int_list_input"
+operations = ["opencv.ml.train_knn_classifier"]
+evidence = ["tools/native_direct_check/tests/ml_knn.rs", "tests/opencv/MlTest.terl"]
+rationale = "Training labels cross as a call-scoped signed-integer slice."
+
+[[shapes]]
+id = "owned_int_list_output"
+operations = ["opencv.components.areas"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/ComponentsTest.terl"]
+rationale = "Component areas are copied from a temporary native vector into an ordinary Terlan list."
+
+[[shapes]]
+id = "borrowed_float_list_input"
+operations = ["opencv.ml.train_knn_classifier"]
+evidence = ["tools/native_direct_check/tests/ml_knn.rs", "tests/opencv/MlTest.terl"]
+rationale = "Training samples cross as a call-scoped double slice."
+
+[[shapes]]
+id = "owned_float_list_output"
+operations = ["opencv.calib3d.undistort_points"]
+evidence = ["tools/native_direct_check/tests/calib3d_undistort.rs", "tests/opencv/Calib3dTest.terl"]
+rationale = "Corrected points are copied from native vector storage into an ordinary Terlan list."
+
+[[shapes]]
+id = "stable_failure_translation"
+operations = ["opencv.codecs.decode"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/CodecsTest.terl"]
+rationale = "Invalid input and contained C++ exceptions become stable public errors without native payload leakage."
+
+[[shapes]]
+id = "deterministic_disposal"
+operations = ["opencv.mat.dispose"]
+evidence = ["tools/native_direct_check/tests/native_adapter.rs", "tests/opencv/MatTest.terl"]
+rationale = "Generation-tagged resource disposal rejects stale use and releases the unique native owner exactly once."
+
+[[rejections]]
+family = "cpp.pointer.unsupported"
+rationale = "Raw pointers require a reviewed copied-buffer or owned-resource adapter."
+
+[[rejections]]
+family = "cpp.lifetime.borrowed"
+rationale = "Borrowed results and views cannot escape one generated native call."
+
+[[rejections]]
+family = "cpp.template.unspecialized"
+rationale = "Dependent templates require a package-selected concrete adapter."
+
+[[rejections]]
+family = "cpp.exception.crossing"
+rationale = "Throwing calls require contained exception or stable failure translation."
+
+[[rejections]]
+family = "cpp.overload.ambiguous"
+rationale = "Overload selection requires one stable symbol identity."
+
+[[rejections]]
+family = "cpp.callback.unsupported"
+rationale = "Callback ownership, lifetime, and reentrancy are not inferred."
+
+[[rejections]]
+family = "cpp.variadic.unsupported"
+rationale = "Variadic C++ calls have no generated typed signature."
+
+[[rejections]]
+family = "cpp.inheritance.unsupported"
+rationale = "Unreviewed inheritance layout and virtual dispatch do not cross the boundary."
+
+[[rejections]]
+family = "cpp.ownership.unknown"
+rationale = "Every resource producer must declare an ownership transfer."
+
+[[rejections]]
+family = "cpp.type.unmapped"
+rationale = "Every admitted C++ type requires one reviewed Terlan representation."

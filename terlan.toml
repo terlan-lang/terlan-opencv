@@ -12,9 +12,11 @@ links = ["https://terlan.org", "https://opencv.org"]
 source_roots = ["src"]
 artifact = "library"
 
-[native.cpp]
-binding = "bindings/opencv.metadata.json"
-mapping = "bindings/opencv.mapping.toml"
-upstream_lock = "upstream/opencv.lock.toml"
-cmake_cache = "cmake/opencv-cpu.cmake"
-modules = ["core", "imgproc", "imgcodecs", "features", "calib3d", "ml", "dnn"]
+[scripts]
+check-cpp-validation = "scripts/CheckCppValidation.terls"
+check-sources = "scripts/CheckSources.terls"
+fresh-workspace-check = "scripts/FreshWorkspaceCheck.terls"
+generate-package = "scripts/GeneratePackage.terls"
+package-artifact = "scripts/PackageArtifact.terls"
+runtime-checks = "scripts/RuntimeChecks.terls"
+workspace = "scripts/Workspace.terls"

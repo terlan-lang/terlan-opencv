@@ -3,8 +3,9 @@
 #![deny(missing_docs)]
 #![forbid(unsafe_code)]
 
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
 use std::io::{self, BufRead, BufReader, Write};
+use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 
 use base64::engine::general_purpose::STANDARD;
@@ -21,13 +22,44 @@ const UNAVAILABLE_MESSAGE: &str = "OpenCV native runtime is unavailable";
 /// The guard remains alive when its OpenCV-linked worker is unavailable and
 /// emits one correlated `opencv.unavailable` reply for every incoming call.
 pub fn run_from_environment() -> Result<(), String> {
-    let worker_path = std::env::var_os(WORKER_PATH_ENV);
+    let worker_path = std::env::var_os(WORKER_PATH_ENV).or_else(default_worker_path);
     let mut guard = RuntimeGuard::new(worker_path.as_deref());
     let input = io::stdin();
     let output = io::stdout();
     guard
         .run(input.lock(), output.lock())
         .map_err(|error| format!("OpenCV runtime guard I/O failed: {error}"))
+}
+
+/// Locates the worker shipped beside the runtime guard in package artifacts.
+fn default_worker_path() -> Option<OsString> {
+    std::env::current_exe()
+        .ok()
+        .and_then(|executable| bundled_worker_path(&executable))
+        .map(PathBuf::into_os_string)
+}
+
+/// Projects the conventional sibling worker path from a guard executable.
+fn bundled_worker_path(executable: &Path) -> Option<PathBuf> {
+    executable
+        .parent()
+        .map(|directory| directory.join("terlan-opencv-worker"))
+}
+
+/// Builds the worker's private-library search path for an artifact layout.
+fn bundled_library_path(worker: &Path) -> Option<OsString> {
+    let library = worker.parent()?.parent()?.join("lib");
+    if !library.is_dir() {
+        return None;
+    }
+    let inherited = std::env::var_os("LD_LIBRARY_PATH");
+    let paths = std::iter::once(library).chain(
+        inherited
+            .as_deref()
+            .into_iter()
+            .flat_map(std::env::split_paths),
+    );
+    std::env::join_paths(paths).ok()
 }
 
 /// Stateful proxy owning at most one generated worker.
@@ -84,7 +116,12 @@ struct NativeWorker {
 impl NativeWorker {
     /// Starts the selected worker without exposing loader diagnostics.
     fn spawn(path: &OsStr) -> io::Result<Self> {
-        let mut child = Command::new(path)
+        let worker = Path::new(path);
+        let mut command = Command::new(worker);
+        if let Some(library_path) = bundled_library_path(worker) {
+            command.env("LD_LIBRARY_PATH", library_path);
+        }
+        let mut child = command
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())

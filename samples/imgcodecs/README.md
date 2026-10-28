@@ -6,7 +6,11 @@ paths, URLs, and filesystem discovery remain explicit host capabilities.
 
 | Tutorial family | Terlan coverage | Status |
 | --- | --- | --- |
-| In-memory image encoding and decoding | `EncodeDecode.terl` | Runnable |
+| In-memory BMP encoding and decoding | `EncodeDecode.terl` | Runnable |
+| Lossless PNG encoding and decoding | `PngEncodeDecode.terl` | Runnable |
+| Bounded-quality JPEG encoding and decoding | `JpegEncodeDecode.terl` | Runnable |
+| Bounded-quality WebP encoding and decoding | `WebpEncodeDecode.terl` | Runnable |
+| Uncompressed TIFF encoding and decoding | `TiffEncodeDecode.terl` | Runnable |
 | Image file reading and writing | Ambient filesystem access is outside the package contract | Blocked |
 | Multi-page image containers | No reviewed bounded page-list contract | Blocked |
 | Image metadata and orientation | No reviewed copied metadata type or orientation policy | Blocked |
@@ -15,4 +19,3 @@ paths, URLs, and filesystem discovery remain explicit host capabilities.
 New codec tutorials must use copied bytes, an explicitly reviewed format, hard
 allocation limits, exact decoded layout checks, and deterministic owner
 cleanup.
-

@@ -68,6 +68,23 @@ fn byte_limit_drift_is_rejected() {
     }
 }
 
+/// Rejects drift in deterministic codec parameters.
+#[test]
+fn deterministic_codec_parameter_drift_is_rejected() {
+    for (key, expected) in [
+        ("jpeg_encode_quality", "JPEG quality"),
+        ("png_compression_level", "PNG compression"),
+        ("webp_encode_quality", "WebP quality"),
+    ] {
+        let mut value_policy = policy();
+        value_policy[key] = Value::from(1_u64);
+        expect_error(validate_policy(&value_policy), expected);
+    }
+    let mut value_policy = policy();
+    value_policy["tiff_compression"] = Value::String("lzw".to_string());
+    expect_error(validate_policy(&value_policy), "TIFF compression");
+}
+
 /// Rejects new public or missing forbidden filesystem operations.
 #[test]
 fn callable_inventory_drift_is_rejected() {
@@ -80,16 +97,16 @@ fn callable_inventory_drift_is_rejected() {
     expect_error(validate_policy(&value_policy), "imread and imwrite");
 }
 
-/// Rejects additional, renamed, unavailable, or one-way first codecs.
+/// Rejects additional, renamed, unavailable, or one-way required codecs.
 #[test]
 fn codec_format_drift_is_rejected() {
     let mut value_policy = policy();
-    value_policy["formats"][0]["name"] = Value::String("png".to_string());
-    expect_error(validate_policy(&value_policy), "BMP");
+    value_policy["formats"][0]["name"] = Value::String("webp".to_string());
+    expect_error(validate_policy(&value_policy), "bmp");
 
     let mut value_policy = policy();
     value_policy["formats"][0]["encode"] = Value::Bool(false);
-    expect_error(validate_policy(&value_policy), "encoding");
+    expect_error(validate_policy(&value_policy), "bmp encoding");
 
     let mut value_policy = policy();
     let duplicate = value_policy["formats"][0].clone();
@@ -97,7 +114,10 @@ fn codec_format_drift_is_rejected() {
         .as_array_mut()
         .expect("formats")
         .push(duplicate);
-    expect_error(validate_policy(&value_policy), "exactly BMP");
+    expect_error(
+        validate_policy(&value_policy),
+        "exactly BMP, PNG, JPEG, WebP, and TIFF",
+    );
 }
 
 /// Rejects missing, duplicate, renamed, or renumbered decode modes.
@@ -119,38 +139,31 @@ fn decode_mode_drift_is_rejected() {
 #[test]
 fn module_scope_drift_is_rejected() {
     let lock = read_toml(&package_root().join("upstream/opencv.lock.toml")).expect("lock");
-    let package = read_toml(&package_root().join("terlan.toml")).expect("package");
     let manifest =
         read_json(&package_root().join("bindings/opencv.native-binding.json")).expect("manifest");
     let cmake = read_text(&package_root().join("cmake/opencv-cpu.cmake")).expect("cmake");
 
     let mut changed = lock.clone();
     changed["build"]["modules"] = serde_json::json!(["core", "imgproc"]);
-    expect_error(
-        validate_module_scope(&changed, &package, &manifest, &cmake),
-        "lock",
-    );
+    expect_error(validate_module_scope(&changed, &manifest, &cmake), "lock");
 
     let mut changed = manifest.clone();
     changed["build"]["linked_libraries"]
         .as_array_mut()
         .expect("libraries")
         .retain(|library| library["name"] != "opencv_imgcodecs");
-    expect_error(
-        validate_module_scope(&lock, &package, &changed, &cmake),
-        "build plan",
-    );
+    expect_error(validate_module_scope(&lock, &changed, &cmake), "build plan");
 
     let extended_cmake = cmake.replace(
         "core,imgproc,imgcodecs,features,calib3d,ml,dnn",
         "core,imgproc,imgcodecs,features,calib3d,ml,dnn,video",
     );
-    validate_module_scope(&lock, &package, &manifest, &extended_cmake)
+    validate_module_scope(&lock, &manifest, &extended_cmake)
         .expect("modules after imgcodecs remain valid");
 
     let changed_cmake = cmake.replace("imgcodecs,", "");
     expect_error(
-        validate_module_scope(&lock, &package, &manifest, &changed_cmake),
+        validate_module_scope(&lock, &manifest, &changed_cmake),
         "CMake build scope",
     );
 }

@@ -1,19 +1,19 @@
-/** Demonstrates a reviewed sharpening mask without direct pixel pointers. */
+/**
+ * Demonstrates a reviewed sharpening mask without direct pixel pointers.
+ */
 module samples.core.MaskFiltering.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the image-mask filtering example. */
+/**
+ * Runs the image-mask filtering example.
+ */
 pub main(): Unit ->
     let image = Mat.from_u8(Bytes.from_list([0, 32, 0, 32, 255, 32, 0, 32, 0]), 3, 3, Gray);
-    // The upstream tutorial compares a handwritten 3x3 scan with filter2D.
-    // The package publishes the reviewed bounded sharpening operation.
     let sharpened = Imgproc.sharpen(image, 1.0);
-    // ConvertScaleAbs-style scaling is also applied without exposing storage.
     let adjusted = Imgproc.scale_abs(sharpened, 1.0, 0.0);
     let valid = Mat.rows(adjusted) == 3 and Mat.cols(adjusted) == 3;
     Mat.dispose(adjusted);

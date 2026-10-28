@@ -1,17 +1,17 @@
-/** Demonstrates camera-matrix image undistortion into a new matrix owner. */
+/**
+ * Demonstrates camera-matrix image undistortion into a new matrix owner.
+ */
 module samples.calib3d.UndistortImage.
 
-import opencv.Calib3d.
-import opencv.Mat.
 import opencv.Types.{Gray}.
-import opencv.Types.
+import opencv.{Calib3d, Mat, Types}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the deterministic undistortion example. */
+/**
+ * Runs the deterministic undistortion example.
+ */
 pub main(): Unit ->
-    // Camera calibration normally supplies the intrinsic matrix and lens
-    // coefficients. Zero distortion makes copied output directly observable.
     let image = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
     let camera = Types.camera_intrinsics(2.0, 2.0, 0.5, 0.5);
     let distortion = Types.distortion_coefficients(0.0, 0.0, 0.0, 0.0, 0.0);

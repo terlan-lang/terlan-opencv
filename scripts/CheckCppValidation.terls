@@ -1,0 +1,137 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Compiles and executes the header-only C++ validation fixtures in isolated
+ * temporary outputs.
+ */
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.Directory.
+import std.system.{Arguments, Process}.
+
+import type std.system.Process.{Command, Output}.
+
+struct Fixture {
+    name: String,
+    source: String,
+    pthread: Bool,
+}.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_cpp_validation]: ", message));
+    false.
+
+command(program: String, arguments: List[String], repository: String): Command ->
+    let request = Process.with_arguments(Process.command(program), arguments);
+    let located = Process.with_working_directory(request, repository);
+    let timed = Process.with_timeout_ms(located, 600_000);
+    Process.with_output_limit_bytes(timed, 16_777_216).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+check_output(label: String, output: Output): Bool ->
+    let _printed = print_output(output);
+    let status = output.status;
+    if {
+        status == 0 -> true;
+        true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
+    }.
+
+run_ok(program: String, arguments: List[String], repository: String): Bool ->
+    let label = String.concat([program, " ", String.join(arguments, " ")]);
+    case Process.run(command(program, arguments, repository)) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) -> check_output(label, output)
+    }.
+
+compiler_arguments(repository: String, output: String, fixture: Fixture): List[String] ->
+    let base =
+        [
+            "-std=c++14",
+            "-Wall",
+            "-Wextra",
+            "-Wpedantic",
+            "-Werror",
+            String.append("-I", child(repository, "bindings/cpp")),
+            child(repository, fixture.source),
+            "-o",
+            output,
+        ];
+    if {
+        fixture.pthread -> ["-pthread" | base];
+        true -> base
+    }.
+
+check_fixtures(
+    compiler: String,
+    repository: String,
+    temporary: String,
+    fixtures: List[Fixture],
+): Bool ->
+    case fixtures {
+        [] -> true;
+        [fixture | rest] ->
+            let output = child(temporary, fixture.name);
+            if {
+                not run_ok(compiler, compiler_arguments(repository, output, fixture), repository) -> false;
+                not run_ok(output, [], repository) -> false;
+                true -> check_fixtures(compiler, repository, temporary, rest)
+            }
+    }.
+
+fixtures(): List[Fixture] ->
+    [
+        Fixture(
+            name = "opencv-validation",
+            source = "tests/cpp/opencv_validation_test.cc",
+            pthread = true,
+        ),
+        Fixture(
+            name = "opencv-dnn-validation",
+            source = "tests/cpp/opencv_dnn_validation_test.cc",
+            pthread = false,
+        ),
+        Fixture(
+            name = "opencv-dnn-detection-validation",
+            source = "tests/cpp/opencv_dnn_detection_validation_test.cc",
+            pthread = false,
+        ),
+    ].
+
+run(compiler: String, repository: String): Bool ->
+    case Directory.create_temporary("terlan-opencv-cpp-validation.") {
+        Err(reason) -> failure(reason.message);
+        Ok(temporary) ->
+            let valid = check_fixtures(compiler, repository, temporary, fixtures());
+            case Directory.remove_all(temporary) {
+                Err(reason) -> failure(reason.message);
+                Ok(Unit) -> valid
+            }
+    }.
+
+entry(): Bool ->
+    case {Arguments.get(0), Arguments.get(1), Arguments.count()} {
+        {Some(compiler), Some(repository), 2} -> run(compiler, repository);
+        _ -> failure("expected <c++-compiler> <repository>")
+    }.
+
+assert(entry());
+Unit.

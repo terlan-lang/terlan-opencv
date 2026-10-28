@@ -1,0 +1,14 @@
+/**
+ * Executes the README pipeline through an extracted package artifact.
+ */
+module example.ThresholdTest.
+
+import example.Threshold.{make_binary_image}.
+import std.test.Test.{assert}.
+
+/**
+ * Verifies that the packaged OpenCV runtime performs binary thresholding.
+ */
+@test
+pub packaged_threshold_pipeline_returns_binary_pixels(): Bool ->
+    assert(make_binary_image().to_list() == [0, 0, 255, 255]).

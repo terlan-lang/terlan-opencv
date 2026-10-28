@@ -675,10 +675,42 @@ int main() {
   }
   std::vector<cv::KeyPoint> blob_keypoints;
   blob_detector->detect(mser_source, blob_keypoints);
-  std::vector<unsigned char> encoded;
-  if (!cv::imencode(".bmp", blurred, encoded)) {
+  std::vector<unsigned char> bmp_encoded;
+  if (!cv::imencode(".bmp", blurred, bmp_encoded)) {
     return 1;
   }
-  const cv::Mat decoded = cv::imdecode(encoded, cv::IMREAD_GRAYSCALE);
-  return decoded.empty() ? 1 : 0;
+  const cv::Mat bmp_decoded =
+      cv::imdecode(bmp_encoded, cv::IMREAD_GRAYSCALE);
+  std::vector<unsigned char> png_encoded;
+  if (!cv::imencode(".png", blurred, png_encoded,
+                    {cv::IMWRITE_PNG_COMPRESSION, 3})) {
+    return 1;
+  }
+  const cv::Mat png_decoded =
+      cv::imdecode(png_encoded, cv::IMREAD_GRAYSCALE);
+  std::vector<unsigned char> jpeg_encoded;
+  if (!cv::imencode(".jpg", blurred, jpeg_encoded,
+                    {cv::IMWRITE_JPEG_QUALITY, 90})) {
+    return 1;
+  }
+  const cv::Mat jpeg_decoded =
+      cv::imdecode(jpeg_encoded, cv::IMREAD_GRAYSCALE);
+  std::vector<unsigned char> webp_encoded;
+  if (!cv::imencode(".webp", blurred, webp_encoded,
+                    {cv::IMWRITE_WEBP_QUALITY, 90})) {
+    return 1;
+  }
+  const cv::Mat webp_decoded =
+      cv::imdecode(webp_encoded, cv::IMREAD_GRAYSCALE);
+  std::vector<unsigned char> tiff_encoded;
+  if (!cv::imencode(".tiff", blurred, tiff_encoded,
+                    {cv::IMWRITE_TIFF_COMPRESSION, 1})) {
+    return 1;
+  }
+  const cv::Mat tiff_decoded =
+      cv::imdecode(tiff_encoded, cv::IMREAD_GRAYSCALE);
+  return bmp_decoded.empty() || png_decoded.empty() || jpeg_decoded.empty() ||
+                 webp_decoded.empty() || tiff_decoded.empty()
+             ? 1
+             : 0;
 }

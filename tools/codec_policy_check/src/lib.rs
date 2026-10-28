@@ -11,17 +11,19 @@ use std::path::Path;
 const POLICY_SCHEMA: &str = "terlan.opencv.codec-policy.v1";
 const MAX_ENCODED_BYTES: u64 = 64 * 1024 * 1024;
 const MAX_DECODED_BYTES: u64 = 256 * 1024 * 1024;
+const JPEG_ENCODE_QUALITY: u64 = 90;
+const PNG_COMPRESSION_LEVEL: u64 = 3;
+const WEBP_ENCODE_QUALITY: u64 = 90;
 
 /// Validates the committed codec policy and every package integration point.
 pub fn validate_package(root: &Path) -> Result<(), String> {
     let policy = read_toml(&root.join("bindings/opencv.codecs.toml"))?;
     let lock = read_toml(&root.join("upstream/opencv.lock.toml"))?;
-    let package = read_toml(&root.join("terlan.toml"))?;
     let manifest = read_json(&root.join("bindings/opencv.native-binding.json"))?;
     let cmake = read_text(&root.join("cmake/opencv-cpu.cmake"))?;
     let probe = read_text(&root.join("tests/cpp/opencv_link_probe.cc"))?;
     validate_policy(&policy)?;
-    validate_module_scope(&lock, &package, &manifest, &cmake)?;
+    validate_module_scope(&lock, &manifest, &cmake)?;
     validate_public_surface(&manifest)?;
     validate_link_probe(&probe)
 }
@@ -167,6 +169,22 @@ fn validate_policy(policy: &Value) -> Result<(), String> {
         "decoded byte limit drift",
     )?;
     require(
+        unsigned(policy, "jpeg_encode_quality")? == JPEG_ENCODE_QUALITY,
+        "JPEG quality must remain fixed at 90",
+    )?;
+    require(
+        unsigned(policy, "png_compression_level")? == PNG_COMPRESSION_LEVEL,
+        "PNG compression level must remain fixed at 3",
+    )?;
+    require(
+        unsigned(policy, "webp_encode_quality")? == WEBP_ENCODE_QUALITY,
+        "WebP quality must remain fixed at 90",
+    )?;
+    require(
+        string(policy, "tiff_compression")? == "none",
+        "TIFF compression must remain fixed at none",
+    )?;
+    require(
         string_set(policy, "public_functions")?
             == BTreeSet::from(["decode".into(), "encode".into()]),
         "codec API must contain only decode and encode",
@@ -180,30 +198,42 @@ fn validate_policy(policy: &Value) -> Result<(), String> {
     validate_decode_modes(array(policy, "decode_modes")?)
 }
 
-/// Requires the first codec surface to be one guaranteed BMP byte codec.
+/// Requires the exact guaranteed copied-byte codec set.
 fn validate_formats(formats: &[Value]) -> Result<(), String> {
     require(
-        formats.len() == 1,
-        "first codec surface must contain exactly BMP",
+        formats.len() == 5,
+        "codec surface must contain exactly BMP, PNG, JPEG, WebP, and TIFF",
     )?;
-    let format = &formats[0];
-    require(string(format, "name")? == "bmp", "first codec must be BMP")?;
-    require(
-        string(format, "extension")? == ".bmp",
-        "BMP extension must be .bmp",
-    )?;
-    require(
-        format.get("decode") == Some(&Value::Bool(true)),
-        "BMP decoding must be enabled",
-    )?;
-    require(
-        format.get("encode") == Some(&Value::Bool(true)),
-        "BMP encoding must be enabled",
-    )?;
-    require(
-        string(format, "availability")? == "required",
-        "BMP availability must be a build requirement",
-    )
+    let expected = [
+        ("bmp", ".bmp"),
+        ("png", ".png"),
+        ("jpeg", ".jpg"),
+        ("webp", ".webp"),
+        ("tiff", ".tiff"),
+    ];
+    for (name, extension) in expected {
+        let format = formats
+            .iter()
+            .find(|format| format.get("name").and_then(Value::as_str) == Some(name))
+            .ok_or_else(|| format!("required {name} codec is missing"))?;
+        require(
+            string(format, "extension")? == extension,
+            format!("{name} extension must be {extension}"),
+        )?;
+        require(
+            format.get("decode") == Some(&Value::Bool(true)),
+            format!("{name} decoding must be enabled"),
+        )?;
+        require(
+            format.get("encode") == Some(&Value::Bool(true)),
+            format!("{name} encoding must be enabled"),
+        )?;
+        require(
+            string(format, "availability")? == "required",
+            format!("{name} availability must be a build requirement"),
+        )?;
+    }
+    Ok(())
 }
 
 /// Requires a finite, duplicate-free set of reviewed OpenCV decode modes.
@@ -233,22 +263,11 @@ fn validate_decode_modes(modes: &[Value]) -> Result<(), String> {
 }
 
 /// Validates that every package build description carries `imgcodecs`.
-fn validate_module_scope(
-    lock: &Value,
-    package: &Value,
-    manifest: &Value,
-    cmake: &str,
-) -> Result<(), String> {
+fn validate_module_scope(lock: &Value, manifest: &Value, cmake: &str) -> Result<(), String> {
     let lock_build = Value::Object(object(lock, "build")?.clone());
     require(
         string_set(&lock_build, "modules")?.contains("imgcodecs"),
         "upstream lock omits imgcodecs",
-    )?;
-    let native = Value::Object(object(package, "native")?.clone());
-    let cpp = Value::Object(object(&native, "cpp")?.clone());
-    require(
-        string_set(&cpp, "modules")?.contains("imgcodecs"),
-        "package metadata omits imgcodecs",
     )?;
     let build = Value::Object(object(manifest, "build")?.clone());
     let linked = array(&build, "linked_libraries")?
@@ -377,6 +396,14 @@ fn validate_link_probe(probe: &str) -> Result<(), String> {
         "cv::imdecode",
         "cv::imencode",
         "\".bmp\"",
+        "\".png\"",
+        "\".jpg\"",
+        "\".webp\"",
+        "\".tiff\"",
+        "cv::IMWRITE_JPEG_QUALITY",
+        "cv::IMWRITE_PNG_COMPRESSION",
+        "cv::IMWRITE_WEBP_QUALITY",
+        "cv::IMWRITE_TIFF_COMPRESSION",
     ] {
         require(
             probe.contains(required),

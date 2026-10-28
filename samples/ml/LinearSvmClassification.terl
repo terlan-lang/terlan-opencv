@@ -1,18 +1,23 @@
-/** Demonstrates training and applying a bounded linear support-vector machine. */
+/**
+ * Demonstrates training and applying a bounded linear support-vector machine.
+ */
 module samples.ml.LinearSvmClassification.
 
 import opencv.Ml.
 import std.io.Console.{println}.
 
-/** Runs the linear SVM classification example. */
+/**
+ * Runs the linear SVM classification example.
+ */
 pub main(): Unit ->
-    // Set up row-major training data and labels for two separated classes.
     let samples = [0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 10.0, 10.0, 10.0, 11.0, 11.0, 10.0, 11.0, 11.0];
     let labels = [0, 0, 0, 0, 1, 1, 1, 1];
-    // The package fixes a linear C-SVC policy and bounded convergence.
     let model = Ml.train_linear_svm_classifier(samples, labels, 2);
     let predictions = Ml.predict_linear_svm(model, [0.2, 0.2, 10.2, 10.2]);
-    let valid = predictions == [0, 1] and Ml.linear_svm_sample_count(model) == 8 and Ml.linear_svm_feature_count(model) == 2;
+    let valid =
+        predictions == [0, 1]
+            and Ml.linear_svm_sample_count(model) == 8
+            and Ml.linear_svm_feature_count(model) == 2;
     Ml.dispose_linear_svm(model);
     if {
         valid and Ml.live_linear_svm_count() == 0 -> println("Linear SVM example complete");

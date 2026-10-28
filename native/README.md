@@ -6,6 +6,16 @@ generates the Rust ownership adapter and `cxx::bridge` under the ignored
 mutable output parameters, integer type codes, or exception payloads to Terlan
 callers.
 
+OpenCV validates the direct-AOT public adapter contract independently from the
+VM's private compiled-value ABI. Generated metadata fixes adapter ABI version,
+target calling convention, explicit execution and capability lifetimes, opaque
+resource ownership, bounded frames and transfers, status-valued failures,
+forbidden callback reentrancy, and single-shot async completion. The generated
+helper chunks larger copied values without relaxing the per-frame bound and
+executes adversarial frame-bound and request-replay checks. `TvmRef`,
+actor heaps, continuations, Cranelift state, and scheduler-thread identity are
+never package ABI.
+
 `runtime_guard` is the unlinked package entry point used by the VM. It proxies
 the generated OpenCV-linked worker and converts missing libraries, failed
 worker startup, and early worker exit into the stable `opencv.unavailable`

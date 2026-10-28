@@ -10,6 +10,9 @@
 /tools/promotion_check/target/
 /tools/codec_policy_check/target/
 /tools/native_install_check/target/
+/tools/package_artifact/target/
+/tools/api_parity/target/
+/tools/behavioral_parity/target/
 /native/runtime_guard/target/
 .terlan/
 /.cache/

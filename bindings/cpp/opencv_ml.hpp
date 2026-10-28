@@ -5,10 +5,7 @@
 #include <vector>
 
 #if defined(TERLAN_OPENCV_METADATA)
-namespace rust {
-template <typename T>
-class Slice;
-}
+#include "opencv_metadata_rust.hpp"
 #else
 #include "rust/cxx.h"
 #endif

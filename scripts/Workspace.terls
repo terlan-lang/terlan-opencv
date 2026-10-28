@@ -1,0 +1,55 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Performs portable package workspace maintenance without a shell runner.
+ */
+import std.core.Option.Some.
+import std.core.Result.{Err, Ok}.
+import std.core.{String, Unit}.
+import std.io.Console.eprintln.
+import std.io.Directory.{create_all, create_symbolic_link, remove_all}.
+import std.io.File.delete.
+import std.system.Arguments.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_workspace]: ", message));
+    false.
+
+remove_directory(path: String): Bool ->
+    case create_all(path) {
+        Err(reason) -> failure(reason.message);
+        Ok(Unit) ->
+            case remove_all(path) {
+                Ok(Unit) -> true;
+                Err(reason) -> failure(reason.message)
+            }
+    }.
+
+create_link(target: String, link: String): Bool ->
+    let _removed = delete(link);
+    case create_symbolic_link(target, link) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+clean(repository: String): Bool ->
+    if {
+        not remove_directory(child(repository, "generated")) -> false;
+        not remove_directory(child(repository, "upstream/build")) -> false;
+        true -> remove_directory(child(repository, "upstream/install"))
+    }.
+
+entry(): Bool ->
+    case {Arguments.get(0), Arguments.get(1), Arguments.get(2), Arguments.count()} {
+        {Some("link-native"), Some(target), Some(link), 3} -> create_link(target, link);
+        {Some("clean"), Some(repository), _, 2} -> clean(repository);
+        _ -> failure("expected link-native <target-directory> <link-path> or clean <repository>")
+    }.
+
+assert(entry());
+Unit.

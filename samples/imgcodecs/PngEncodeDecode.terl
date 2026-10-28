@@ -1,0 +1,24 @@
+/**
+ * Demonstrates lossless PNG encoding and decoding without filesystem access.
+ */
+module samples.imgcodecs.PngEncodeDecode.
+
+import opencv.Types.{Gray, Grayscale, Png}.
+import opencv.{Codecs, Mat}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/**
+ * Runs the in-memory PNG codec example.
+ */
+pub main(): Unit ->
+    let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Png);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid = Mat.to_u8(decoded).to_list() == [0, 64, 128, 255];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("PNG codec example complete");
+        true -> println("PNG codec example failed")
+    }.

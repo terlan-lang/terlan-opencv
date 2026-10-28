@@ -1,26 +1,29 @@
-/** Demonstrates bounded AKAZE detection, description, and matching. */
+/**
+ * Demonstrates bounded AKAZE detection, description, and matching.
+ */
 module samples.features2d.AkazeMatching.
 
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Imgproc, Mat}.
 import std.io.Console.{println}.
 
-/** Runs the AKAZE matching example. */
+/**
+ * Runs the AKAZE matching example.
+ */
 pub main(): Unit ->
-    // Build a deterministic high-contrast target instead of loading tutorial
-    // images and a homography from ambient files.
     let blank = Mat.zeros(64, 64, Gray);
     let box = Imgproc.draw_rectangle(blank, 8, 8, 48, 48, 255, 2);
     let cross = Imgproc.draw_cross(box, 32, 32, 21, 255, 2);
     let image = Imgproc.draw_circle(cross, 20, 20, 6, 255, 2);
-    // Detect and compute descriptors, then match the target against itself.
     let query = Features.detect_akaze(image, 0.0001, 64);
     let train = Features.detect_akaze(image, 0.0001, 64);
     let matches = Features.match_akaze(query, train, 32);
     let count = Features.akaze_match_count(matches);
-    let valid = Features.akaze_count(query) > 0 and Features.akaze_descriptor_width(query) == 61 and count > 0 and Features.akaze_match_distances(matches)[0] == 0;
+    let valid =
+        Features.akaze_count(query) > 0
+            and Features.akaze_descriptor_width(query) == 61
+            and count > 0
+            and Features.akaze_match_distances(matches)[0] == 0;
     Features.dispose_akaze_matches(matches);
     Features.dispose_akaze(train);
     Features.dispose_akaze(query);
@@ -29,6 +32,9 @@ pub main(): Unit ->
     Mat.dispose(box);
     Mat.dispose(blank);
     if {
-        valid and Features.live_akaze_match_count() == 0 and Features.live_akaze_count() == 0 and Mat.live_count() == 0 -> println("AKAZE matching example complete");
+        valid
+            and Features.live_akaze_match_count() == 0
+            and Features.live_akaze_count() == 0
+            and Mat.live_count() == 0 -> println("AKAZE matching example complete");
         true -> println("AKAZE matching example failed")
     }.

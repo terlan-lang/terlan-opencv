@@ -1,0 +1,382 @@
+schema = "terlan.opencv.behavioral-parity.v1"
+upstream_commit = "fe38fc608f6acb8b68953438a62305d8318f4fcd"
+inventory_schema = "terlan.opencv.api-inventory.v1"
+reconciliation_schema = "terlan.opencv.api-reconciliation.v1"
+
+[[behaviors]]
+id = "calib3d.current_geometry"
+module = "calib3d"
+title = "Current camera geometry"
+status = "implemented"
+domain = "Owned matrices and copied camera, distortion, transform, and pose values admitted by the current package."
+ownership = "Inputs are borrowed for one call; matrices and copied result records are independently owned."
+errors = "Invalid geometry, shape, and native failures become stable package errors."
+operation_prefixes = ["opencv.calib3d."]
+upstream_sections = ["OpenCV calib3d camera calibration and 3D reconstruction"]
+evidence = ["tests/opencv/Calib3dTest.terl", "samples/calib3d/PoseEstimation.terl"]
+
+[[behaviors]]
+id = "calib3d.remaining"
+module = "calib3d"
+title = "Remaining calibration behavior"
+status = "incomplete"
+fallback = true
+domain = "Pinned calib3d public behavior not yet admitted by a narrower behavior."
+ownership = "Future APIs must return owned matrices or named copied results."
+errors = "Unsupported domains remain unavailable until assigned stable package errors."
+upstream_sections = ["OpenCV calib3d public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "core.matrix_values"
+module = "core"
+title = "Owned matrix values"
+status = "implemented"
+domain = "Two-dimensional owned matrices across the package scalar depths and supported channel counts."
+ownership = "Matrices use generation-checked unique owners; copied views and byte projections never escape borrowed storage."
+errors = "Shape, layout, range, stale-handle, and allocation failures are stable package errors."
+operation_prefixes = ["opencv.mat."]
+upstream_sections = ["OpenCV core basic structures and Mat"]
+evidence = ["tests/opencv/MatTest.terl", "tests/opencv/MatViewTest.terl", "samples/core/MatBasics.terl"]
+
+[[behaviors]]
+id = "core.linear_algebra"
+module = "core"
+title = "Dense linear algebra and random values"
+status = "implemented"
+domain = "Owned typed matrices, deterministic floating-point random matrices, finite reductions, and dense F32/F64 linear systems."
+ownership = "Every matrix result is a fresh owner; scalar and trace results are copied finite values."
+errors = "Invalid dimensions, scalar depths, decomposition policies, singular systems, non-finite results, and native failures use stable package errors."
+operations = [
+  "opencv.core.determinant",
+  "opencv.core.dot",
+  "opencv.core.identity",
+  "opencv.core.inverse",
+  "opencv.core.multiply",
+  "opencv.core.norm",
+  "opencv.core.ones",
+  "opencv.core.random_uniform",
+  "opencv.core.solve",
+  "opencv.core.trace",
+]
+upstream_sections = ["OpenCV core array operations and linear algebra"]
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_linear_algebra.rs"]
+
+[[behaviors]]
+id = "core.dense_array_algorithms"
+module = "core"
+title = "Dense array algorithms"
+status = "implemented"
+domain = "Checked two-dimensional dense matrices, per-channel copied statistics, deterministic normal random values, symbolic reductions and sorting, and finite floating-point transforms."
+ownership = "Every matrix output is a fresh owner and all scalar projections are copied into ordinary Terlan values."
+errors = "Invalid dimensions, policies, scalar domains, non-finite values, unsupported channel counts, and native failures use stable package errors."
+operations = [
+  "opencv.core.exponential",
+  "opencv.core.logarithm",
+  "opencv.core.mean",
+  "opencv.core.normalize",
+  "opencv.core.power",
+  "opencv.core.random_normal",
+  "opencv.core.reduce",
+  "opencv.core.sort",
+  "opencv.core.sort_indices",
+  "opencv.core.square_root",
+  "opencv.core.standard_deviation",
+  "opencv.core.sum",
+]
+upstream_sections = ["OpenCV core operations on arrays"]
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_arrays.rs"]
+
+[[behaviors]]
+id = "core.value_arrays"
+module = "core"
+title = "Advanced value and array behavior"
+status = "incomplete"
+domain = "Pinned core value types, multidimensional dense arrays, sparse arrays, spectral transforms, generalized channel composition, and remaining array behavior not admitted by owned two-dimensional matrices."
+ownership = "Values are copied and arrays are owned; pointers, iterators, expression templates, allocators, and borrowed headers remain reshaped rather than exposed."
+errors = "Unsupported dimensions, layouts, scalar domains, masks, and array shapes require stable package errors."
+upstream_sections = ["OpenCV core basic structures and operations on arrays"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "core.persistence_algorithms"
+module = "core"
+title = "Persistence and algorithm lifecycle"
+status = "implemented"
+domain = "Portable bounded in-memory YAML, XML, and JSON matrix persistence plus the lifecycle of package-owned algorithm resources."
+ownership = "Serialized values are copied bytes or text and algorithms are deterministic owned resources."
+errors = "Invalid formats, unsupported values, stale algorithms, and native failures require stable package errors."
+operations = ["opencv.core.deserialize", "opencv.core.serialize"]
+upstream_sections = ["OpenCV core XML/YAML persistence and Algorithm"]
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_linear_algebra.rs"]
+
+[[behaviors]]
+id = "core.runtime_information"
+module = "core"
+title = "Portable runtime information"
+status = "implemented"
+domain = "Linked OpenCV version and build details, logical processor and worker counts, monotonic tick frequency, and optimized-code-path state."
+ownership = "Strings are bounded copies and scalar observations are ordinary Terlan values; no process-wide setting is mutated."
+errors = "Empty, oversized, non-finite, or nonpositive runtime observations use stable package errors."
+operations = [
+  "opencv.core.build_information",
+  "opencv.core.optimized",
+  "opencv.core.processor_count",
+  "opencv.core.thread_count",
+  "opencv.core.tick_frequency",
+  "opencv.core.version",
+]
+upstream_sections = ["OpenCV core utility and system functions"]
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[behaviors]]
+id = "core.runtime_controls"
+module = "core"
+title = "Process-wide runtime controls"
+status = "incomplete"
+fallback = true
+domain = "Thread-count mutation, optimized-code-path mutation, CPU feature reporting, and remaining process-wide controls not owned by optional accelerator packages."
+ownership = "Process-wide controls require explicit scoped capability ownership and restoration."
+errors = "Unavailable controls, invalid limits, and unsupported hardware behavior require stable package errors."
+upstream_sections = ["OpenCV core utility and system functions"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "dnn.current_inference"
+module = "dnn"
+title = "Current CPU DNN inference"
+status = "implemented"
+domain = "Owned CPU blobs, ONNX model loading, forward execution, classification, detection, and segmentation projections."
+ownership = "Models, blobs, outputs, and projected results have independent generation-checked owners."
+errors = "Model, tensor-shape, output-shape, and native inference failures use stable package errors."
+operation_prefixes = ["opencv.dnn."]
+upstream_sections = ["OpenCV DNN model loading and inference"]
+evidence = ["tests/opencv/DnnTest.terl", "tests/opencv/DnnDetectionChecks.terl", "samples/dnn/Classification.terl"]
+
+[[behaviors]]
+id = "dnn.remaining"
+module = "dnn"
+title = "Remaining CPU DNN behavior"
+status = "incomplete"
+fallback = true
+domain = "Named and multiple tensors, dynamic shapes, layers, dictionaries, loaders, and CPU backend behavior not yet admitted."
+ownership = "Future tensors and networks must have explicit owned resource identities."
+errors = "Unsupported models, layers, and targets remain explicit package errors."
+upstream_sections = ["OpenCV DNN public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "features2d.current_detection_matching"
+module = "features2d"
+title = "Current feature detection and matching"
+status = "implemented"
+domain = "ORB, BRISK, AKAZE, KAZE, SIFT, MSER, FAST, and blob detection over owned images."
+ownership = "Feature collections and descriptors are owned resources or copied lists."
+errors = "Invalid image, detector, descriptor, and matching domains become stable package errors."
+operation_prefixes = ["opencv.features."]
+upstream_sections = ["OpenCV features2d detection, description, and matching"]
+evidence = ["tests/opencv/FeaturesTest.terl", "samples/features2d/OrbFeatures.terl"]
+
+[[behaviors]]
+id = "features2d.remaining"
+module = "features2d"
+title = "Remaining feature behavior"
+status = "incomplete"
+fallback = true
+domain = "Pinned features2d algorithms, configuration, persistence, and result forms not yet admitted."
+ownership = "Future algorithm instances and results must use deterministic ownership."
+errors = "Unsupported feature domains remain explicit package errors."
+upstream_sections = ["OpenCV features2d public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "flann.remaining"
+module = "flann"
+title = "FLANN indexing and search"
+status = "incomplete"
+fallback = true
+domain = "CPU index construction, search parameters, persistence, and owned search results."
+ownership = "Indices are owned resources and query results are copied values."
+errors = "Invalid index, metric, parameter, and query domains require stable package errors."
+upstream_sections = ["OpenCV FLANN public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "gapi.remaining"
+module = "gapi"
+title = "Portable G-API graphs"
+status = "incomplete"
+fallback = true
+domain = "Portable graph construction, compilation, inference, rendering, streaming, and serialization."
+ownership = "Graphs, compiled graphs, streams, and values require explicit owned lifecycles."
+errors = "Unsupported kernels, backends, graph shapes, and stream states require stable errors."
+upstream_sections = ["OpenCV portable G-API public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "highgui.host_ui"
+module = "highgui"
+title = "Host window and input integration"
+status = "optional_backend"
+fallback = true
+domain = "Windows, controls, events, and input behavior requiring an explicit Terlan host UI capability."
+ownership = "Host windows and subscriptions must use scoped capability-owned resources."
+errors = "Unavailable displays and host backends must be reported deterministically."
+upstream_sections = ["OpenCV HighGUI public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "imgcodecs.memory_codecs"
+module = "imgcodecs"
+title = "In-memory image codecs"
+status = "implemented"
+domain = "Bounded PNG, JPEG, WebP, and TIFF decoding and encoding through copied bytes."
+ownership = "Encoded and decoded buffers are copied across the boundary and returned as owned values."
+errors = "Malformed input, unsupported format, limits, and codec failures become stable package errors."
+operation_prefixes = ["opencv.codecs."]
+upstream_sections = ["OpenCV imgcodecs in-memory image file reading and writing"]
+evidence = ["tests/opencv/CodecsTest.terl", "samples/imgcodecs/EncodeDecode.terl"]
+
+[[behaviors]]
+id = "imgcodecs.remaining"
+module = "imgcodecs"
+title = "Remaining codec behavior"
+status = "incomplete"
+fallback = true
+domain = "Multi-image, animation, metadata, extended parameters, and capability-gated path behavior not yet admitted."
+ownership = "All decoded images, metadata, animations, and encoded buffers must be owned values."
+errors = "Unsupported formats, metadata, paths, and devices require stable package errors."
+upstream_sections = ["OpenCV imgcodecs public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "imgproc.current_processing"
+module = "imgproc"
+title = "Current image processing"
+status = "implemented"
+domain = "The admitted filtering, color, geometry, drawing, morphology, histogram, segmentation, feature, shape, and transform operations."
+ownership = "Operations return fresh owned matrices or copied scalar and list results."
+errors = "Invalid dimensions, layouts, masks, parameters, and native failures use stable package errors."
+operation_prefixes = ["opencv.imgproc."]
+upstream_sections = ["OpenCV imgproc image processing"]
+evidence = ["tests/opencv/ImgprocTest.terl", "samples/imgproc/Thresholding.terl"]
+
+[[behaviors]]
+id = "imgproc.components"
+module = "imgproc"
+title = "Connected components"
+status = "implemented"
+domain = "Connected-component labels, areas, bounds, centroids, and foreground counts."
+ownership = "Component analysis is an owned resource and projections are copied values."
+errors = "Invalid masks and stale component resources use stable package errors."
+operation_prefixes = ["opencv.components."]
+upstream_sections = ["OpenCV imgproc connected components"]
+evidence = ["tests/opencv/ComponentsTest.terl", "samples/imgproc/FloodFillComponents.terl"]
+
+[[behaviors]]
+id = "imgproc.contours"
+module = "imgproc"
+title = "Contour analysis"
+status = "implemented"
+domain = "Contour extraction, geometry, moments, fitting, hulls, masks, and matching over owned images."
+ownership = "Contour collections are owned resources and all projections are copied values."
+errors = "Invalid masks, indexes, geometry, and stale resources use stable package errors."
+operation_prefixes = ["opencv.contours."]
+upstream_sections = ["OpenCV imgproc structural analysis and shape descriptors"]
+evidence = ["tests/opencv/ContoursTest.terl", "samples/imgproc/Contours.terl"]
+
+[[behaviors]]
+id = "imgproc.remaining"
+module = "imgproc"
+title = "Remaining image processing behavior"
+status = "incomplete"
+fallback = true
+domain = "Pinned imgproc domains, parameter forms, masks, and multi-output behavior not covered by admitted behaviors."
+ownership = "Future operations must replace mutable outputs with owned values and named result records."
+errors = "Unsupported domains remain unavailable until assigned stable package errors."
+upstream_sections = ["OpenCV imgproc public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "ml.current_models"
+module = "ml"
+title = "Current CPU machine learning"
+status = "implemented"
+domain = "The admitted CPU clustering, classification, training, and prediction workflows over copied numeric data."
+ownership = "Models are generation-checked resources and predictions are copied lists."
+errors = "Invalid training data, labels, model state, and prediction shape use stable package errors."
+operation_prefixes = ["opencv.ml."]
+upstream_sections = ["OpenCV ML statistical models"]
+evidence = ["tests/opencv/MlTest.terl", "samples/ml/KnnClassification.terl"]
+
+[[behaviors]]
+id = "ml.remaining"
+module = "ml"
+title = "Remaining machine-learning behavior"
+status = "incomplete"
+fallback = true
+domain = "Training options, update modes, persistence, result forms, and CPU models not yet admitted."
+ownership = "Future models and training data must have explicit owned lifecycles."
+errors = "Unsupported models, parameters, and data domains require stable package errors."
+upstream_sections = ["OpenCV ML public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "objdetect.remaining"
+module = "objdetect"
+title = "Object and marker detection"
+status = "incomplete"
+fallback = true
+domain = "Conventional object detection, QR, barcode, ArUco, and related CPU detection behavior."
+ownership = "Detectors are owned resources and detections are named copied results."
+errors = "Unsupported models, markers, images, and detector states require stable package errors."
+upstream_sections = ["OpenCV objdetect public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "photo.remaining"
+module = "photo"
+title = "Computational photography"
+status = "incomplete"
+fallback = true
+domain = "Denoising, inpainting, HDR, tonemapping, seamless cloning, and related CPU behavior."
+ownership = "Algorithms and images use explicit owners; operations return fresh images or copied results."
+errors = "Unsupported image, algorithm, and parameter domains require stable package errors."
+upstream_sections = ["OpenCV photo public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "stitching.remaining"
+module = "stitching"
+title = "Image stitching"
+status = "incomplete"
+fallback = true
+domain = "Feature finding, matching, estimation, warping, blending, and complete stitching workflows."
+ownership = "Pipeline components and intermediate images require explicit deterministic ownership."
+errors = "Invalid image sets, models, pipeline states, and native failures require stable package errors."
+upstream_sections = ["OpenCV stitching public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "video.remaining"
+module = "video"
+title = "CPU video algorithms"
+status = "incomplete"
+fallback = true
+domain = "Optical flow, background subtraction, tracking, motion analysis, and related frame algorithms."
+ownership = "Algorithm instances and frames require explicit ownership and bounded lifecycle rules."
+errors = "Invalid frames, stream state, algorithm state, and cancellation require stable package errors."
+upstream_sections = ["OpenCV video public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]
+
+[[behaviors]]
+id = "videoio.host_media"
+module = "videoio"
+title = "Host media integration"
+status = "optional_backend"
+fallback = true
+domain = "Camera, file, network, codec, timestamp, queue, cancellation, and backpressure behavior requiring host media capabilities."
+ownership = "Captures, writers, frames, and queues require capability-owned bounded lifecycles."
+errors = "Unavailable devices, codecs, streams, and host backends must be reported deterministically."
+upstream_sections = ["OpenCV videoio public headers"]
+evidence = ["bindings/opencv.api-inventory.json"]

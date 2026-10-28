@@ -9,6 +9,10 @@ unavailable_error = "opencv.codec_unavailable"
 invalid_data_error = "opencv.invalid_encoded_image"
 max_encoded_bytes = 67108864
 max_decoded_bytes = 268435456
+jpeg_encode_quality = 90
+png_compression_level = 3
+webp_encode_quality = 90
+tiff_compression = "none"
 
 public_functions = ["decode", "encode"]
 forbidden_functions = ["imread", "imwrite"]
@@ -16,6 +20,34 @@ forbidden_functions = ["imread", "imwrite"]
 [[formats]]
 name = "bmp"
 extension = ".bmp"
+decode = true
+encode = true
+availability = "required"
+
+[[formats]]
+name = "png"
+extension = ".png"
+decode = true
+encode = true
+availability = "required"
+
+[[formats]]
+name = "jpeg"
+extension = ".jpg"
+decode = true
+encode = true
+availability = "required"
+
+[[formats]]
+name = "webp"
+extension = ".webp"
+decode = true
+encode = true
+availability = "required"
+
+[[formats]]
+name = "tiff"
+extension = ".tiff"
 decode = true
 encode = true
 availability = "required"

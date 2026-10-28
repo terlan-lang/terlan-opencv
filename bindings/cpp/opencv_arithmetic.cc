@@ -5,6 +5,8 @@
 
 #include <opencv2/core.hpp>
 
+#include <cmath>
+#include <limits>
 #include <utility>
 
 namespace terlan_opencv {
@@ -20,17 +22,29 @@ enum class BinaryBitwiseOperation {
 /// Applies one validated binary bitwise operation into fresh matching storage.
 std::unique_ptr<OpenCvMat> apply_binary_bitwise(
     const cv::Mat& first, const cv::Mat& second,
-    BinaryBitwiseOperation operation) {
+    BinaryBitwiseOperation operation, const cv::Mat* mask = nullptr) {
   cv::Mat result;
   switch (operation) {
     case BinaryBitwiseOperation::And:
-      cv::bitwise_and(first, second, result);
+      if (mask == nullptr) {
+        cv::bitwise_and(first, second, result);
+      } else {
+        cv::bitwise_and(first, second, result, *mask);
+      }
       break;
     case BinaryBitwiseOperation::Or:
-      cv::bitwise_or(first, second, result);
+      if (mask == nullptr) {
+        cv::bitwise_or(first, second, result);
+      } else {
+        cv::bitwise_or(first, second, result, *mask);
+      }
       break;
     case BinaryBitwiseOperation::Xor:
-      cv::bitwise_xor(first, second, result);
+      if (mask == nullptr) {
+        cv::bitwise_xor(first, second, result);
+      } else {
+        cv::bitwise_xor(first, second, result, *mask);
+      }
       break;
   }
   return own_matching_mat(std::move(result), first);
@@ -62,7 +76,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::abs_diff_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -77,7 +91,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::add_saturated_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -92,7 +106,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::subtract_saturated_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -107,7 +121,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::minimum_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -122,7 +136,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::maximum_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -137,7 +151,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::compare_mask_owned(
     const OpenCvMat& other, std::int64_t mode) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_grayscale_images(impl_->value, other.impl_->value) ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
       !validation::valid_comparison_mode(mode)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
@@ -146,7 +160,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::compare_mask_owned(
     cv::Mat result;
     cv::compare(impl_->value, other.impl_->value, result,
                 comparison_code(mode));
-    return own_grayscale_mat(std::move(result), impl_->value);
+    return own_comparison_mask(std::move(result), impl_->value);
   });
 }
 
@@ -154,7 +168,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::multiply_scaled_owned(
     const OpenCvMat& other, double scale) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value) ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
       !validation::valid_multiply_scale(scale)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
@@ -170,7 +184,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::divide_scaled_owned(
     const OpenCvMat& other, double scale) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value) ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
       !validation::valid_divide_scale(scale)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
@@ -208,7 +222,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::add_weighted_owned(
     double offset) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value) ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
       !validation::valid_weighted_addition(first_weight, second_weight,
                                            offset)) {
     failure::set(failure::NativeFailure::InvalidArgument);
@@ -243,15 +257,21 @@ OpenCvMat::mean_absolute_error_channels_owned(
 std::unique_ptr<OpenCvMat> OpenCvMat::concat_horizontal_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
+  const auto max_dimension =
+      static_cast<std::int64_t>(std::numeric_limits<int>::max());
+  const bool compatible =
+      impl_ != nullptr && other.impl_ != nullptr &&
+      compatible_matrix_types(impl_->value, other.impl_->value) &&
+      impl_->value.rows == other.impl_->value.rows &&
+      impl_->value.cols <= max_dimension - other.impl_->value.cols;
   const auto shape =
-      impl_ == nullptr || other.impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::horizontal_concat_shape(
-                impl_->value.rows, impl_->value.cols, impl_->value.channels(),
-                other.impl_->value.rows, other.impl_->value.cols,
-                other.impl_->value.channels());
-  if (!shape.valid || impl_->value.depth() != CV_8U ||
-      impl_->value.type() != other.impl_->value.type()) {
+      compatible
+          ? resized_matrix_shape(
+                impl_->value, impl_->value.rows,
+                static_cast<std::int64_t>(impl_->value.cols) +
+                    other.impl_->value.cols)
+          : validation::ImageShape{false, 0, 0};
+  if (!shape.valid) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -268,15 +288,22 @@ std::unique_ptr<OpenCvMat> OpenCvMat::concat_horizontal_owned(
 std::unique_ptr<OpenCvMat> OpenCvMat::concat_vertical_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
+  const auto max_dimension =
+      static_cast<std::int64_t>(std::numeric_limits<int>::max());
+  const bool compatible =
+      impl_ != nullptr && other.impl_ != nullptr &&
+      compatible_matrix_types(impl_->value, other.impl_->value) &&
+      impl_->value.cols == other.impl_->value.cols &&
+      impl_->value.rows <= max_dimension - other.impl_->value.rows;
   const auto shape =
-      impl_ == nullptr || other.impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::vertical_concat_shape(
-                impl_->value.rows, impl_->value.cols, impl_->value.channels(),
-                other.impl_->value.rows, other.impl_->value.cols,
-                other.impl_->value.channels());
-  if (!shape.valid || impl_->value.depth() != CV_8U ||
-      impl_->value.type() != other.impl_->value.type()) {
+      compatible
+          ? resized_matrix_shape(
+                impl_->value,
+                static_cast<std::int64_t>(impl_->value.rows) +
+                    other.impl_->value.rows,
+                impl_->value.cols)
+          : validation::ImageShape{false, 0, 0};
+  if (!shape.valid) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -292,12 +319,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::concat_vertical_owned(
 
 std::unique_ptr<OpenCvMat> OpenCvMat::transpose_owned() const noexcept {
   failure::clear();
-  const auto shape =
-      impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::transposed_image_shape(
-                impl_->value.rows, impl_->value.cols, impl_->value.channels());
-  if (!shape.valid || impl_->value.depth() != CV_8U) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -313,13 +335,20 @@ std::unique_ptr<OpenCvMat> OpenCvMat::tile_owned(
     std::int64_t vertical_count,
     std::int64_t horizontal_count) const noexcept {
   failure::clear();
+  const auto max_dimension =
+      static_cast<std::int64_t>(std::numeric_limits<int>::max());
+  const bool counts_valid =
+      impl_ != nullptr && valid_owned_matrix(impl_->value) &&
+      vertical_count > 0 && horizontal_count > 0 &&
+      vertical_count <= max_dimension / impl_->value.rows &&
+      horizontal_count <= max_dimension / impl_->value.cols;
   const auto shape =
-      impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::tiled_image_shape(
-                impl_->value.rows, impl_->value.cols, impl_->value.channels(),
-                vertical_count, horizontal_count);
-  if (!shape.valid || impl_->value.depth() != CV_8U) {
+      counts_valid
+          ? resized_matrix_shape(impl_->value,
+                                 impl_->value.rows * vertical_count,
+                                 impl_->value.cols * horizontal_count)
+          : validation::ImageShape{false, 0, 0};
+  if (!shape.valid) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -340,25 +369,21 @@ std::unique_ptr<OpenCvMat> OpenCvMat::tile_owned(
 std::unique_ptr<OpenCvMat> OpenCvMat::scale_abs_owned(
     double scale, double offset) const noexcept {
   failure::clear();
-  if (impl_ == nullptr || impl_->value.depth() != CV_8U ||
-      !validation::valid_scale_abs(
-          impl_->value.rows, impl_->value.cols, impl_->value.channels(), scale,
-          offset)) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) ||
+      !std::isfinite(scale) || !std::isfinite(offset)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
   return failure::contain<OpenCvMat>([this, scale, offset] {
     cv::Mat result;
     cv::convertScaleAbs(impl_->value, result, scale, offset);
-    return own_matching_mat(std::move(result), impl_->value);
+    return own_comparison_mask(std::move(result), impl_->value);
   });
 }
 
 std::unique_ptr<OpenCvMat> OpenCvMat::invert_owned() const noexcept {
   failure::clear();
-  if (impl_ == nullptr || impl_->value.depth() != CV_8U ||
-      !validation::valid_u8_image(impl_->value.rows, impl_->value.cols,
-                                  impl_->value.channels())) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -369,11 +394,28 @@ std::unique_ptr<OpenCvMat> OpenCvMat::invert_owned() const noexcept {
   });
 }
 
+std::unique_ptr<OpenCvMat> OpenCvMat::invert_masked_owned(
+    const OpenCvMat& mask) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || mask.impl_ == nullptr ||
+      !compatible_mask(impl_->value, mask.impl_->value)) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, &mask] {
+    cv::Mat inverted;
+    cv::bitwise_not(impl_->value, inverted);
+    cv::Mat result = cv::Mat::zeros(impl_->value.size(), impl_->value.type());
+    inverted.copyTo(result, mask.impl_->value);
+    return own_matching_mat(std::move(result), impl_->value);
+  });
+}
+
 std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_and_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -383,11 +425,27 @@ std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_and_owned(
   });
 }
 
+std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_and_masked_owned(
+    const OpenCvMat& other, const OpenCvMat& mask) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || other.impl_ == nullptr || mask.impl_ == nullptr ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
+      !compatible_mask(impl_->value, mask.impl_->value)) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, &other, &mask] {
+    return apply_binary_bitwise(impl_->value, other.impl_->value,
+                                BinaryBitwiseOperation::And,
+                                &mask.impl_->value);
+  });
+}
+
 std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_or_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -397,17 +455,49 @@ std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_or_owned(
   });
 }
 
+std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_or_masked_owned(
+    const OpenCvMat& other, const OpenCvMat& mask) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || other.impl_ == nullptr || mask.impl_ == nullptr ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
+      !compatible_mask(impl_->value, mask.impl_->value)) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, &other, &mask] {
+    return apply_binary_bitwise(impl_->value, other.impl_->value,
+                                BinaryBitwiseOperation::Or,
+                                &mask.impl_->value);
+  });
+}
+
 std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_xor_owned(
     const OpenCvMat& other) const noexcept {
   failure::clear();
   if (impl_ == nullptr || other.impl_ == nullptr ||
-      !compatible_u8_images(impl_->value, other.impl_->value)) {
+      !compatible_matrices(impl_->value, other.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
   return failure::contain<OpenCvMat>([this, &other] {
     return apply_binary_bitwise(impl_->value, other.impl_->value,
                                 BinaryBitwiseOperation::Xor);
+  });
+}
+
+std::unique_ptr<OpenCvMat> OpenCvMat::bitwise_xor_masked_owned(
+    const OpenCvMat& other, const OpenCvMat& mask) const noexcept {
+  failure::clear();
+  if (impl_ == nullptr || other.impl_ == nullptr || mask.impl_ == nullptr ||
+      !compatible_matrices(impl_->value, other.impl_->value) ||
+      !compatible_mask(impl_->value, mask.impl_->value)) {
+    failure::set(failure::NativeFailure::InvalidArgument);
+    return nullptr;
+  }
+  return failure::contain<OpenCvMat>([this, &other, &mask] {
+    return apply_binary_bitwise(impl_->value, other.impl_->value,
+                                BinaryBitwiseOperation::Xor,
+                                &mask.impl_->value);
   });
 }
 

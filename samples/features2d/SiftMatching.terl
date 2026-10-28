@@ -1,15 +1,16 @@
-/** Demonstrates bounded SIFT detection, float descriptors, and matching. */
+/**
+ * Demonstrates bounded SIFT detection, float descriptors, and matching.
+ */
 module samples.features2d.SiftMatching.
 
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Imgproc, Mat}.
 import std.io.Console.{println}.
 
-/** Runs the SIFT matching example. */
+/**
+ * Runs the SIFT matching example.
+ */
 pub main(): Unit ->
-    // Construct repeatable corners and curves instead of loading an image.
     let blank = Mat.zeros(64, 64, Gray);
     let box = Imgproc.draw_rectangle(blank, 8, 8, 48, 48, 255, 2);
     let cross = Imgproc.draw_cross(box, 32, 32, 21, 255, 2);
@@ -18,7 +19,11 @@ pub main(): Unit ->
     let train = Features.detect_sift(image, 0.01, 64);
     let matches = Features.match_sift(query, train, 32);
     let match_count = Features.sift_match_count(matches);
-    let valid = Features.sift_count(query) > 0 and Features.sift_descriptor_width(query) == 128 and match_count > 0 and Features.sift_match_distances(matches)[0] < 0.001;
+    let valid =
+        Features.sift_count(query) > 0
+            and Features.sift_descriptor_width(query) == 128
+            and match_count > 0
+            and Features.sift_match_distances(matches)[0] < 0.001;
     Features.dispose_sift_matches(matches);
     Features.dispose_sift(train);
     Features.dispose_sift(query);
@@ -27,6 +32,9 @@ pub main(): Unit ->
     Mat.dispose(box);
     Mat.dispose(blank);
     if {
-        valid and Features.live_sift_match_count() == 0 and Features.live_sift_count() == 0 and Mat.live_count() == 0 -> println("SIFT matching example complete");
+        valid
+            and Features.live_sift_match_count() == 0
+            and Features.live_sift_count() == 0
+            and Mat.live_count() == 0 -> println("SIFT matching example complete");
         true -> println("SIFT matching example failed")
     }.

@@ -20,6 +20,65 @@ struct OpenCvMat::Impl final {
   cv::Mat value;
 };
 
+/// Returns the checked package storage shape for one two-dimensional matrix.
+inline validation::ImageShape matrix_storage_shape(
+    const cv::Mat& matrix) noexcept {
+  if (matrix.dims != 2) {
+    return {false, 0, 0};
+  }
+  return validation::matrix_shape(matrix.rows, matrix.cols, matrix.channels(),
+                                  matrix.elemSize1());
+}
+
+/// Reports whether one matrix fits the complete package-owned storage contract.
+inline bool valid_owned_matrix(const cv::Mat& matrix) noexcept {
+  const auto shape = matrix_storage_shape(matrix);
+  return shape.valid && matrix.total() * matrix.elemSize() == shape.byte_count;
+}
+
+/// Reports whether two matrices have identical valid shape and scalar type.
+inline bool compatible_matrices(const cv::Mat& first,
+                                const cv::Mat& second) noexcept {
+  return valid_owned_matrix(first) && valid_owned_matrix(second) &&
+         first.rows == second.rows && first.cols == second.cols &&
+         first.type() == second.type();
+}
+
+/// Reports whether two valid matrices share one scalar and channel type.
+inline bool compatible_matrix_types(const cv::Mat& first,
+                                    const cv::Mat& second) noexcept {
+  return valid_owned_matrix(first) && valid_owned_matrix(second) &&
+         first.type() == second.type();
+}
+
+/// Reports whether one matrix has valid single-channel byte mask storage.
+inline bool valid_mask_storage(const cv::Mat& mask) noexcept {
+  return valid_owned_matrix(mask) && mask.type() == CV_8UC1;
+}
+
+/// Reports whether one byte mask covers the complete two-dimensional matrix.
+inline bool compatible_mask(const cv::Mat& matrix,
+                            const cv::Mat& mask) noexcept {
+  return valid_owned_matrix(matrix) && valid_mask_storage(mask) &&
+         matrix.rows == mask.rows && matrix.cols == mask.cols;
+}
+
+/// Reports whether two byte masks have identical valid shape.
+inline bool compatible_masks(const cv::Mat& first,
+                             const cv::Mat& second) noexcept {
+  return valid_mask_storage(first) && valid_mask_storage(second) &&
+         first.rows == second.rows && first.cols == second.cols;
+}
+
+/// Computes a checked output allocation preserving one matrix type.
+inline validation::ImageShape resized_matrix_shape(
+    const cv::Mat& source, std::int64_t rows, std::int64_t cols) noexcept {
+  return valid_owned_matrix(source)
+             ? validation::matrix_shape(rows, cols, source.channels(),
+                                        source.elemSize1())
+             : validation::ImageShape{false, 0, 0};
+}
+
 /// Reports whether two matrices share one valid public unsigned-byte image type.
 inline bool compatible_u8_images(const cv::Mat& first,
                                  const cv::Mat& second) noexcept {
@@ -69,6 +128,32 @@ inline std::unique_ptr<OpenCvMat> own_channel_count_mat(
   if ((channels != 1 && channels != 3 && channels != 4) ||
       result.rows != source.rows || result.cols != source.cols ||
       result.type() != CV_MAKETYPE(CV_8U, channels)) {
+    failure::set(failure::NativeFailure::NativeFailure);
+    return nullptr;
+  }
+  return std::make_unique<OpenCvMat>(
+      std::make_unique<OpenCvMat::Impl>(std::move(result)));
+}
+
+/// Converts a same-shape typed channel result into fresh adapter ownership.
+inline std::unique_ptr<OpenCvMat> own_typed_channel_count_mat(
+    cv::Mat result, const cv::Mat& source, int channels) {
+  if (channels <= 0 || channels > validation::kMaxMatrixChannels ||
+      result.rows != source.rows || result.cols != source.cols ||
+      result.type() != CV_MAKETYPE(source.depth(), channels) ||
+      !valid_owned_matrix(result)) {
+    failure::set(failure::NativeFailure::NativeFailure);
+    return nullptr;
+  }
+  return std::make_unique<OpenCvMat>(
+      std::make_unique<OpenCvMat::Impl>(std::move(result)));
+}
+
+/// Converts one comparison result into a fresh same-channel byte mask owner.
+inline std::unique_ptr<OpenCvMat> own_comparison_mask(
+    cv::Mat result, const cv::Mat& source) {
+  if (result.rows != source.rows || result.cols != source.cols ||
+      result.type() != CV_MAKETYPE(CV_8U, source.channels())) {
     failure::set(failure::NativeFailure::NativeFailure);
     return nullptr;
   }

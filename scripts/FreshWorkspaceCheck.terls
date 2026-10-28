@@ -1,0 +1,224 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Reproduces the OpenCV package gate from immutable repository snapshots and
+ * records promotion evidence only after the external consumer succeeds.
+ */
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File, Path}.
+import std.system.{Arguments, Process}.
+
+import type std.system.Process.{Command, Output}.
+
+struct Inputs {
+    compiler: String,
+    package: String,
+    opencv: String,
+    expected_commit: String,
+    report: String,
+}.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_fresh_workspace_check]: ", message));
+    false.
+
+bounded(program: String, arguments: List[String], working_directory: String): Command ->
+    let request = Process.with_arguments(Process.command(program), arguments);
+    let located = Process.with_working_directory(request, working_directory);
+    let timed = Process.with_timeout_ms(located, Process.limits().maximum_timeout_ms);
+    Process.with_output_limit_bytes(timed, 16_777_216).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+check_output(label: String, output: Output): Bool ->
+    let _printed = print_output(output);
+    let status = output.status;
+    if {
+        status == 0 -> true;
+        true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
+    }.
+
+run_ok(program: String, arguments: List[String], working_directory: String): Bool ->
+    let label = String.concat([program, " ", String.join(arguments, " ")]);
+    case Process.run(bounded(program, arguments, working_directory)) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) -> check_output(label, output)
+    }.
+
+append_strings(left: List[String], right: List[String]): List[String] ->
+    case left {
+        [] -> right;
+        [value | rest] -> [value | append_strings(rest, right)]
+    }.
+
+promotion_arguments(inputs: Inputs, report: String, verified: Bool): List[String] ->
+    let base =
+        [
+            "run",
+            "--quiet",
+            "--manifest-path",
+            child(inputs.package, "tools/promotion_check/Cargo.toml"),
+            "--",
+            "--compiler",
+            inputs.compiler,
+            "--package",
+            inputs.package,
+            "--opencv",
+            inputs.opencv,
+            "--expected-opencv-commit",
+            inputs.expected_commit,
+            "--report",
+            report,
+        ];
+    if {
+        verified -> append_strings(base, ["--verified"]);
+        true -> base
+    }.
+
+validate_path(label: String, path: String, marker: String): Bool ->
+    case Path.from_string(path) {
+        Err(_reason) -> failure(String.concat([label, " is not a valid path: ", path]));
+        Ok(parsed) ->
+            if {
+                not parsed.is_absolute() -> failure(String.concat([label, " must be absolute: ", path]));
+                not File.exists(child(path, marker)) -> failure(String.concat([label, " is missing ", marker, ": ", path]));
+                true -> true
+            }
+    }.
+
+validate(inputs: Inputs): Bool ->
+    if {
+        not validate_path("compiler repository", inputs.compiler, "Cargo.toml") -> false;
+        not validate_path("package repository", inputs.package, "tools/promotion_check/Cargo.toml") -> false;
+        not validate_path("OpenCV repository", inputs.opencv, "CMakeLists.txt") -> false;
+        inputs.expected_commit == "" -> failure("expected OpenCV commit is empty");
+        true -> case Path.from_string(inputs.report) {
+            Err(_reason) -> failure(String.append("report is not a valid path: ", inputs.report));
+            Ok(report) ->
+                if {
+                    report.is_absolute() -> true;
+                    true -> failure(String.append("report must be absolute: ", inputs.report))
+                }
+        }
+    }.
+
+clone(source: String, destination: String, working_directory: String): Bool ->
+    run_ok("git", ["clone", "--quiet", "--no-hardlinks", source, destination], working_directory).
+
+build_compiler(workspace: String): Bool ->
+    let compiler = child(workspace, "terlan");
+    let extractor_source = child(compiler, "tools/cpp_metadata_extractor");
+    let extractor_build = child(compiler, "target/cpp-metadata-extractor");
+    if {
+        not run_ok(
+    "cargo",
+    [
+        "build",
+        "--quiet",
+        "--manifest-path",
+        child(compiler, "Cargo.toml"),
+        "-p",
+        "terlan",
+        "--bin",
+        "terlc",
+        "--bin",
+        "terlan-vm",
+    ],
+    workspace,
+) -> false;
+        not run_ok("cmake", ["-S", extractor_source, "-B", extractor_build], workspace) -> false;
+        true -> run_ok("cmake", ["--build", extractor_build, "--parallel"], workspace)
+    }.
+
+package_check(workspace: String): Bool ->
+    let compiler = child(workspace, "terlan");
+    let package = child(workspace, "terlan-opencv");
+    run_ok(
+        "make",
+        [
+            "-C",
+            package,
+            "terlan-opencv-package-check",
+            String.append("OPENCV_SOURCE=", child(workspace, "opencv")),
+            String.append("TERLC=", child(compiler, "target/debug/terlc")),
+            String.append(
+                "CPP_METADATA_EXTRACTOR=",
+                child(compiler, "target/cpp-metadata-extractor/terlan-cpp-metadata-extractor"),
+            ),
+        ],
+        workspace,
+    ).
+
+execute(inputs: Inputs, workspace: String): Bool ->
+    let inventory = child(workspace, "inventory.json");
+    if {
+        not run_ok("cargo", promotion_arguments(inputs, inventory, false), inputs.package) -> false;
+        not clone(inputs.compiler, child(workspace, "terlan"), workspace) -> false;
+        not clone(inputs.package, child(workspace, "terlan-opencv"), workspace) -> false;
+        not clone(inputs.opencv, child(workspace, "opencv"), workspace) -> false;
+        not build_compiler(workspace) -> false;
+        not package_check(workspace) -> false;
+        not run_ok("cargo", promotion_arguments(inputs, inputs.report, true), inputs.package) -> false;
+        true -> let _printed = println("opencv-fresh-workspace-check: consumer reproduced from committed revisions");
+        true
+    }.
+
+run(inputs: Inputs): Bool ->
+    if {
+        not validate(inputs) -> false;
+        true -> case Directory.create_temporary("terlan-opencv-fresh-workspace.") {
+            Err(reason) -> failure(reason.message);
+            Ok(workspace) ->
+                let valid = execute(inputs, workspace);
+                case Directory.remove_all(workspace) {
+                    Err(reason) -> failure(reason.message);
+                    Ok(Unit) -> valid
+                }
+        }
+    }.
+
+entry(): Bool ->
+    let {
+        5 <- Arguments.count();
+        Some(compiler) <- Arguments.get(0);
+        Some(package) <- Arguments.get(1);
+        Some(opencv) <- Arguments.get(2);
+        Some(expected_commit) <- Arguments.get(3);
+        Some(report) <- Arguments.get(4)
+    } else {
+        _ ->
+            failure(
+                "expected <compiler-repository> <package-repository> <opencv-repository> <expected-opencv-commit> <report>",
+            )
+    };
+    run(
+        Inputs(
+            compiler = compiler,
+            package = package,
+            opencv = opencv,
+            expected_commit = expected_commit,
+            report = report,
+        ),
+    ).
+
+assert(entry());
+Unit.

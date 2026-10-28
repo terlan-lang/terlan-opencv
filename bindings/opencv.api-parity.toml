@@ -1,0 +1,758 @@
+schema = "terlan.opencv.api-parity.v1"
+upstream_commit = "fe38fc608f6acb8b68953438a62305d8318f4fcd"
+
+# Every mapping groups one or more exact identities from
+# opencv.api-inventory.json behind one behavior-preserving Terlan operation.
+# This ledger audits implementation provenance. Product completion is measured
+# by module behavioral parity, not by mapping every C++ declaration.
+[[mappings]]
+upstream = [
+  "function:cv::operator<<(cv::FileStorage &,const char *)@modules/core/include/opencv2/core/persistence.hpp:1175:14",
+  "method:cv::FileStorage::releaseAndGetString()@modules/core/include/opencv2/core/persistence.hpp:338:28",
+]
+terlan = "opencv.Core.serialize"
+disposition = "reshaped"
+rationale = "Writes one checked matrix to a bounded copied YAML, XML, or JSON string without exposing mutable FileStorage state."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::FileStorage::isOpened()@modules/core/include/opencv2/core/persistence.hpp:325:26",
+  "method:cv::FileStorage::operator[](const char *)@modules/core/include/opencv2/core/persistence.hpp:359:34",
+]
+terlan = "opencv.Core.deserialize"
+disposition = "reshaped"
+rationale = "Parses one bounded copied YAML, XML, or JSON matrix document into fresh checked ownership."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25",
+]
+terlan = "opencv.Core.ones"
+disposition = "reshaped"
+rationale = "Creates checked owned typed storage and fills every scalar channel with one instead of exposing OpenCV scalar-constructor behavior."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::eye(int,int,int)@modules/core/include/opencv2/core/mat.hpp:1519:37",
+]
+terlan = "opencv.Core.identity"
+disposition = "reshaped"
+rationale = "Returns a checked single-channel typed identity matrix in fresh package ownership."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::RNG::fill(const cv::_InputOutputArray &,int,const cv::_InputArray &,const cv::_InputArray &,bool)@modules/core/include/opencv2/core.hpp:3016:10",
+]
+terlan = "opencv.Core.random_uniform"
+additional_terlan = ["opencv.Core.random_normal"]
+disposition = "reshaped"
+rationale = "Provides deterministic seeded F32 and F64 uniform and normal generation without exposing mutable arrays or ambient random state."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::dot(const cv::_InputArray &)@modules/core/include/opencv2/core/mat.hpp:1443:12",
+]
+terlan = "opencv.Core.dot"
+disposition = "direct"
+rationale = "Returns the same finite flattened dot product for two checked compatible owned matrices."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::sum(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:560:32",
+]
+terlan = "opencv.Core.sum"
+disposition = "reshaped"
+rationale = "Copies one finite channel sum into ordinary Terlan values without exposing OpenCV's fixed-width scalar container."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::mean(const cv::_InputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:648:21",
+]
+terlan = "opencv.Core.mean"
+disposition = "reshaped"
+rationale = "Copies one finite unmasked channel mean into ordinary Terlan values."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::meanStdDev(const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:670:19",
+]
+terlan = "opencv.Core.standard_deviation"
+disposition = "reshaped"
+rationale = "Copies finite unmasked per-channel population deviations while the separately mapped mean operation covers the companion output."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::normalize(const cv::_InputArray &,const cv::_InputOutputArray &,double,double,int,int,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:825:19",
+]
+terlan = "opencv.Core.normalize"
+disposition = "reshaped"
+rationale = "Replaces flags, mutable outputs, optional masks, and output-depth selection with a symbolic norm and fresh same-type ownership."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::reduce(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/core/include/opencv2/core.hpp:960:19",
+]
+terlan = "opencv.Core.reduce"
+disposition = "reshaped"
+rationale = "Uses symbolic dimensions and operations, returns fresh ownership, and promotes sum and average output to F64."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::sort(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1983:19",
+]
+terlan = "opencv.Core.sort"
+disposition = "reshaped"
+rationale = "Replaces bit flags with independent symbolic dimension and order policies and returns a fresh single-channel owner."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::sortIdx(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:2003:19",
+]
+terlan = "opencv.Core.sort_indices"
+disposition = "reshaped"
+rationale = "Returns owned I32 source indexes using symbolic dimension and order policies."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_arrays.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::exp(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1605:19",
+]
+terlan = "opencv.Core.exponential"
+disposition = "reshaped"
+rationale = "Applies finite element-wise exponential to F32 or F64 matrices and rejects non-finite output."
+evidence = ["tools/native_direct_check/tests/core_arrays.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::log(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1618:19",
+]
+terlan = "opencv.Core.logarithm"
+disposition = "reshaped"
+rationale = "Applies finite element-wise natural logarithm to strictly positive F32 or F64 matrices."
+evidence = ["tools/native_direct_check/tests/core_arrays.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::pow(const cv::_InputArray &,double,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1589:19",
+]
+terlan = "opencv.Core.power"
+disposition = "reshaped"
+rationale = "Applies one finite exponent to a finite F32 or F64 matrix and rejects non-finite output."
+evidence = ["tools/native_direct_check/tests/core_arrays.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::sqrt(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1564:19",
+]
+terlan = "opencv.Core.square_root"
+disposition = "reshaped"
+rationale = "Applies element-wise square root to a checked nonnegative F32 or F64 matrix."
+evidence = ["tools/native_direct_check/tests/core_arrays.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::getVersionString()@modules/core/include/opencv2/core/utility.hpp:281:21",
+]
+terlan = "opencv.Core.version"
+disposition = "direct"
+rationale = "Copies the linked OpenCV runtime version into an ordinary Terlan string."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::getBuildInformation()@modules/core/include/opencv2/core/utility.hpp:273:28",
+]
+terlan = "opencv.Core.build_information"
+disposition = "reshaped"
+rationale = "Copies bounded OpenCV build information without exposing process-owned string storage."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::getNumberOfCPUs()@modules/core/include/opencv2/core/utility.hpp:505:18",
+]
+terlan = "opencv.Core.processor_count"
+disposition = "direct"
+rationale = "Returns the positive logical processor count observed by the linked OpenCV runtime."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::getNumThreads()@modules/core/include/opencv2/core/utility.hpp:249:18",
+]
+terlan = "opencv.Core.thread_count"
+disposition = "direct"
+rationale = "Returns the positive current OpenCV parallel worker count without mutating process-wide state."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::getTickFrequency()@modules/core/include/opencv2/core/utility.hpp:312:21",
+]
+terlan = "opencv.Core.tick_frequency"
+disposition = "direct"
+rationale = "Returns the finite positive monotonic tick frequency without exposing platform clock handles."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::useOptimized()@modules/core/include/opencv2/core/utility.hpp:636:19",
+]
+terlan = "opencv.Core.optimized"
+disposition = "direct"
+rationale = "Reports whether optimized OpenCV code paths are currently enabled without changing the global setting."
+evidence = ["tests/opencv/CoreTest.terl", "tools/native_direct_check/tests/core_runtime.rs"]
+
+[[mappings]]
+upstream = [
+  "function:cv::gemm(const cv::_InputArray &,const cv::_InputArray &,double,const cv::_InputArray &,double,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1752:19",
+]
+terlan = "opencv.Core.multiply"
+disposition = "reshaped"
+rationale = "Specializes general matrix multiplication to checked F32 and F64 operands and returns a fresh owner."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::invert(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1943:21",
+]
+terlan = "opencv.Core.inverse"
+disposition = "reshaped"
+rationale = "Uses a symbolic decomposition policy and returns a checked owned inverse rather than a mutable output and numeric status pair."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::solve(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1967:19",
+]
+terlan = "opencv.Core.solve"
+disposition = "reshaped"
+rationale = "Uses a symbolic decomposition policy and returns the owned dense solution or a stable package error."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::determinant(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1907:21",
+]
+terlan = "opencv.Core.determinant"
+disposition = "direct"
+rationale = "Returns OpenCV's finite determinant for one checked square F32 or F64 matrix."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::norm(const cv::_InputArray &,int,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:709:21",
+]
+terlan = "opencv.Core.norm"
+disposition = "reshaped"
+rationale = "Replaces integer norm flags and an optional mask with one explicit unmasked symbolic norm operation."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::trace(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1916:21",
+]
+terlan = "opencv.Core.trace"
+disposition = "reshaped"
+rationale = "Copies one finite diagonal sum per admitted channel instead of exposing OpenCV's fixed-width scalar container."
+evidence = [
+  "tests/opencv/CoreTest.terl",
+  "tools/native_direct_check/tests/core_linear_algebra.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::equalizeHist(const cv::_InputArray &,const cv::_OutputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:3413:19",
+]
+terlan = "opencv.Imgproc.equalize_hist"
+disposition = "reshaped"
+rationale = "Returns a fresh grayscale Mat instead of requiring a mutable output parameter."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/native_adapter.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+]
+terlan = "opencv.Mat.clone"
+disposition = "reshaped"
+rationale = "Returns a uniquely owned deep copy while preserving OpenCV matrix contents and metadata."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/native_adapter.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::rowRange(int,int)@modules/core/include/opencv2/core/mat.hpp:1167:9",
+]
+terlan = "opencv.Mat.row_range_copy"
+disposition = "reshaped"
+rationale = "Copies the selected half-open row view into an independent owner so no borrowed OpenCV storage crosses the package boundary."
+evidence = [
+  "tests/opencv/MatViewTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::colRange(int,int)@modules/core/include/opencv2/core/mat.hpp:1181:9",
+]
+terlan = "opencv.Mat.col_range_copy"
+disposition = "reshaped"
+rationale = "Copies the selected half-open column view into an independent owner so no borrowed OpenCV storage crosses the package boundary."
+evidence = [
+  "tests/opencv/MatViewTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::diag(int)@modules/core/include/opencv2/core/mat.hpp:1222:9",
+]
+terlan = "opencv.Mat.diagonal_copy"
+disposition = "reshaped"
+rationale = "Copies the selected diagonal view into an independent column-matrix owner."
+evidence = [
+  "tests/opencv/MatViewTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::reshape(int,int)@modules/core/include/opencv2/core/mat.hpp:1365:9",
+]
+terlan = "opencv.Mat.reshape_copy"
+disposition = "reshaped"
+rationale = "Preserves scalar storage order while copying the reshaped OpenCV header view into an independent owner."
+evidence = [
+  "tests/opencv/MatViewTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+]
+terlan = "opencv.Mat.channels"
+disposition = "direct"
+rationale = "Returns the unchanged OpenCV channel count from the owned matrix."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/native_adapter.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+]
+terlan = "opencv.Mat.is_contiguous"
+disposition = "direct"
+rationale = "Renames OpenCV continuity to Terlan contiguity without changing the reported property."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/native_adapter.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9",
+]
+terlan = "opencv.Mat.depth_code"
+disposition = "direct"
+rationale = "Returns the unchanged OpenCV scalar depth code."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::elemSize1()@modules/core/include/opencv2/core/mat.hpp:1846:12",
+]
+terlan = "opencv.Mat.element_size"
+disposition = "direct"
+rationale = "Returns the unchanged byte width of one scalar channel value."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12",
+]
+terlan = "opencv.Mat.pixel_size"
+disposition = "direct"
+rationale = "Returns the unchanged byte width of one matrix element across all channels."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9",
+]
+terlan = "opencv.Mat.type_code"
+disposition = "direct"
+rationale = "Returns the unchanged OpenCV matrix type code."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+]
+terlan = "opencv.Mat.element_count"
+disposition = "direct"
+rationale = "Returns the unchanged number of matrix elements excluding channels."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::step1(int)@modules/core/include/opencv2/core/mat.hpp:1881:12",
+]
+terlan = "opencv.Mat.step_scalars"
+disposition = "direct"
+rationale = "Returns the selected OpenCV dimension stride measured in scalar values."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10",
+]
+terlan = "opencv.Mat.empty"
+disposition = "direct"
+rationale = "Returns the unchanged OpenCV empty-matrix predicate."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::isSubmatrix()@modules/core/include/opencv2/core/mat.hpp:1832:10",
+]
+terlan = "opencv.Mat.is_submatrix"
+disposition = "direct"
+rationale = "Renames the OpenCV submatrix predicate without changing its result."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::absdiff(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1450:19",
+]
+terlan = "opencv.Imgproc.abs_diff"
+disposition = "reshaped"
+rationale = "Accepts compatible owned matrices across OpenCV scalar depths and returns the same element-wise absolute difference in fresh owned storage."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::min(const cv::Mat &,const cv::Mat &,cv::Mat &)@modules/core/include/opencv2/core.hpp:1528:17",
+]
+terlan = "opencv.Imgproc.minimum"
+disposition = "reshaped"
+rationale = "Returns OpenCV's element-wise matrix minimum in fresh owned storage while preserving shape, channels, and scalar depth."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/elementwise_extrema.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::max(const cv::Mat &,const cv::Mat &,cv::Mat &)@modules/core/include/opencv2/core.hpp:1549:17",
+]
+terlan = "opencv.Imgproc.maximum"
+disposition = "reshaped"
+rationale = "Returns OpenCV's element-wise matrix maximum in fresh owned storage while preserving shape, channels, and scalar depth."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/elementwise_extrema.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::flip(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1139:19",
+]
+terlan = "opencv.Imgproc.flip"
+disposition = "reshaped"
+rationale = "Exposes all three OpenCV flip-axis behaviors symbolically and returns the transformed matrix in fresh owned storage."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::rotate(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1171:19",
+]
+terlan = "opencv.Imgproc.rotate"
+disposition = "reshaped"
+rationale = "Exposes every OpenCV right-angle rotation mode symbolically and returns the transformed matrix in fresh owned storage."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::transpose(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1796:19",
+]
+terlan = "opencv.Imgproc.transpose"
+disposition = "reshaped"
+rationale = "Returns OpenCV's two-dimensional transpose in fresh owned storage while preserving channels and scalar depth."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/transpose.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::hconcat(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1239:17",
+]
+terlan = "opencv.Imgproc.concat_horizontal"
+disposition = "reshaped"
+rationale = "Accepts OpenCV-compatible typed matrices and returns the same horizontal concatenation in checked fresh ownership."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/image_concatenation.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::vconcat(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1304:17",
+]
+terlan = "opencv.Imgproc.concat_vertical"
+disposition = "reshaped"
+rationale = "Accepts OpenCV-compatible typed matrices and returns the same vertical concatenation in checked fresh ownership."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/image_concatenation.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::extractChannel(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1097:19",
+]
+terlan = "opencv.Imgproc.extract_channel"
+disposition = "reshaped"
+rationale = "Copies the selected zero-based channel into a fresh single-channel matrix while preserving OpenCV depth support and failure behavior."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/extract_channel.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::insertChannel(const cv::_InputArray &,const cv::_InputOutputArray &,int)@modules/core/include/opencv2/core.hpp:1105:19",
+]
+terlan = "opencv.Imgproc.replace_channel"
+disposition = "reshaped"
+rationale = "Preserves immutable Terlan ownership by inserting a compatible typed channel into a deep copy of the destination matrix."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/replace_channel.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::repeat(const cv::_InputArray &,int,int,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1186:19",
+]
+terlan = "opencv.Imgproc.tile"
+disposition = "reshaped"
+rationale = "Exposes both positive OpenCV repeat counts and returns the repeated typed matrix in checked fresh ownership."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/tile.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::resize(const cv::_InputArray &,const cv::_OutputArray &,cv::Size_<int>,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:2453:19",
+]
+terlan = "opencv.Imgproc.resize"
+disposition = "reshaped"
+rationale = "Requires an explicit destination size, for which OpenCV derives and ignores explicit scale factors, exposes every valid resize interpolation, and returns checked fresh ownership."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/native_adapter.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "method:cv::Mat::convertTo(const cv::_OutputArray &,int,double,double)@modules/core/include/opencv2/core/mat.hpp:1305:10",
+]
+terlan = "opencv.Mat.convert_depth"
+disposition = "reshaped"
+rationale = "Exposes every supported destination scalar depth with finite OpenCV scale and offset parameters, preserves shape and channels, and returns fresh owned storage."
+evidence = [
+  "tests/opencv/MatTest.terl",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::convertScaleAbs(const cv::_InputArray &,const cv::_OutputArray &,double,double)@modules/core/include/opencv2/core.hpp:516:19",
+]
+terlan = "opencv.Imgproc.scale_abs"
+disposition = "reshaped"
+rationale = "Accepts every finite scale and offset, preserves matrix shape and channels, and returns OpenCV's absolute saturated byte conversion in fresh ownership."
+evidence = [
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/scale_abs.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::bitwise_not(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1421:19",
+]
+terlan = "opencv.Imgproc.invert"
+additional_terlan = ["opencv.Imgproc.invert_masked"]
+disposition = "reshaped"
+rationale = "Separates OpenCV's optional mask into explicit unmasked and masked operations, preserves typed scalar bit patterns, and returns zero-initialized fresh output outside a supplied mask."
+evidence = [
+  "tests/opencv/BitwiseTest.terl",
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/bitwise.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::bitwise_and(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1349:19",
+]
+terlan = "opencv.Imgproc.bitwise_and"
+additional_terlan = ["opencv.Imgproc.bitwise_and_masked"]
+disposition = "reshaped"
+rationale = "Separates OpenCV's optional mask into explicit unmasked and masked operations while preserving typed matrix bit patterns and fresh output ownership."
+evidence = [
+  "tests/opencv/BitwiseTest.terl",
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/bitwise.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::bitwise_or(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1376:19",
+]
+terlan = "opencv.Imgproc.bitwise_or"
+additional_terlan = ["opencv.Imgproc.bitwise_or_masked"]
+disposition = "reshaped"
+rationale = "Separates OpenCV's optional mask into explicit unmasked and masked operations while preserving typed matrix bit patterns and fresh output ownership."
+evidence = [
+  "tests/opencv/BitwiseTest.terl",
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/bitwise.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]
+
+[[mappings]]
+upstream = [
+  "function:cv::bitwise_xor(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1404:19",
+]
+terlan = "opencv.Imgproc.bitwise_xor"
+additional_terlan = ["opencv.Imgproc.bitwise_xor_masked"]
+disposition = "reshaped"
+rationale = "Separates OpenCV's optional mask into explicit unmasked and masked operations while preserving typed matrix bit patterns and fresh output ownership."
+evidence = [
+  "tests/opencv/BitwiseTest.terl",
+  "tests/opencv/ImgprocTest.terl",
+  "tools/native_direct_check/tests/bitwise.rs",
+  "tools/native_direct_check/tests/matrix_storage.rs",
+]

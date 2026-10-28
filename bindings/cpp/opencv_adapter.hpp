@@ -5,10 +5,7 @@
 #include <vector>
 
 #if defined(TERLAN_OPENCV_METADATA)
-namespace rust {
-template <typename T>
-class Slice;
-}
+#include "opencv_metadata_rust.hpp"
 #else
 #include "rust/cxx.h"
 #endif
@@ -22,12 +19,27 @@ enum class PixelLayout : std::int32_t {
   Bgra = 4,
 };
 
+/// Defines every scalar depth supported by an OpenCV matrix.
+enum class MatrixDepth : std::int32_t {
+  U8 = 0,
+  I8 = 1,
+  U16 = 2,
+  I16 = 3,
+  I32 = 4,
+  F32 = 5,
+  F64 = 6,
+  F16 = 7,
+};
+
 /// Defines the supported resize interpolation policies.
 enum class Interpolation : std::int32_t {
   Nearest = 0,
   Linear = 1,
   Area = 2,
   Cubic = 3,
+  Lanczos4 = 4,
+  LinearExact = 5,
+  NearestExact = 6,
 };
 
 /// Defines the supported color conversion policies.
@@ -40,7 +52,7 @@ enum class ColorConversion : std::int32_t {
 
 /// Defines supported encoded image formats.
 enum class ImageFormat : std::int32_t {
-  Bmp = 0,
+  Bmp = 0, Png = 1, Jpeg = 2, Webp = 3, Tiff = 4,
 };
 
 /// Defines supported image decode output modes.
@@ -90,12 +102,99 @@ class OpenCvMat final {
   std::int64_t cols() const noexcept;
   /// Returns the matrix channel count.
   std::int64_t channels() const noexcept;
+  /// Returns the OpenCV scalar depth code.
+  std::int64_t depth_code() const noexcept;
+  /// Returns the byte width of one scalar channel value.
+  std::int64_t element_size() const noexcept;
+  /// Returns the byte width of one matrix element across all channels.
+  std::int64_t pixel_size() const noexcept;
+  /// Returns the OpenCV matrix type code.
+  std::int64_t type_code() const noexcept;
+  /// Returns the number of matrix dimensions.
+  std::int64_t dimension_count() const noexcept;
+  /// Returns the number of matrix elements excluding channels.
+  std::int64_t element_count() const noexcept;
+  /// Returns the stride for one dimension in scalar values.
+  std::int64_t step_scalars(std::int64_t dimension) const noexcept;
+  /// Returns the complete contiguous matrix storage size in bytes.
+  std::int64_t byte_count() const noexcept;
+  /// Reports whether the matrix has no elements.
+  bool empty() const noexcept;
+  /// Reports whether the matrix aliases a parent matrix.
+  bool is_submatrix() const noexcept;
   /// Reports whether matrix bytes occupy one contiguous region.
   bool is_contiguous() const noexcept;
+  /// Copies one checked row interval into a fresh independent owner.
+  std::unique_ptr<OpenCvMat> row_range_copy_owned(
+      std::int64_t start, std::int64_t end) const noexcept;
+  /// Copies one checked column interval into a fresh independent owner.
+  std::unique_ptr<OpenCvMat> col_range_copy_owned(
+      std::int64_t start, std::int64_t end) const noexcept;
+  /// Copies one checked diagonal into a fresh column-matrix owner.
+  std::unique_ptr<OpenCvMat> diagonal_copy_owned(
+      std::int64_t offset) const noexcept;
+  /// Reshapes contiguous storage and copies it into a fresh owner.
+  std::unique_ptr<OpenCvMat> reshape_copy_owned(
+      std::int64_t rows, std::int64_t channels) const noexcept;
   /// Deep-copies the matrix into a new owner.
   std::unique_ptr<OpenCvMat> clone_owned() const noexcept; /** Creates one fixed-policy NCHW RGB inference blob from this BGR image. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one fixed-policy NCHW inference blob from this grayscale image. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one center-cropped NCHW RGB inference blob from this BGR image. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_center_crop_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one center-cropped NCHW inference blob from this grayscale image. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_center_crop_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one per-channel normalized NCHW RGB inference blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_normalized_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept; /** Creates one center-cropped per-channel normalized NCHW RGB blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_normalized_center_crop_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept; /** Creates one aspect-preserving zero-padded NCHW RGB blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_letterbox_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one aspect-preserving zero-padded grayscale NCHW blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_letterbox_owned(std::int64_t width, std::int64_t height) const noexcept; /** Creates one letterboxed per-channel normalized NCHW RGB blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_bgr_rgb_normalized_letterbox_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept; /** Creates one normalized NCHW grayscale blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_normalized_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept; /** Creates one center-cropped normalized NCHW grayscale blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_normalized_center_crop_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept; /** Creates one letterboxed normalized NCHW grayscale blob. */ std::unique_ptr<OpenCvDnnBlob> blob_from_grayscale_normalized_letterbox_owned(std::int64_t width, std::int64_t height, rust::Slice<const double> means, rust::Slice<const double> scales) const noexcept;
+  /// Computes the finite flattened dot product with one compatible matrix.
+  double dot_value(const OpenCvMat& other) const noexcept;
+  /// Multiplies two compatible floating-point matrices into a fresh owner.
+  std::unique_ptr<OpenCvMat> matrix_multiply_owned(
+      const OpenCvMat& other) const noexcept;
+  /// Inverts one square floating-point matrix using a finite method policy.
+  std::unique_ptr<OpenCvMat> matrix_inverse_owned(
+      std::int64_t method) const noexcept;
+  /// Solves one floating-point linear system into a fresh matrix owner.
+  std::unique_ptr<OpenCvMat> matrix_solve_owned(
+      const OpenCvMat& right_hand_side, std::int64_t method) const noexcept;
+  /// Computes the finite determinant of one square floating-point matrix.
+  double determinant_value() const noexcept;
+  /// Computes an L1, L2, or infinity norm selected by a finite policy.
+  double norm_value(std::int64_t norm) const noexcept;
+  /// Copies one finite diagonal sum per matrix channel.
+  std::unique_ptr<std::vector<double>> trace_values_owned() const noexcept;
+  /// Serializes this matrix into one bounded in-memory OpenCV document.
+  std::unique_ptr<std::string> serialize_owned(
+      std::int64_t format) const noexcept;
+  /// Copies one finite sum per matrix channel.
+  std::unique_ptr<std::vector<double>> sum_values_owned() const noexcept;
+  /// Copies one finite arithmetic mean per matrix channel.
+  std::unique_ptr<std::vector<double>> mean_values_owned() const noexcept;
+  /// Copies one finite population standard deviation per matrix channel.
+  std::unique_ptr<std::vector<double>>
+  standard_deviation_values_owned() const noexcept;
+  /// Normalizes the matrix to one finite target norm.
+  std::unique_ptr<OpenCvMat> normalize_norm_owned(
+      double target, std::int64_t norm) const noexcept;
+  /// Reduces one matrix dimension using a symbolic operation.
+  std::unique_ptr<OpenCvMat> reduce_owned(
+      std::int64_t dimension, std::int64_t operation) const noexcept;
+  /// Sorts each row or column into fresh ownership.
+  std::unique_ptr<OpenCvMat> sort_owned(
+      std::int64_t dimension, std::int64_t order) const noexcept;
+  /// Returns source indexes for each independently sorted row or column.
+  std::unique_ptr<OpenCvMat> sort_indices_owned(
+      std::int64_t dimension, std::int64_t order) const noexcept;
+  /// Applies element-wise exponential to a finite floating matrix.
+  std::unique_ptr<OpenCvMat> exponential_owned() const noexcept;
+  /// Applies element-wise natural logarithm to a positive floating matrix.
+  std::unique_ptr<OpenCvMat> logarithm_owned() const noexcept;
+  /// Raises every finite floating matrix value to one finite exponent.
+  std::unique_ptr<OpenCvMat> power_owned(double exponent) const noexcept;
+  /// Applies element-wise square root to a nonnegative floating matrix.
+  std::unique_ptr<OpenCvMat> square_root_owned() const noexcept;
+  /// Converts scalar depth with checked scale and offset into a new owner.
+  std::unique_ptr<OpenCvMat> convert_depth_owned(
+      std::int64_t depth, double scale, double offset) const noexcept;
   /// Copies contiguous matrix bytes into an owned standard vector.
   std::unique_ptr<std::vector<std::uint8_t>> to_u8() const noexcept;
+  /// Copies contiguous matrix storage into an owned byte vector.
+  std::unique_ptr<std::vector<std::uint8_t>> to_bytes() const noexcept;
+  /// Copies a contiguous matrix into a pointer-free tensor exchange packet.
+  std::unique_ptr<std::vector<std::uint8_t>> to_tensor_packet(
+      rust::Str consumer) const noexcept;
   /// Resizes the matrix into a new owner.
   std::unique_ptr<OpenCvMat> resize_owned(std::int64_t width, std::int64_t height, std::int64_t interpolation) const noexcept;
   /// Computes one bounded absolute first-order Sobel response into a new owner.
@@ -138,7 +237,7 @@ class OpenCvMat final {
   std::unique_ptr<OpenCvMat> canny_owned(
       double low_threshold, double high_threshold,
       std::int64_t aperture_size, bool l2_gradient) const noexcept;
-  /// Normalizes values into a bounded range in a new owner.
+  /// Min-max normalizes typed values into a finite ordered range.
   std::unique_ptr<OpenCvMat> normalize_min_max_owned(
       double minimum, double maximum) const noexcept;
   /// Applies a bounded affine transform into a newly owned matrix.
@@ -214,7 +313,7 @@ class OpenCvMat final {
   std::unique_ptr<OpenCvMat> pyr_up_owned() const noexcept;
   /// Applies one copied 256-byte lookup table into a new image owner.
   std::unique_ptr<OpenCvMat> apply_lut_owned(rust::Slice<const std::uint8_t> table) const noexcept;
-  /// Scales, takes absolute values, and saturates into a new image owner.
+  /// Scales typed values, takes absolute values, and returns a byte matrix.
   std::unique_ptr<OpenCvMat> scale_abs_owned(double scale, double offset) const noexcept;
   /// Sharpens this image with one bounded package-owned kernel.
   std::unique_ptr<OpenCvMat> sharpen_owned(double amount) const noexcept;
@@ -244,27 +343,27 @@ class OpenCvMat final {
   std::unique_ptr<OpenCvMat> tile_owned(std::int64_t vertical_count, std::int64_t horizontal_count) const noexcept;
   /// Extracts one checked channel into a fresh grayscale image owner.
   std::unique_ptr<OpenCvMat> extract_channel_owned(std::int64_t channel_index) const noexcept;
-  /// Merges blue, green, and red grayscale inputs into a fresh BGR owner.
+  /// Merges three single-channel typed inputs into a fresh three-channel owner.
   std::unique_ptr<OpenCvMat> merge_bgr_owned(const OpenCvMat& green, const OpenCvMat& red) const noexcept;
-  /// Merges blue, green, red, and alpha grayscale inputs into a fresh BGRA owner.
+  /// Merges four single-channel typed inputs into a fresh four-channel owner.
   std::unique_ptr<OpenCvMat> merge_bgra_owned(const OpenCvMat& green, const OpenCvMat& red, const OpenCvMat& alpha) const noexcept;
-  /// Replaces one checked channel with a grayscale source in a fresh owner.
+  /// Replaces one checked channel with a compatible single-channel source.
   std::unique_ptr<OpenCvMat> replace_channel_owned(const OpenCvMat& replacement, std::int64_t channel_index) const noexcept;
-  /// Adds two compatible images with unsigned-byte saturation into a fresh owner.
+  /// Adds two compatible typed matrices into a fresh owner.
   std::unique_ptr<OpenCvMat> add_saturated_owned(const OpenCvMat& other) const noexcept;
-  /// Subtracts two compatible images with unsigned-byte saturation into a fresh owner.
+  /// Subtracts two compatible typed matrices into a fresh owner.
   std::unique_ptr<OpenCvMat> subtract_saturated_owned(const OpenCvMat& other) const noexcept;
   /// Selects the per-element minimum of two compatible images into a fresh owner.
   std::unique_ptr<OpenCvMat> minimum_owned(const OpenCvMat& other) const noexcept;
   /// Selects the per-element maximum of two compatible images into a fresh owner.
   std::unique_ptr<OpenCvMat> maximum_owned(const OpenCvMat& other) const noexcept;
-  /// Compares two grayscale images into a fresh binary mask owner.
+  /// Compares two compatible typed matrices into a fresh byte mask owner.
   std::unique_ptr<OpenCvMat> compare_mask_owned(const OpenCvMat& other, std::int64_t mode) const noexcept;
   /// Selects between two compatible images through a grayscale mask into a fresh owner.
   std::unique_ptr<OpenCvMat> select_mask_owned(const OpenCvMat& other, const OpenCvMat& mask) const noexcept;
-  /// Multiplies two compatible images by a bounded scale into a fresh owner.
+  /// Multiplies two compatible typed matrices by a bounded scale.
   std::unique_ptr<OpenCvMat> multiply_scaled_owned(const OpenCvMat& other, double scale) const noexcept;
-  /// Divides two compatible images by a byte-domain scale into a fresh owner.
+  /// Divides two compatible typed matrices by a bounded scale.
   std::unique_ptr<OpenCvMat> divide_scaled_owned(const OpenCvMat& other, double scale) const noexcept;
   /// Combines two grayscale vector components into a fresh magnitude owner.
   std::unique_ptr<OpenCvMat> gradient_magnitude_owned(const OpenCvMat& other) const noexcept;
@@ -310,14 +409,22 @@ class OpenCvMat final {
   std::unique_ptr<OpenCvMat> fill_rectangle_owned(std::int64_t x, std::int64_t y, std::int64_t width, std::int64_t height, std::int64_t value) const noexcept;
   /// Fills one bounded grayscale circle into a fresh matrix owner.
   std::unique_ptr<OpenCvMat> fill_circle_owned(std::int64_t center_x, std::int64_t center_y, std::int64_t radius, std::int64_t value) const noexcept;
-  /// Inverts every byte into a fresh matrix owner.
+  /// Inverts every scalar bit pattern into a fresh typed matrix owner.
   std::unique_ptr<OpenCvMat> invert_owned() const noexcept;
-  /// Applies bytewise conjunction into a fresh matrix owner.
+  /// Inverts selected scalar bit patterns through a same-size byte mask.
+  std::unique_ptr<OpenCvMat> invert_masked_owned(const OpenCvMat& mask) const noexcept;
+  /// Applies bitwise conjunction to two compatible typed matrices.
   std::unique_ptr<OpenCvMat> bitwise_and_owned(const OpenCvMat& other) const noexcept;
-  /// Applies bytewise disjunction into a fresh matrix owner.
+  /// Applies masked bitwise conjunction to compatible typed matrices.
+  std::unique_ptr<OpenCvMat> bitwise_and_masked_owned(const OpenCvMat& other, const OpenCvMat& mask) const noexcept;
+  /// Applies bitwise disjunction to two compatible typed matrices.
   std::unique_ptr<OpenCvMat> bitwise_or_owned(const OpenCvMat& other) const noexcept;
-  /// Applies bytewise exclusive-or into a fresh matrix owner.
+  /// Applies masked bitwise disjunction to compatible typed matrices.
+  std::unique_ptr<OpenCvMat> bitwise_or_masked_owned(const OpenCvMat& other, const OpenCvMat& mask) const noexcept;
+  /// Applies bitwise exclusive-or to two compatible typed matrices.
   std::unique_ptr<OpenCvMat> bitwise_xor_owned(const OpenCvMat& other) const noexcept;
+  /// Applies masked bitwise exclusive-or to compatible typed matrices.
+  std::unique_ptr<OpenCvMat> bitwise_xor_masked_owned(const OpenCvMat& other, const OpenCvMat& mask) const noexcept;
   /// Draws one bounded grayscale cross into a fresh matrix owner.
   std::unique_ptr<OpenCvMat> draw_cross_owned(std::int64_t center_x, std::int64_t center_y, std::int64_t size, std::int64_t value, std::int64_t thickness) const noexcept;
   /// Draws one bounded axis-aligned grayscale ellipse into a fresh matrix owner.
@@ -398,14 +505,100 @@ enum class MorphologyOperation : std::int32_t {
   TopHat = 3,
   BlackHat = 4,
 };
+/// Defines supported dense linear-system decomposition policies.
+enum class DecompositionMethod : std::int32_t {
+  Lu = 0,
+  Svd = 1,
+  Eigen = 2,
+  Cholesky = 3,
+  Qr = 4,
+  NormalLu = 5,
+  NormalSvd = 6,
+};
+/// Defines supported matrix norm policies.
+enum class MatrixNorm : std::int32_t {
+  L1 = 0,
+  L2 = 1,
+  Infinity = 2,
+};
+/// Defines supported portable in-memory matrix serialization formats.
+enum class SerializationFormat : std::int32_t {
+  Yaml = 0,
+  Xml = 1,
+  Json = 2,
+};
+/// Defines the matrix axis collapsed by a reduction.
+enum class ReductionDimension : std::int32_t {
+  AcrossRows = 0,
+  AcrossColumns = 1,
+};
+/// Defines supported matrix reduction operations.
+enum class ReductionOperation : std::int32_t {
+  Sum = 0,
+  Average = 1,
+  Maximum = 2,
+  Minimum = 3,
+};
+/// Defines whether sorting is performed independently by row or column.
+enum class SortDimension : std::int32_t {
+  EachRow = 0,
+  EachColumn = 1,
+};
+/// Defines the ordering applied by matrix sorting.
+enum class SortOrder : std::int32_t {
+  Ascending = 0,
+  Descending = 1,
+};
 /// Copies unsigned bytes into a newly owned matrix.
 std::unique_ptr<OpenCvMat> mat_from_u8(
     rust::Slice<const std::uint8_t> bytes, std::int64_t rows,
     std::int64_t cols, std::int64_t layout) noexcept;
+/// Copies raw scalar bytes into a typed newly owned matrix.
+std::unique_ptr<OpenCvMat> mat_from_bytes(
+    rust::Slice<const std::uint8_t> bytes, std::int64_t rows,
+    std::int64_t cols, std::int64_t channels,
+    std::int64_t depth) noexcept;
+/// Copies a pointer-free contiguous tensor packet into a newly owned matrix.
+std::unique_ptr<OpenCvMat> mat_from_tensor_packet(
+    rust::Slice<const std::uint8_t> packet) noexcept;
 /// Creates a zero-filled owned matrix.
 std::unique_ptr<OpenCvMat> mat_zeros(
     std::int64_t rows, std::int64_t cols, std::int64_t layout) noexcept;
-/// Decodes copied BMP bytes into a newly owned matrix.
+/// Creates a typed zero-filled owned matrix.
+std::unique_ptr<OpenCvMat> mat_zeros_typed(
+    std::int64_t rows, std::int64_t cols, std::int64_t channels,
+    std::int64_t depth) noexcept;
+/// Creates an all-one typed matrix.
+std::unique_ptr<OpenCvMat> mat_ones_typed(
+    std::int64_t rows, std::int64_t cols, std::int64_t channels,
+    std::int64_t depth) noexcept;
+/// Creates one single-channel typed identity matrix.
+std::unique_ptr<OpenCvMat> mat_identity_typed(
+    std::int64_t rows, std::int64_t cols, std::int64_t depth) noexcept;
+/// Creates deterministic uniformly distributed floating-point values.
+std::unique_ptr<OpenCvMat> mat_random_uniform(
+    std::int64_t rows, std::int64_t cols, std::int64_t depth, double lower,
+    double upper, std::int64_t seed) noexcept;
+/// Creates deterministic normally distributed floating-point values.
+std::unique_ptr<OpenCvMat> mat_random_normal(
+    std::int64_t rows, std::int64_t cols, std::int64_t depth, double mean,
+    double standard_deviation, std::int64_t seed) noexcept;
+/// Parses one bounded in-memory OpenCV matrix document.
+std::unique_ptr<OpenCvMat> mat_deserialize(
+    rust::Str document, std::int64_t format) noexcept;
+/// Copies the linked OpenCV runtime version.
+std::unique_ptr<std::string> opencv_version_owned() noexcept;
+/// Copies bounded OpenCV build configuration information.
+std::unique_ptr<std::string> opencv_build_information_owned() noexcept;
+/// Returns the logical processor count observed by OpenCV.
+std::int64_t opencv_processor_count() noexcept;
+/// Returns the current OpenCV parallel worker count.
+std::int64_t opencv_thread_count() noexcept;
+/// Returns the monotonic OpenCV tick frequency in ticks per second.
+double opencv_tick_frequency() noexcept;
+/// Reports whether optimized OpenCV code paths are enabled.
+bool opencv_optimized_enabled() noexcept;
+/// Decodes copied BMP, PNG, or JPEG bytes into a newly owned matrix.
 std::unique_ptr<OpenCvMat> decode_image(
     rust::Slice<const std::uint8_t> bytes, std::int64_t mode) noexcept;
 /// Returns the number of live adapter-owned matrices.

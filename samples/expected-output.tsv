@@ -1,38 +1,42 @@
-samples_calib3d_PoseEstimation.tvm.json	Pose estimation example complete
-samples_calib3d_ProjectPoints.tvm.json	projection example complete
-samples_calib3d_UndistortImage.tvm.json	Undistortion example complete
-samples_core_ImageBlending.tvm.json	Image blending example complete
-samples_core_ImageScanning.tvm.json	Image scanning example complete
-samples_core_MaskFiltering.tvm.json	Mask filtering example complete
-samples_core_MatBasics.tvm.json	matrix example complete
-samples_core_MatrixOperations.tvm.json	Matrix operations example complete
-samples_dnn_BlobPreprocessing.tvm.json	DNN preprocessing example complete
-samples_dnn_Classification.tvm.json	DNN classification example complete
-samples_dnn_IdentityInference.tvm.json	Identity inference example complete
-samples_dnn_ObjectDetection.tvm.json	DNN object detection example complete
-samples_dnn_Segmentation.tvm.json	DNN segmentation example complete
-samples_features2d_AkazeMatching.tvm.json	AKAZE matching example complete
-samples_features2d_BriskMatching.tvm.json	BRISK matching example complete
-samples_features2d_KazeMatching.tvm.json	KAZE matching example complete
-samples_features2d_MserRegions.tvm.json	MSER regions example complete
-samples_features2d_OrbFeatures.tvm.json	ORB example complete
-samples_features2d_SiftMatching.tvm.json	SIFT matching example complete
-samples_features2d_SimpleBlobDetection.tvm.json	Simple blob example complete
-samples_imgcodecs_EncodeDecode.tvm.json	codec example complete
-samples_imgproc_Borders.tvm.json	Borders example complete
-samples_imgproc_Contours.tvm.json	Contours example complete
-samples_imgproc_CornerDetection.tvm.json	Corner detection example complete
-samples_imgproc_Drawing.tvm.json	Drawing example complete
-samples_imgproc_EdgeDetection.tvm.json	Edge detection example complete
-samples_imgproc_FloodFillComponents.tvm.json	Flood fill and components example complete
-samples_imgproc_GeometricTransforms.tvm.json	Geometric transforms example complete
-samples_imgproc_Histograms.tvm.json	Histogram example complete
-samples_imgproc_HoughDetection.tvm.json	Hough detection example complete
-samples_imgproc_Morphology.tvm.json	morphology example complete
-samples_imgproc_Pyramids.tvm.json	Pyramid example complete
-samples_imgproc_RangeMask.tvm.json	Range mask example complete
-samples_imgproc_Smoothing.tvm.json	smoothing example complete
-samples_imgproc_TemplateMatching.tvm.json	Template matching example complete
-samples_imgproc_Thresholding.tvm.json	thresholding example complete
-samples_ml_KnnClassification.tvm.json	KNN example complete
-samples_ml_LinearSvmClassification.tvm.json	Linear SVM example complete
+samples.calib3d.PoseEstimation	Pose estimation example complete
+samples.calib3d.ProjectPoints	projection example complete
+samples.calib3d.UndistortImage	Undistortion example complete
+samples.core.ImageBlending	Image blending example complete
+samples.core.ImageScanning	Image scanning example complete
+samples.core.MaskFiltering	Mask filtering example complete
+samples.core.MatBasics	matrix example complete
+samples.core.MatrixOperations	Matrix operations example complete
+samples.dnn.BlobPreprocessing	DNN preprocessing example complete
+samples.dnn.Classification	DNN classification example complete
+samples.dnn.IdentityInference	Identity inference example complete
+samples.dnn.ObjectDetection	DNN object detection example complete
+samples.dnn.Segmentation	DNN segmentation example complete
+samples.features2d.AkazeMatching	AKAZE matching example complete
+samples.features2d.BriskMatching	BRISK matching example complete
+samples.features2d.KazeMatching	KAZE matching example complete
+samples.features2d.MserRegions	MSER regions example complete
+samples.features2d.OrbFeatures	ORB example complete
+samples.features2d.SiftMatching	SIFT matching example complete
+samples.features2d.SimpleBlobDetection	Simple blob example complete
+samples.imgcodecs.EncodeDecode	codec example complete
+samples.imgcodecs.JpegEncodeDecode	JPEG codec example complete
+samples.imgcodecs.PngEncodeDecode	PNG codec example complete
+samples.imgcodecs.TiffEncodeDecode	TIFF codec example complete
+samples.imgcodecs.WebpEncodeDecode	WebP codec example complete
+samples.imgproc.Borders	Borders example complete
+samples.imgproc.Contours	Contours example complete
+samples.imgproc.CornerDetection	Corner detection example complete
+samples.imgproc.Drawing	Drawing example complete
+samples.imgproc.EdgeDetection	Edge detection example complete
+samples.imgproc.FloodFillComponents	Flood fill and components example complete
+samples.imgproc.GeometricTransforms	Geometric transforms example complete
+samples.imgproc.Histograms	Histogram example complete
+samples.imgproc.HoughDetection	Hough detection example complete
+samples.imgproc.Morphology	morphology example complete
+samples.imgproc.Pyramids	Pyramid example complete
+samples.imgproc.RangeMask	Range mask example complete
+samples.imgproc.Smoothing	smoothing example complete
+samples.imgproc.TemplateMatching	Template matching example complete
+samples.imgproc.Thresholding	thresholding example complete
+samples.ml.KnnClassification	KNN example complete
+samples.ml.LinearSvmClassification	Linear SVM example complete

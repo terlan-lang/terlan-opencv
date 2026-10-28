@@ -1,21 +1,20 @@
-/** Demonstrates table-driven byte transformation without exposing matrix storage. */
+/**
+ * Demonstrates table-driven byte transformation without exposing matrix storage.
+ */
 module samples.core.ImageScanning.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
 import std.io.Console.{println}.
 import std.range.Range.{inclusive, to_list}.
 import std.vm.Bytes.
 
-/** Runs the image-scanning and lookup-table example. */
+/**
+ * Runs the image-scanning and lookup-table example.
+ */
 pub main(): Unit ->
     let image = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
-    // Initialize one table entry for every possible unsigned byte value. The
-    // upstream tutorial compares pointer, iterator, random-access, and LUT
-    // scans; Terlan exposes the reviewed LUT operation without raw storage.
     let table = Bytes.from_list(to_list(inclusive(255, 0)));
-    // Apply the lookup table to every image element.
     let transformed = Imgproc.apply_lut(image, table);
     let valid = Mat.to_u8(transformed).to_list() == [255, 191, 127, 0];
     Mat.dispose(transformed);

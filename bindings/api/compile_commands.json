@@ -1,0 +1,29 @@
+[
+  {
+    "directory": ".",
+    "arguments": [
+      "clang++",
+      "--target=x86_64-unknown-linux-gnu",
+      "-std=c++14",
+      "-I../../upstream/build",
+      "-I../../upstream/opencv/modules/calib3d/include",
+      "-I../../upstream/opencv/modules/core/include",
+      "-I../../upstream/opencv/modules/dnn/include",
+      "-I../../upstream/opencv/modules/features2d/include",
+      "-I../../upstream/opencv/modules/flann/include",
+      "-I../../upstream/opencv/modules/gapi/include",
+      "-I../../upstream/opencv/modules/highgui/include",
+      "-I../../upstream/opencv/modules/imgcodecs/include",
+      "-I../../upstream/opencv/modules/imgproc/include",
+      "-I../../upstream/opencv/modules/ml/include",
+      "-I../../upstream/opencv/modules/objdetect/include",
+      "-I../../upstream/opencv/modules/photo/include",
+      "-I../../upstream/opencv/modules/stitching/include",
+      "-I../../upstream/opencv/modules/video/include",
+      "-I../../upstream/opencv/modules/videoio/include",
+      "-c",
+      "opencv_public_api_inventory.cc"
+    ],
+    "file": "opencv_public_api_inventory.cc"
+  }
+]

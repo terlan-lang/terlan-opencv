@@ -90,6 +90,7 @@ mod ml_svm_contract;
 mod morphology_contract;
 mod mser_regions_contract;
 mod multiply_contract;
+mod native_helper;
 mod non_zero_approximate_hull_contract;
 mod non_zero_bounds_contract;
 mod non_zero_centroid_contract;
@@ -122,18 +123,18 @@ mod transpose_contract;
 mod triangle_threshold_contract;
 
 use std::ffi::OsStr;
-use std::io::{BufRead, BufReader, Write};
-use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
 
 use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
 use contract_support::*;
-use protocol::{decode_reply, NativeReply};
+use native_helper::NativeHelper;
 
 const MAT_TYPE: &str = "opencv.Mat.Mat";
 
 /// Runs the complete OCV0.2 behavior and ownership contract.
 pub fn run_native_contract(helper_path: impl AsRef<OsStr>) -> Result<(), String> {
+    let helper_path = helper_path.as_ref();
+    NativeHelper::verify_public_adapter_transport(helper_path)?;
     let mut helper = NativeHelper::spawn(helper_path)?;
     expect_int(helper.call("opencv.mat.live_count", &[])?, 0)?;
     adaptive_equalization_contract::run(&mut helper)?;
@@ -707,8 +708,6 @@ pub fn run_native_contract(helper_path: impl AsRef<OsStr>) -> Result<(), String>
         )?;
     }
     for (minimum, maximum) in [
-        (-0.1, 255.0),
-        (0.0, 255.1),
         (f64::NAN, 255.0),
         (0.0, f64::NAN),
         (f64::INFINITY, 255.0),
@@ -883,79 +882,6 @@ pub fn run_native_contract(helper_path: impl AsRef<OsStr>) -> Result<(), String>
         "stale_handle",
     )?;
     expect_int(helper.call("opencv.mat.live_count", &[])?, 0)
-}
-
-/// One live helper process with correlated request sequencing.
-struct NativeHelper {
-    child: Child,
-    input: ChildStdin,
-    output: BufReader<ChildStdout>,
-    next_request_id: u64,
-}
-
-impl NativeHelper {
-    /// Starts the generated helper with isolated standard streams.
-    fn spawn(path: impl AsRef<OsStr>) -> Result<Self, String> {
-        let mut child = Command::new(path)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::inherit())
-            .spawn()
-            .map_err(|error| format!("cannot start generated helper: {error}"))?;
-        let input = child
-            .stdin
-            .take()
-            .ok_or_else(|| "generated helper stdin is unavailable".to_string())?;
-        let output = child
-            .stdout
-            .take()
-            .ok_or_else(|| "generated helper stdout is unavailable".to_string())?;
-        Ok(Self {
-            child,
-            input,
-            output: BufReader::new(output),
-            next_request_id: 0,
-        })
-    }
-
-    /// Executes one protocol call and decodes its correlated reply.
-    fn call(&mut self, operation: &str, args: &[String]) -> Result<NativeReply, String> {
-        self.next_request_id += 1;
-        let mut fields = vec![
-            "call".to_string(),
-            self.next_request_id.to_string(),
-            STANDARD.encode(operation),
-        ];
-        fields.extend(args.iter().cloned());
-        writeln!(self.input, "{}", fields.join(" "))
-            .and_then(|()| self.input.flush())
-            .map_err(|error| format!("cannot write helper request: {error}"))?;
-        let mut line = String::new();
-        let read = self
-            .output
-            .read_line(&mut line)
-            .map_err(|error| format!("cannot read helper reply: {error}"))?;
-        if read == 0 {
-            return Err("generated helper exited without replying".to_string());
-        }
-        let reply = decode_reply(line.trim_end(), self.next_request_id).map_err(|error| {
-            format!("operation {operation} with arguments {args:?} failed: {error}")
-        })?;
-        if std::env::var_os("TERLAN_OPENCV_TRACE_HELPER_ERRORS").is_some()
-            && matches!(reply, NativeReply::Error { .. })
-        {
-            eprintln!("helper error from {operation} {args:?}: {reply:?}");
-        }
-        Ok(reply)
-    }
-}
-
-impl Drop for NativeHelper {
-    /// Stops the helper even when a contract assertion fails.
-    fn drop(&mut self) {
-        let _ = self.child.kill();
-        let _ = self.child.wait();
-    }
 }
 
 /// Stable identity for one generated opaque resource handle.

@@ -1,5 +1,9 @@
 //! Shared deterministic fixtures for direct native integration tests.
 
+// Each integration-test crate includes this module independently and uses a
+// different subset of the shared fixtures.
+#![allow(dead_code)]
+
 use std::collections::BTreeSet;
 
 /// Minimal ONNX Identity graph with one fixed `[1, 3, 2, 2]` float tensor.

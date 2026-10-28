@@ -1,0 +1,130 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Runs repository source validation with recursive Terlan script discovery.
+ */
+import std.core.Option.Some.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.Directory.files_recursive_excluding.
+import std.io.File.exists.
+import std.system.{Arguments, Process}.
+
+import type std.system.Process.{Command, Output}.
+
+struct Context {
+    compiler: String,
+    repository: String,
+    mode: String,
+}.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_source_check]: ", message));
+    false.
+
+command(context: Context, arguments: List[String]): Command ->
+    let request = Process.with_arguments(Process.command(context.compiler), arguments);
+    let located = Process.with_working_directory(request, context.repository);
+    let bounded = Process.with_timeout_ms(located, 600_000);
+    Process.with_output_limit_bytes(bounded, 16_777_216).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+check_output(label: String, output: Output): Bool ->
+    let _printed = print_output(output);
+    let status = output.status;
+    if {
+        status == 0 -> true;
+        true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
+    }.
+
+run_command(context: Context, arguments: List[String]): Bool ->
+    let label = String.join(arguments, " ");
+    case Process.run(command(context, arguments)) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) -> check_output(label, output)
+    }.
+
+check_roots(context: Context, roots: List[String]): Bool ->
+    case roots {
+        [] -> true;
+        [root | rest] ->
+            let path = child(context.repository, root);
+            if {
+                not exists(path) -> check_roots(context, rest);
+                not run_command(context, ["lint", "--only", context.mode, path]) -> false;
+                true -> check_roots(context, rest)
+            }
+    }.
+
+check_scripts(context: Context, paths: List[String]): Bool ->
+    case paths {
+        [] -> true;
+        [path | rest] ->
+            if {
+                not String.ends_with(path, ".terls") -> check_scripts(context, rest);
+                not run_command(context, ["check", path]) -> false;
+                context.mode == "scripts" and not run_command(context, ["lint", path]) -> false;
+                context.mode != "scripts"
+                    and not run_command(context, ["lint", "--only", context.mode, path]) -> false;
+                true -> check_scripts(context, rest)
+            }
+    }.
+
+has_script(paths: List[String]): Bool ->
+    case paths {
+        [] -> false;
+        [path | rest] -> String.ends_with(path, ".terls") or has_script(rest)
+    }.
+
+check(context: Context): Bool ->
+    let scripts = child(context.repository, "scripts");
+    let Ok(paths) <- files_recursive_excluding(scripts, [".git", "_build", "target"]) else {
+        Err(reason) -> failure(reason.message)
+    };
+    if {
+        not has_script(paths) -> failure(String.append("no Terlan scripts found in ", scripts));
+        context.mode != "scripts"
+            and not check_roots(context, ["src", "samples", "test", "tests", "consumer"]) -> false;
+        not check_scripts(context, paths) -> false;
+        context.mode == "scripts" -> run_command(context, ["fmt", "--check", scripts]);
+        true -> true
+    }.
+
+valid_mode(mode: String): Bool ->
+    case mode {
+        "scripts" -> true;
+        "TL0009" -> true;
+        "TL0010" -> true;
+        _ -> false
+    }.
+
+entry(): Bool ->
+    case {Arguments.get(0), Arguments.get(1), Arguments.get(2), Arguments.count()} {
+        {Some(compiler), Some(repository), Some(mode), 3} ->
+            if {
+                valid_mode(mode) -> check(Context(compiler = compiler, repository = repository, mode = mode));
+                true -> failure(String.append("unknown validation mode: ", mode))
+            };
+        _ -> failure("expected <terlc> <repository> <scripts|TL0009|TL0010>")
+    }.
+
+assert(entry());
+Unit.

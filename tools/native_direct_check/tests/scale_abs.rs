@@ -2,9 +2,9 @@
 
 use terlan_opencv_native::ffi;
 
-/// Proves exact transforms, layout preservation, bounds, and fresh ownership.
+/// Proves exact transforms, layout preservation, finite coefficients, and ownership.
 #[test]
-fn scale_abs_is_per_channel_bounded_and_saturating() {
+fn scale_abs_is_per_channel_finite_and_saturating() {
     assert_eq!(ffi::live_mat_count(), 0);
     let source_bytes = [0, 10, 100, 200, 255];
     let source = ffi::mat_from_u8(&source_bytes, 1, 5, 1);
@@ -63,10 +63,14 @@ fn scale_abs_is_per_channel_bounded_and_saturating() {
     for (scale, offset) in [
         (65_536.0, 0.0),
         (-65_536.0, 0.0),
-        (f64::NAN, 0.0),
-        (f64::INFINITY, 0.0),
         (1.0, 65_536.0),
         (1.0, -65_536.0),
+    ] {
+        assert!(!source_ref.scale_abs_owned(scale, offset).is_null());
+    }
+    for (scale, offset) in [
+        (f64::NAN, 0.0),
+        (f64::INFINITY, 0.0),
         (1.0, f64::NAN),
         (1.0, f64::NEG_INFINITY),
     ] {

@@ -2,11 +2,21 @@
 
 use std::ffi::OsStr;
 use std::io::Cursor;
+use std::path::{Path, PathBuf};
 
 use base64::engine::general_purpose::STANDARD;
 use base64::Engine;
 
-use super::{request_id, unavailable_reply, RuntimeGuard};
+use super::{bundled_worker_path, request_id, unavailable_reply, RuntimeGuard};
+
+/// Resolves the worker beside the installed runtime guard.
+#[test]
+fn bundled_worker_uses_guard_directory() {
+    assert_eq!(
+        bundled_worker_path(Path::new("/artifact/bin/terlan-opencv-runtime-guard")),
+        Some(PathBuf::from("/artifact/bin/terlan-opencv-worker"))
+    );
+}
 
 /// Extracts only valid correlated call identities.
 #[test]

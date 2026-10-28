@@ -1,0 +1,27 @@
+/**
+ * Demonstrates deterministic uncompressed TIFF encoding and decoding.
+ */
+module samples.imgcodecs.TiffEncodeDecode.
+
+import opencv.Types.{Gray, Grayscale, Tiff}.
+import opencv.{Codecs, Mat}.
+import std.io.Console.{println}.
+import std.vm.Bytes.
+
+/**
+ * Runs the in-memory TIFF codec example.
+ */
+pub main(): Unit ->
+    let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let encoded = Codecs.encode(source, Tiff);
+    let repeated = Codecs.encode(source, Tiff);
+    let decoded = Codecs.decode(encoded, Grayscale);
+    let valid =
+        encoded.to_list() == repeated.to_list()
+            and Mat.to_u8(decoded).to_list() == [0, 64, 128, 255];
+    Mat.dispose(decoded);
+    Mat.dispose(source);
+    if {
+        valid and Mat.live_count() == 0 -> println("TIFF codec example complete");
+        true -> println("TIFF codec example failed")
+    }.

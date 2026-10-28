@@ -1,0 +1,66 @@
+module opencv.BitwiseTest.
+
+import opencv.{Imgproc, Mat}.
+import std.vm.Bytes.
+
+/**
+ * Validates typed bitwise inversion through an explicit mask.
+ */
+@test
+pub typed_masked_invert_contract(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0, 15, 240, 170, 85, 255]), 1, 2, Atom["bgr"]);
+    let mask = Mat.from_u8(Bytes.from_list([255, 0]), 1, 2, Atom["gray"]);
+    let result = Imgproc.invert_masked(source, mask);
+    let valid = Mat.to_u8(result).to_list() == [255, 240, 15, 0, 0, 0];
+    Mat.dispose(result);
+    Mat.dispose(mask);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates typed bitwise conjunction through an explicit mask.
+ */
+@test
+pub typed_masked_and_contract(): Bool ->
+    let first = Mat.from_u8(Bytes.from_list([0, 15, 240, 170, 85, 255]), 1, 2, Atom["bgr"]);
+    let second = Mat.from_u8(Bytes.from_list([255, 51, 15, 85, 170, 0]), 1, 2, Atom["bgr"]);
+    let mask = Mat.from_u8(Bytes.from_list([255, 0]), 1, 2, Atom["gray"]);
+    let result = Imgproc.bitwise_and_masked(first, second, mask);
+    let valid = Mat.to_u8(result).to_list() == [0, 3, 0, 0, 0, 0];
+    Mat.dispose(result);
+    Mat.dispose(mask);
+    Mat.dispose(second);
+    Mat.dispose(first);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates typed bitwise disjunction through an explicit mask.
+ */
+@test
+pub typed_masked_or_contract(): Bool ->
+    let first = Mat.from_u8(Bytes.from_list([0, 15, 240, 170, 85, 255]), 1, 2, Atom["bgr"]);
+    let second = Mat.from_u8(Bytes.from_list([255, 51, 15, 85, 170, 0]), 1, 2, Atom["bgr"]);
+    let mask = Mat.from_u8(Bytes.from_list([255, 0]), 1, 2, Atom["gray"]);
+    let result = Imgproc.bitwise_or_masked(first, second, mask);
+    let valid = Mat.to_u8(result).to_list() == [255, 63, 255, 0, 0, 0];
+    Mat.dispose(result);
+    Mat.dispose(mask);
+    Mat.dispose(second);
+    Mat.dispose(first);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates typed bitwise exclusive-or through an explicit mask.
+ */
+@test
+pub typed_masked_xor_contract(): Bool ->
+    let first = Mat.from_u8(Bytes.from_list([0, 15, 240, 170, 85, 255]), 1, 2, Atom["bgr"]);
+    let second = Mat.from_u8(Bytes.from_list([255, 51, 15, 85, 170, 0]), 1, 2, Atom["bgr"]);
+    let mask = Mat.from_u8(Bytes.from_list([255, 0]), 1, 2, Atom["gray"]);
+    let result = Imgproc.bitwise_xor_masked(first, second, mask);
+    let valid = Mat.to_u8(result).to_list() == [255, 60, 255, 0, 0, 0];
+    Mat.dispose(result);
+    Mat.dispose(mask);
+    Mat.dispose(second);
+    Mat.dispose(first);
+    valid and Mat.live_count() == 0.

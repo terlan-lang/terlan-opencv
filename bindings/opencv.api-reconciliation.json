@@ -1,0 +1,4673 @@
+{
+  "schema": "terlan.opencv.api-reconciliation.v1",
+  "upstream_commit": "fe38fc608f6acb8b68953438a62305d8318f4fcd",
+  "total": 429,
+  "operations": [
+    {
+      "operation": "opencv.calib3d.affine_transform_points",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.affine_transform_points_owned"
+      ],
+      "upstream": [
+        "function:cv::transform(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1832:19"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.compose_pose",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.compose_pose_owned"
+      ],
+      "upstream": [
+        "function:cv::composeRT(const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &)@modules/calib3d/include/opencv2/calib3d.hpp:951:19"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.estimate_affine_transform",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.estimate_affine_transform_owned"
+      ],
+      "upstream": [
+        "function:cv::getAffineTransform(const cv::Point_<float> *,const cv::Point_<float> *)@modules/imgproc/include/opencv2/imgproc.hpp:2641:16",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.estimate_perspective_transform",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.estimate_perspective_transform_owned"
+      ],
+      "upstream": [
+        "function:cv::determinant(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1907:21",
+        "function:cv::getPerspectiveTransform(const cv::Point_<float> *,const cv::Point_<float> *,int)@modules/imgproc/include/opencv2/imgproc.hpp:2675:16",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.perspective_transform_points",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.perspective_transform_points_owned"
+      ],
+      "upstream": [
+        "function:cv::perspectiveTransform(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1859:19"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.project_points",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.project_points_owned"
+      ],
+      "upstream": [
+        "function:cv::projectPoints(const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,double)@modules/calib3d/include/opencv2/calib3d.hpp:992:19"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.refine_pose",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.refine_pose_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.refine_pose_vvs",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.refine_pose_vvs_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.solve_pose",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.solve_pose_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.solve_pose_minimal",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.solve_pose_minimal_owned"
+      ],
+      "upstream": [
+        "function:cv::solveP3P(const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,int)@modules/calib3d/include/opencv2/calib3d.hpp:1169:18"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.solve_pose_planar",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.solve_pose_planar_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.solve_pose_robust",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.solve_pose_robust_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.solve_square_marker_pose",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.solve_square_marker_pose_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.undistort",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.undistort_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.calib3d.undistort_optimal",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.undistort_optimal_owned"
+      ],
+      "upstream": [
+        "function:cv::getOptimalNewCameraMatrix(const cv::_InputArray &,const cv::_InputArray &,cv::Size_<int>,double,cv::Size_<int>,cv::Rect_<int> *,bool)@modules/calib3d/include/opencv2/calib3d.hpp:2205:18"
+      ]
+    },
+    {
+      "operation": "opencv.calib3d.undistort_points",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.undistort_points_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29"
+      ]
+    },
+    {
+      "operation": "opencv.codecs.decode",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.decode_image"
+      ],
+      "upstream": [
+        "function:cv::imdecode(const cv::_InputArray &,int)@modules/imgcodecs/include/opencv2/imgcodecs.hpp:597:18",
+        "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12",
+        "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.codecs.encode",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.encode_owned"
+      ],
+      "upstream": [
+        "function:cv::imencode(const std::basic_string<char> &,const cv::_InputArray &,std::vector<unsigned char> &,const std::vector<int> &)@modules/imgcodecs/include/opencv2/imgcodecs.hpp:651:19"
+      ]
+    },
+    {
+      "operation": "opencv.components.areas",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_components.areas_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.components.bounds",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_components.bounds_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.components.centroids",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_components.centroids_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.components.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.components.foreground_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_components.foreground_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.components.labels",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_components.labels_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.components.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_component_analysis_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.approximate",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_contours.approximate_owned"
+      ],
+      "upstream": [
+        "function:cv::approxPolyDP(const cv::_InputArray &,const cv::_OutputArray &,double,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4145:19"
+      ]
+    },
+    {
+      "operation": "opencv.contours.areas",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.areas_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.bounds",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.bounds_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.centroids",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.centroids_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.circularities",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.circularities_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.convex_areas",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.convex_areas_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.convex_hulls",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_contours.convex_hulls_owned"
+      ],
+      "upstream": [
+        "function:cv::convexHull(const cv::_InputArray &,const cv::_OutputArray &,bool,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4351:19"
+      ]
+    },
+    {
+      "operation": "opencv.contours.convexity_defects",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_contours.convexity_defects_owned"
+      ],
+      "upstream": [
+        "function:cv::convexHull(const cv::_InputArray &,const cv::_OutputArray &,bool,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4351:19",
+        "function:cv::convexityDefects(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:4371:19"
+      ]
+    },
+    {
+      "operation": "opencv.contours.count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.extents",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.extents_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.filled_mask",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.filled_mask_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.fitted_ellipses",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.fitted_ellipses_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.fitted_lines",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.fitted_lines_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.hu_moments",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_contours.hu_moments_owned"
+      ],
+      "upstream": [
+        "function:cv::HuMoments(const cv::Moments &,double *)@modules/imgproc/include/opencv2/imgproc.hpp:3914:17",
+        "function:cv::moments(const cv::_InputArray &,bool)@modules/imgproc/include/opencv2/imgproc.hpp:3893:22"
+      ]
+    },
+    {
+      "operation": "opencv.contours.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_contour_analysis_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.match_scores",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.shape_match_scores_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.minimum_area_boxes",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.minimum_area_boxes_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.minimum_enclosing_circles",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.minimum_enclosing_circles_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.minimum_enclosing_triangles",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.minimum_enclosing_triangles_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.offsets",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.offsets_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.outline_mask",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.outline_mask_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.perimeters",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.perimeters_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.points",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.points_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.selected_filled_mask",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.selected_filled_mask_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.contours.signed_distances",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_contours.signed_distances_owned"
+      ],
+      "upstream": [
+        "function:cv::pointPolygonTest(const cv::_InputArray &,cv::Point_<float>,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4576:21"
+      ]
+    },
+    {
+      "operation": "opencv.contours.solidities",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_contours.solidities_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.core.build_information",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_build_information_owned"
+      ],
+      "upstream": [
+        "function:cv::getBuildInformation()@modules/core/include/opencv2/core/utility.hpp:273:28"
+      ]
+    },
+    {
+      "operation": "opencv.core.deserialize",
+      "status": "mapped",
+      "wrappers": [
+        "function.mat_deserialize"
+      ],
+      "upstream": [
+        "method:cv::FileStorage::isOpened()@modules/core/include/opencv2/core/persistence.hpp:325:26",
+        "method:cv::FileStorage::operator[](const char *)@modules/core/include/opencv2/core/persistence.hpp:359:34"
+      ]
+    },
+    {
+      "operation": "opencv.core.determinant",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.determinant_value"
+      ],
+      "upstream": [
+        "function:cv::determinant(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1907:21"
+      ]
+    },
+    {
+      "operation": "opencv.core.dot",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.dot_value"
+      ],
+      "upstream": [
+        "method:cv::Mat::dot(const cv::_InputArray &)@modules/core/include/opencv2/core/mat.hpp:1443:12"
+      ]
+    },
+    {
+      "operation": "opencv.core.exponential",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.exponential_owned"
+      ],
+      "upstream": [
+        "function:cv::exp(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1605:19"
+      ]
+    },
+    {
+      "operation": "opencv.core.identity",
+      "status": "mapped",
+      "wrappers": [
+        "function.mat_identity_typed"
+      ],
+      "upstream": [
+        "method:cv::Mat::eye(int,int,int)@modules/core/include/opencv2/core/mat.hpp:1519:37"
+      ]
+    },
+    {
+      "operation": "opencv.core.inverse",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.matrix_inverse_owned"
+      ],
+      "upstream": [
+        "function:cv::invert(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1943:21"
+      ]
+    },
+    {
+      "operation": "opencv.core.logarithm",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.logarithm_owned"
+      ],
+      "upstream": [
+        "function:cv::log(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1618:19",
+        "function:cv::minMaxLoc(const cv::_InputArray &,double *,double *,cv::Point_<int> *,cv::Point_<int> *,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:863:19",
+        "method:cv::Mat::reshape(int,int)@modules/core/include/opencv2/core/mat.hpp:1365:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.mean",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.mean_values_owned"
+      ],
+      "upstream": [
+        "function:cv::mean(const cv::_InputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:648:21",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.multiply",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.matrix_multiply_owned"
+      ],
+      "upstream": [
+        "function:cv::gemm(const cv::_InputArray &,const cv::_InputArray &,double,const cv::_InputArray &,double,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1752:19",
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.norm",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.norm_value"
+      ],
+      "upstream": [
+        "function:cv::norm(const cv::_InputArray &,int,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:709:21"
+      ]
+    },
+    {
+      "operation": "opencv.core.normalize",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.normalize_norm_owned"
+      ],
+      "upstream": [
+        "function:cv::normalize(const cv::_InputArray &,const cv::_InputOutputArray &,double,double,int,int,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:825:19"
+      ]
+    },
+    {
+      "operation": "opencv.core.ones",
+      "status": "mapped",
+      "wrappers": [
+        "function.mat_ones_typed"
+      ],
+      "upstream": [
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.core.optimized",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_optimized_enabled"
+      ],
+      "upstream": [
+        "function:cv::useOptimized()@modules/core/include/opencv2/core/utility.hpp:636:19"
+      ]
+    },
+    {
+      "operation": "opencv.core.power",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.power_owned"
+      ],
+      "upstream": [
+        "function:cv::pow(const cv::_InputArray &,double,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1589:19"
+      ]
+    },
+    {
+      "operation": "opencv.core.processor_count",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_processor_count"
+      ],
+      "upstream": [
+        "function:cv::getNumberOfCPUs()@modules/core/include/opencv2/core/utility.hpp:505:18"
+      ]
+    },
+    {
+      "operation": "opencv.core.random_normal",
+      "status": "mapped",
+      "wrappers": [
+        "function.mat_random_normal"
+      ],
+      "upstream": [
+        "method:cv::RNG::fill(const cv::_InputOutputArray &,int,const cv::_InputArray &,const cv::_InputArray &,bool)@modules/core/include/opencv2/core.hpp:3016:10"
+      ]
+    },
+    {
+      "operation": "opencv.core.random_uniform",
+      "status": "mapped",
+      "wrappers": [
+        "function.mat_random_uniform"
+      ],
+      "upstream": [
+        "method:cv::RNG::fill(const cv::_InputOutputArray &,int,const cv::_InputArray &,const cv::_InputArray &,bool)@modules/core/include/opencv2/core.hpp:3016:10"
+      ]
+    },
+    {
+      "operation": "opencv.core.reduce",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.reduce_owned"
+      ],
+      "upstream": [
+        "function:cv::reduce(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/core/include/opencv2/core.hpp:960:19"
+      ]
+    },
+    {
+      "operation": "opencv.core.serialize",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.serialize_owned"
+      ],
+      "upstream": [
+        "function:cv::operator<<(cv::FileStorage &,const char *)@modules/core/include/opencv2/core/persistence.hpp:1175:14",
+        "method:cv::FileStorage::releaseAndGetString()@modules/core/include/opencv2/core/persistence.hpp:338:28"
+      ]
+    },
+    {
+      "operation": "opencv.core.solve",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.matrix_solve_owned"
+      ],
+      "upstream": [
+        "function:cv::solve(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1967:19",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.sort",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.sort_owned"
+      ],
+      "upstream": [
+        "function:cv::sort(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1983:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.sort_indices",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.sort_indices_owned"
+      ],
+      "upstream": [
+        "function:cv::sortIdx(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:2003:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.square_root",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.square_root_owned"
+      ],
+      "upstream": [
+        "function:cv::minMaxLoc(const cv::_InputArray &,double *,double *,cv::Point_<int> *,cv::Point_<int> *,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:863:19",
+        "function:cv::sqrt(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1564:19",
+        "method:cv::Mat::reshape(int,int)@modules/core/include/opencv2/core/mat.hpp:1365:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.standard_deviation",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.standard_deviation_values_owned"
+      ],
+      "upstream": [
+        "function:cv::meanStdDev(const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:670:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.sum",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.sum_values_owned"
+      ],
+      "upstream": [
+        "function:cv::sum(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:560:32",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.core.thread_count",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_thread_count"
+      ],
+      "upstream": [
+        "function:cv::getNumThreads()@modules/core/include/opencv2/core/utility.hpp:249:18"
+      ]
+    },
+    {
+      "operation": "opencv.core.tick_frequency",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_tick_frequency"
+      ],
+      "upstream": [
+        "function:cv::getTickFrequency()@modules/core/include/opencv2/core/utility.hpp:312:21"
+      ]
+    },
+    {
+      "operation": "opencv.core.trace",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.trace_values_owned"
+      ],
+      "upstream": [
+        "function:cv::trace(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1916:21",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Vec<double, 4>::operator[](int)@modules/core/include/opencv2/core/matx.hpp:425:16"
+      ]
+    },
+    {
+      "operation": "opencv.core.version",
+      "status": "mapped",
+      "wrappers": [
+        "function.opencv_version_owned"
+      ],
+      "upstream": [
+        "function:cv::getVersionString()@modules/core/include/opencv2/core/utility.hpp:281:21"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.batch_count",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_blob.batch_count"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb_center_crop",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_center_crop_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb_letterbox",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_letterbox_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb_normalized",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_normalized_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb_normalized_center_crop",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_normalized_center_crop_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_bgr_rgb_normalized_letterbox",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_bgr_rgb_normalized_letterbox_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale_center_crop",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_center_crop_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale_letterbox",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_letterbox_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale_normalized",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_normalized_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale_normalized_center_crop",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_normalized_center_crop_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.blob_from_grayscale_normalized_letterbox",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.blob_from_grayscale_normalized_letterbox_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.channel_count",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_blob.channel_count"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.channel_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.channel_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.class_confidence_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.class_confidence_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.class_index_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.class_index_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.classification_candidates",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.classification_candidates_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.detection_boxes",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_detections.boxes_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.detection_class_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_detections.class_indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.detection_confidences",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_detections.confidences_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.detection_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_detections.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.dispose_classifications",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.dispose_detections",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.dispose_model",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.dispose_output",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.forward",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_onnx_model.forward_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9",
+        "method:cv::dnn::dnn4_v20251223::Net::empty()@modules/dnn/include/opencv2/dnn/dnn.hpp:509:22",
+        "method:cv::dnn::dnn4_v20251223::Net::forward(const std::basic_string<char> &)@modules/dnn/include/opencv2/dnn/dnn.hpp:629:21",
+        "method:cv::dnn::dnn4_v20251223::Net::setInput(const cv::_InputArray &,const std::basic_string<char> &,double,const cv::Scalar_<double> &)@modules/dnn/include/opencv2/dnn/dnn.hpp:730:22"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.height",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_blob.height"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.live_classifications_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_dnn_classifications_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_dnn_blob_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.live_detection_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_dnn_detections_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.live_model_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_onnx_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.live_output_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_dnn_output_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.load_onnx",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.load_onnx_model_owned"
+      ],
+      "upstream": [
+        "function:cv::dnn::dnn4_v20251223::readNetFromONNX(const std::vector<unsigned char> &)@modules/dnn/include/opencv2/dnn/dnn.hpp:1121:22",
+        "method:cv::dnn::dnn4_v20251223::Net::empty()@modules/dnn/include/opencv2/dnn/dnn.hpp:509:22",
+        "method:cv::dnn::dnn4_v20251223::Net::setPreferableBackend(int)@modules/dnn/include/opencv2/dnn/dnn.hpp:698:22",
+        "method:cv::dnn::dnn4_v20251223::Net::setPreferableTarget(int)@modules/dnn/include/opencv2/dnn/dnn.hpp:717:22"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.non_max_suppression",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_detections.non_max_suppression_owned"
+      ],
+      "upstream": [
+        "function:cv::dnn::dnn4_v20251223::NMSBoxesBatched(const std::vector<cv::Rect_<double>> &,const std::vector<float> &,const std::vector<int> &,const float,const float,std::vector<int> &,const float,const int)@modules/dnn/include/opencv2/dnn/dnn.hpp:1352:23"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_center_xywh_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_center_xywh_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_class_score_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_class_score_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_objectness_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_objectness_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_top_left_xywh_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_top_left_xywh_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_transposed_class_score_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_transposed_class_score_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_transposed_objectness_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_transposed_objectness_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.normalized_xyxy_detections",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.normalized_xyxy_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.output_rank",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_output.rank"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.output_shape",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.shape_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.output_value_count",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.value_count"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.output_values",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.values_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.output_values_slice",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.values_slice_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_any_class_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_any_class_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_class_confidence_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_class_confidence_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_class_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_class_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_class_probability_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_class_probability_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_classification_candidates",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_classification_candidates_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.sigmoid_classifications",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.sigmoid_classifications_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.softmax_class_confidence_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.softmax_class_confidence_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.softmax_class_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.softmax_class_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.softmax_class_probability_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.softmax_class_probability_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.softmax_classifications",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_output.softmax_classifications_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.ssd_detections",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.ssd_detections_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.top_classification",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.top_classification_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.top_classification_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_classifications.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.top_classification_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_classifications.class_indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.top_classification_scores",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_dnn_classifications.scores_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.dnn.top_classifications",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "function.top_classifications_owned"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.values",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_blob.values_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.dnn.width",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_dnn_blob.width"
+      ],
+      "upstream": [
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+      ]
+    },
+    {
+      "operation": "opencv.features.akaze_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_features.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_descriptor_width",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_features.descriptor_width"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_descriptors",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_features.descriptors_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_keypoints",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_features.keypoints_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_match_coordinates",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_matches.coordinates_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_matches.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_match_distances",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_matches.distances_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.akaze_match_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_matches.indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_features.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_descriptor_width",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_features.descriptor_width"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_descriptors",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_features.descriptors_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_keypoints",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_features.keypoints_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_match_coordinates",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_matches.coordinates_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_matches.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_match_distances",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_matches.distances_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.brisk_match_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_matches.indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_features.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.descriptor_width",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_features.descriptor_width"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.descriptors",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_features.descriptors_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.detect_affine_sift",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.affine_sift_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::AffineFeature::create(const cv::Ptr<cv::Feature2D> &,int,int,float,float)@modules/features2d/include/opencv2/features2d.hpp:251:39",
+        "method:cv::AffineFeature::getViewParams(std::vector<float> &,std::vector<float> &)@modules/features2d/include/opencv2/features2d.hpp:255:26",
+        "method:cv::AffineFeature::setViewParams(const std::vector<float> &,const std::vector<float> &)@modules/features2d/include/opencv2/features2d.hpp:254:26",
+        "method:cv::Feature2D::defaultNorm()@modules/features2d/include/opencv2/features2d.hpp:203:25",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detectAndCompute(const cv::_InputArray &,const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &,bool)@modules/features2d/include/opencv2/features2d.hpp:196:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::SIFT::create(int,int,double,double,double,int,bool)@modules/features2d/include/opencv2/features2d.hpp:325:30",
+        "method:cv::SIFT::getContrastThreshold()@modules/features2d/include/opencv2/features2d.hpp:338:28",
+        "method:cv::SIFT::getEdgeThreshold()@modules/features2d/include/opencv2/features2d.hpp:341:28",
+        "method:cv::SIFT::getNFeatures()@modules/features2d/include/opencv2/features2d.hpp:332:25",
+        "method:cv::SIFT::getNOctaveLayers()@modules/features2d/include/opencv2/features2d.hpp:335:25",
+        "method:cv::SIFT::getSigma()@modules/features2d/include/opencv2/features2d.hpp:344:28"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_akaze",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.akaze_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::AKAZE::create(cv::AKAZE::DescriptorType,int,int,float,int,int,cv::KAZE::DiffusivityType,int)@modules/features2d/include/opencv2/features2d.hpp:893:31",
+        "method:cv::AKAZE::getDescriptorChannels()@modules/features2d/include/opencv2/features2d.hpp:906:25",
+        "method:cv::AKAZE::getDescriptorSize()@modules/features2d/include/opencv2/features2d.hpp:903:25",
+        "method:cv::AKAZE::getDescriptorType()@modules/features2d/include/opencv2/features2d.hpp:900:43",
+        "method:cv::AKAZE::getDiffusivity()@modules/features2d/include/opencv2/features2d.hpp:918:43",
+        "method:cv::AKAZE::getMaxPoints()@modules/features2d/include/opencv2/features2d.hpp:922:25",
+        "method:cv::AKAZE::getNOctaveLayers()@modules/features2d/include/opencv2/features2d.hpp:915:25",
+        "method:cv::AKAZE::getNOctaves()@modules/features2d/include/opencv2/features2d.hpp:912:25",
+        "method:cv::AKAZE::getThreshold()@modules/features2d/include/opencv2/features2d.hpp:909:28",
+        "method:cv::Feature2D::defaultNorm()@modules/features2d/include/opencv2/features2d.hpp:203:25",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detectAndCompute(const cv::_InputArray &,const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &,bool)@modules/features2d/include/opencv2/features2d.hpp:196:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_brisk",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.brisk_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::BRISK::create(int,int,float)@modules/features2d/include/opencv2/features2d.hpp:363:31",
+        "method:cv::Feature2D::compute(const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &)@modules/features2d/include/opencv2/features2d.hpp:177:26",
+        "method:cv::Feature2D::defaultNorm()@modules/features2d/include/opencv2/features2d.hpp:203:25",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detect(const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_InputArray &)@modules/features2d/include/opencv2/features2d.hpp:151:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_kaze",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.kaze_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::Feature2D::compute(const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &)@modules/features2d/include/opencv2/features2d.hpp:177:26",
+        "method:cv::Feature2D::defaultNorm()@modules/features2d/include/opencv2/features2d.hpp:203:25",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detect(const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_InputArray &)@modules/features2d/include/opencv2/features2d.hpp:151:26",
+        "method:cv::KAZE::create(bool,bool,float,int,int,cv::KAZE::DiffusivityType)@modules/features2d/include/opencv2/features2d.hpp:825:30",
+        "method:cv::KAZE::getDiffusivity()@modules/features2d/include/opencv2/features2d.hpp:846:43",
+        "method:cv::KAZE::getExtended()@modules/features2d/include/opencv2/features2d.hpp:831:26",
+        "method:cv::KAZE::getNOctaveLayers()@modules/features2d/include/opencv2/features2d.hpp:843:25",
+        "method:cv::KAZE::getNOctaves()@modules/features2d/include/opencv2/features2d.hpp:840:25",
+        "method:cv::KAZE::getThreshold()@modules/features2d/include/opencv2/features2d.hpp:837:28",
+        "method:cv::KAZE::getUpright()@modules/features2d/include/opencv2/features2d.hpp:834:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_mser",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mser_regions_owned"
+      ],
+      "upstream": [
+        "method:cv::MSER::create(int,int,int,double,double,int,double,double,int)@modules/features2d/include/opencv2/features2d.hpp:522:30",
+        "method:cv::MSER::detectRegions(const cv::_InputArray &,std::vector<std::vector<cv::Point_<int>>> &,std::vector<cv::Rect_<int>> &)@modules/features2d/include/opencv2/features2d.hpp:533:26",
+        "method:cv::MSER::getAreaThreshold()@modules/features2d/include/opencv2/features2d.hpp:556:28",
+        "method:cv::MSER::getDelta()@modules/features2d/include/opencv2/features2d.hpp:538:25",
+        "method:cv::MSER::getEdgeBlurSize()@modules/features2d/include/opencv2/features2d.hpp:562:25",
+        "method:cv::MSER::getMaxArea()@modules/features2d/include/opencv2/features2d.hpp:544:25",
+        "method:cv::MSER::getMaxEvolution()@modules/features2d/include/opencv2/features2d.hpp:553:25",
+        "method:cv::MSER::getMaxVariation()@modules/features2d/include/opencv2/features2d.hpp:547:28",
+        "method:cv::MSER::getMinArea()@modules/features2d/include/opencv2/features2d.hpp:541:25",
+        "method:cv::MSER::getMinDiversity()@modules/features2d/include/opencv2/features2d.hpp:550:28",
+        "method:cv::MSER::getMinMargin()@modules/features2d/include/opencv2/features2d.hpp:559:28",
+        "method:cv::MSER::getPass2Only()@modules/features2d/include/opencv2/features2d.hpp:565:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_orb",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.orb_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detectAndCompute(const cv::_InputArray &,const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &,bool)@modules/features2d/include/opencv2/features2d.hpp:196:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::ORB::create(int,float,int,int,int,int,cv::ORB::ScoreType,int,int)@modules/features2d/include/opencv2/features2d.hpp:460:29"
+      ]
+    },
+    {
+      "operation": "opencv.features.detect_sift",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.sift_features_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::Feature2D::defaultNorm()@modules/features2d/include/opencv2/features2d.hpp:203:25",
+        "method:cv::Feature2D::descriptorSize()@modules/features2d/include/opencv2/features2d.hpp:201:25",
+        "method:cv::Feature2D::descriptorType()@modules/features2d/include/opencv2/features2d.hpp:202:25",
+        "method:cv::Feature2D::detectAndCompute(const cv::_InputArray &,const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_OutputArray &,bool)@modules/features2d/include/opencv2/features2d.hpp:196:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::SIFT::create(int,int,double,double,double,int,bool)@modules/features2d/include/opencv2/features2d.hpp:325:30",
+        "method:cv::SIFT::getContrastThreshold()@modules/features2d/include/opencv2/features2d.hpp:338:28",
+        "method:cv::SIFT::getEdgeThreshold()@modules/features2d/include/opencv2/features2d.hpp:341:28",
+        "method:cv::SIFT::getNFeatures()@modules/features2d/include/opencv2/features2d.hpp:332:25",
+        "method:cv::SIFT::getNOctaveLayers()@modules/features2d/include/opencv2/features2d.hpp:335:25",
+        "method:cv::SIFT::getSigma()@modules/features2d/include/opencv2/features2d.hpp:344:28"
+      ]
+    },
+    {
+      "operation": "opencv.features.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_akaze",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_akaze_matches",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_brisk",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_brisk_matches",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_kaze",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_kaze_matches",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_matches",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_mser",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_sift",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.dispose_sift_matches",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_features.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_descriptor_width",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_features.descriptor_width"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_descriptors",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_features.descriptors_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_keypoints",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_features.keypoints_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_match_coordinates",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_matches.coordinates_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_matches.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_match_distances",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_matches.distances_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.kaze_match_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_matches.indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.keypoints",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_features.keypoints_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_akaze_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_akaze_feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_akaze_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_akaze_match_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_brisk_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_brisk_feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_brisk_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_brisk_match_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_orb_feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_kaze_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_kaze_feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_kaze_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_kaze_match_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_orb_match_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_mser_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_mser_region_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_sift_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_sift_feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.live_sift_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_sift_match_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_akaze",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_akaze_features.match_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_brisk",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_brisk_features.match_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_coordinates",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_matches.coordinates_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_matches.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_distances",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_matches.distances_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_matches.indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_kaze",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_kaze_features.match_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_orb",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_orb_features.match_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.match_sift",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_features.match_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.mser_bounds",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mser_regions.bounds_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.mser_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mser_regions.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.mser_offsets",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mser_regions.offsets_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.mser_points",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mser_regions.points_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_features.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_descriptor_width",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_features.descriptor_width"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_descriptors",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_features.descriptors_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_keypoints",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_features.keypoints_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_match_coordinates",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_matches.coordinates_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_match_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_matches.count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_match_distances",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_matches.distances_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.sift_match_indices",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sift_matches.indices_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.features.simple_blob_keypoints",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.simple_blob_keypoints_owned"
+      ],
+      "upstream": [
+        "function:cv::noArray()@modules/core/include/opencv2/core/mat.hpp:477:29",
+        "method:cv::Feature2D::detect(const cv::_InputArray &,std::vector<cv::KeyPoint> &,const cv::_InputArray &)@modules/features2d/include/opencv2/features2d.hpp:151:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Ptr<cv::SimpleBlobDetector>::empty()@modules/core/include/opencv2/core/cvstd_wrapper.hpp:130:17",
+        "method:cv::Ptr<cv::SimpleBlobDetector>::operator->()@modules/core/include/opencv2/core/cvstd_wrapper.hpp:124:8",
+        "method:cv::SimpleBlobDetector::create(const cv::SimpleBlobDetector::Params &)@modules/features2d/include/opencv2/features2d.hpp:784:5",
+        "method:cv::SimpleBlobDetector::getParams()@modules/features2d/include/opencv2/features2d.hpp:787:46"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.abs_diff",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.abs_diff_owned"
+      ],
+      "upstream": [
+        "function:cv::absdiff(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1450:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.adaptive_equalize_hist",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.adaptive_equalize_hist_owned"
+      ],
+      "upstream": [
+        "function:cv::createCLAHE(double,cv::Size_<int>)@modules/imgproc/include/opencv2/imgproc.hpp:3421:25",
+        "method:cv::CLAHE::apply(const cv::_InputArray &,const cv::_OutputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:1053:26",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.adaptive_threshold",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.adaptive_threshold_owned"
+      ],
+      "upstream": [
+        "function:cv::adaptiveThreshold(const cv::_InputArray &,const cv::_OutputArray &,double,int,int,int,double)@modules/imgproc/include/opencv2/imgproc.hpp:3181:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.add_saturated",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.add_saturated_owned"
+      ],
+      "upstream": [
+        "function:cv::add(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &,int)@modules/core/include/opencv2/core.hpp:337:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.add_weighted",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.add_weighted_owned"
+      ],
+      "upstream": [
+        "function:cv::addWeighted(const cv::_InputArray &,double,const cv::_InputArray &,double,double,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:488:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.agast_keypoints",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.agast_keypoints_owned"
+      ],
+      "upstream": [
+        "function:cv::AGAST(const cv::_InputArray &,std::vector<cv::KeyPoint> &,int,bool,cv::AgastFeatureDetector::DetectorType)@modules/features2d/include/opencv2/features2d.hpp:679:17",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.apply_lut",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.apply_lut_owned"
+      ],
+      "upstream": [
+        "function:cv::LUT(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:551:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.apply_mask",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.apply_mask_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_and(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1349:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.bilateral_filter",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.bilateral_filter_owned"
+      ],
+      "upstream": [
+        "function:cv::bilateralFilter(const cv::_InputArray &,const cv::_OutputArray &,int,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1608:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_and",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_and_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_and_masked",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_and_masked_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_or",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_or_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_or_masked",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_or_masked_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_xor",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_xor_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.bitwise_xor_masked",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.bitwise_xor_masked_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.imgproc.blend_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.blend_mask_owned"
+      ],
+      "upstream": [
+        "function:cv::blendLinear(const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:3754:19",
+        "function:cv::subtract(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &,int)@modules/core/include/opencv2/core.hpp:380:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::convertTo(const cv::_OutputArray &,int,double,double)@modules/core/include/opencv2/core/mat.hpp:1305:10",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.box_blur",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.box_blur_owned"
+      ],
+      "upstream": [
+        "function:cv::blur(const cv::_InputArray &,const cv::_OutputArray &,cv::Size_<int>,cv::Point_<int>,int)@modules/imgproc/include/opencv2/imgproc.hpp:1682:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.canny",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.canny_owned"
+      ],
+      "upstream": [
+        "function:cv::Canny(const cv::_InputArray &,const cv::_OutputArray &,double,double,int,bool)@modules/imgproc/include/opencv2/imgproc.hpp:1920:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.compare_mask",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.compare_mask_owned"
+      ],
+      "upstream": [
+        "function:cv::compare(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1511:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.concat_horizontal",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.concat_horizontal_owned"
+      ],
+      "upstream": [
+        "function:cv::hconcat(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1239:17"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.concat_vertical",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.concat_vertical_owned"
+      ],
+      "upstream": [
+        "function:cv::vconcat(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1304:17"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.connected_components",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.connected_components_owned"
+      ],
+      "upstream": [
+        "function:cv::connectedComponentsWithStats(const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4065:62",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.corner_eigensystem",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.corner_eigensystem_owned"
+      ],
+      "upstream": [
+        "function:cv::cornerEigenValsAndVecs(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:2009:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.corner_min_eigenvalue",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.corner_min_eigenvalue_owned"
+      ],
+      "upstream": [
+        "function:cv::cornerMinEigenVal(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:1956:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.crop",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.crop_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::operator()(const cv::Rect_<int> &)@modules/core/include/opencv2/core/mat.hpp:1737:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.cvt_color",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.cvt_color_owned"
+      ],
+      "upstream": [
+        "function:cv::cvtColor(const cv::_InputArray &,const cv::_OutputArray &,int,int,cv::AlgorithmHint)@modules/imgproc/include/opencv2/imgproc.hpp:3804:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.detect_circles",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.detect_circles_owned"
+      ],
+      "upstream": [
+        "function:cv::HoughCircles(const cv::_InputArray &,const cv::_OutputArray &,int,double,double,double,double,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:2309:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Vec<float, 3>::operator[](int)@modules/core/include/opencv2/core/matx.hpp:425:16"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.detect_lines",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.detect_lines_owned"
+      ],
+      "upstream": [
+        "function:cv::HoughLines(const cv::_InputArray &,const cv::_OutputArray &,double,double,int,double,double,double,double,bool)@modules/imgproc/include/opencv2/imgproc.hpp:2202:19",
+        "function:cv::compare(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1511:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Vec<float, 2>::operator[](int)@modules/core/include/opencv2/core/matx.hpp:425:16"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.dilate",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.dilate_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.divide_scaled",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.divide_scaled_owned"
+      ],
+      "upstream": [
+        "function:cv::divide(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,double,int)@modules/core/include/opencv2/core.hpp:439:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.draw_circle",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.draw_circle_owned"
+      ],
+      "upstream": [
+        "function:cv::circle(const cv::_InputOutputArray &,cv::Point_<int>,int,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4741:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.draw_cross",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.draw_cross_owned"
+      ],
+      "upstream": [
+        "function:cv::drawMarker(const cv::_InputOutputArray &,cv::Point_<int>,const cv::Scalar_<double> &,int,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4804:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.draw_ellipse",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.draw_ellipse_owned"
+      ],
+      "upstream": [
+        "function:cv::ellipse(const cv::_InputOutputArray &,cv::Point_<int>,cv::Size_<int>,double,double,double,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4770:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.draw_line",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.draw_line_owned"
+      ],
+      "upstream": [
+        "function:cv::line(const cv::_InputOutputArray &,cv::Point_<int>,cv::Point_<int>,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4679:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.draw_rectangle",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.draw_rectangle_owned"
+      ],
+      "upstream": [
+        "function:cv::rectangle(const cv::_InputOutputArray &,cv::Rect_<int>,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4721:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.equalize_hist",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.equalize_hist_owned"
+      ],
+      "upstream": [
+        "function:cv::equalizeHist(const cv::_InputArray &,const cv::_OutputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:3413:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.erode",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.erode_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.euclidean_distance_transform",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.euclidean_distance_transform_values_owned"
+      ],
+      "upstream": [
+        "function:cv::countNonZero(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:597:18",
+        "function:cv::distanceTransform(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:3654:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.extract_channel",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.extract_channel_owned"
+      ],
+      "upstream": [
+        "function:cv::extractChannel(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1097:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.fast_keypoints",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.fast_keypoints_owned"
+      ],
+      "upstream": [
+        "function:cv::FAST(const cv::_InputArray &,std::vector<cv::KeyPoint> &,int,bool,cv::FastFeatureDetector::DetectorType)@modules/features2d/include/opencv2/features2d.hpp:623:17",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.fill_circle",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.fill_circle_owned"
+      ],
+      "upstream": [
+        "function:cv::circle(const cv::_InputOutputArray &,cv::Point_<int>,int,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4741:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.fill_ellipse",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.fill_ellipse_owned"
+      ],
+      "upstream": [
+        "function:cv::ellipse(const cv::_InputOutputArray &,cv::Point_<int>,cv::Size_<int>,double,double,double,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4770:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.fill_rectangle",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.fill_rectangle_owned"
+      ],
+      "upstream": [
+        "function:cv::rectangle(const cv::_InputOutputArray &,cv::Rect_<int>,const cv::Scalar_<double> &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:4721:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.find_external_contours",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.find_external_contours_owned"
+      ],
+      "upstream": [
+        "function:cv::findContours(const cv::_InputArray &,const cv::_OutputArray &,int,int,cv::Point_<int>)@modules/imgproc/include/opencv2/imgproc.hpp:4116:17",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.flip",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.flip_owned"
+      ],
+      "upstream": [
+        "function:cv::flip(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1139:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.flood_fill",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.flood_fill_owned"
+      ],
+      "upstream": [
+        "function:cv::floodFill(const cv::_InputOutputArray &,cv::Point_<int>,cv::Scalar_<double>,cv::Rect_<int> *,cv::Scalar_<double>,cv::Scalar_<double>,int)@modules/imgproc/include/opencv2/imgproc.hpp:3742:16",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.gaussian_blur",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.gaussian_blur_owned"
+      ],
+      "upstream": [
+        "function:cv::GaussianBlur(const cv::_InputArray &,const cv::_OutputArray &,cv::Size_<int>,double,double,int,cv::AlgorithmHint)@modules/imgproc/include/opencv2/imgproc.hpp:1575:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.good_features_to_track",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.good_features_to_track_owned"
+      ],
+      "upstream": [
+        "function:cv::goodFeaturesToTrack(const cv::_InputArray &,const cv::_OutputArray &,int,double,double,const cv::_InputArray &,int,bool,double)@modules/imgproc/include/opencv2/imgproc.hpp:2127:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.gradient_magnitude",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.gradient_magnitude_owned"
+      ],
+      "upstream": [
+        "function:cv::magnitude(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1695:19",
+        "method:cv::Mat::convertTo(const cv::_OutputArray &,int,double,double)@modules/core/include/opencv2/core/mat.hpp:1305:10"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.harris_response",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.harris_response_owned"
+      ],
+      "upstream": [
+        "function:cv::cornerHarris(const cv::_InputArray &,const cv::_OutputArray &,int,int,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1979:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.histogram",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.histogram_u8_owned"
+      ],
+      "upstream": [
+        "function:cv::calcHist(const cv::Mat *,int,const int *,const cv::_InputArray &,const cv::_OutputArray &,int,const int *,const float **,bool,bool)@modules/imgproc/include/opencv2/imgproc.hpp:3292:17",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.hu_moments",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.hu_moments_owned"
+      ],
+      "upstream": [
+        "function:cv::HuMoments(const cv::Moments &,double *)@modules/imgproc/include/opencv2/imgproc.hpp:3914:17",
+        "function:cv::moments(const cv::_InputArray &,bool)@modules/imgproc/include/opencv2/imgproc.hpp:3893:22",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.in_range",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.in_range_owned"
+      ],
+      "upstream": [
+        "function:cv::inRange(const cv::_InputArray &,const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1482:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.integral_values",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.integral_values_owned"
+      ],
+      "upstream": [
+        "function:cv::integral(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/imgproc/include/opencv2/imgproc.hpp:2926:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.invert",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.invert_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_not(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1421:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.invert_masked",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.invert_masked_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_not(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1421:19",
+        "method:cv::Mat::copyTo(const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core/mat.hpp:1266:10",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9",
+        "method:cv::Mat::zeros(cv::Size_<int>,int)@modules/core/include/opencv2/core/mat.hpp:1465:37",
+        "method:cv::MatExpr::operator Mat()@modules/core/include/opencv2/core/mat.hpp:3660:5",
+        "method:cv::MatSize::operator()()@modules/core/include/opencv2/core/mat.hpp:619:10"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.laplacian_edges",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.laplacian_edges_owned"
+      ],
+      "upstream": [
+        "function:cv::Laplacian(const cv::_InputArray &,const cv::_OutputArray &,int,int,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1888:19",
+        "function:cv::convertScaleAbs(const cv::_InputArray &,const cv::_OutputArray &,double,double)@modules/core/include/opencv2/core.hpp:516:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.line_segments",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.line_segments_owned"
+      ],
+      "upstream": [
+        "function:cv::HoughLinesP(const cv::_InputArray &,const cv::_OutputArray &,double,double,int,double,double)@modules/imgproc/include/opencv2/imgproc.hpp:2236:19",
+        "function:cv::compare(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1511:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.manhattan_distance_transform",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.manhattan_distance_transform_owned"
+      ],
+      "upstream": [
+        "function:cv::distanceTransform(const cv::_InputArray &,const cv::_OutputArray &,int,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:3654:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mask_and",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mask_and_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_and(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1349:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mask_not",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mask_not_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_not(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1421:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mask_or",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mask_or_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_or(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1376:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mask_xor",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mask_xor_owned"
+      ],
+      "upstream": [
+        "function:cv::bitwise_xor(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:1404:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.match_template_sqdiff",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.match_template_sqdiff_owned"
+      ],
+      "upstream": [
+        "function:cv::matchTemplate(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int,const cv::_InputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:3997:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.maximum",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.maximum_owned"
+      ],
+      "upstream": [
+        "function:cv::max(const cv::Mat &,const cv::Mat &,cv::Mat &)@modules/core/include/opencv2/core.hpp:1549:17"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mean_absolute_error_channels",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mean_absolute_error_channels_owned"
+      ],
+      "upstream": [
+        "function:cv::absdiff(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1450:19",
+        "function:cv::mean(const cv::_InputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:648:21",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mean_channels",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mean_channels_owned"
+      ],
+      "upstream": [
+        "function:cv::mean(const cv::_InputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:648:21",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.mean_shift_filter",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.mean_shift_filter_owned"
+      ],
+      "upstream": [
+        "function:cv::pyrMeanShiftFiltering(const cv::_InputArray &,const cv::_OutputArray &,double,double,int,cv::TermCriteria)@modules/imgproc/include/opencv2/imgproc.hpp:3541:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.median_blur",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.median_blur_owned"
+      ],
+      "upstream": [
+        "function:cv::medianBlur(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/imgproc/include/opencv2/imgproc.hpp:1552:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.merge_bgr",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.merge_bgr_owned"
+      ],
+      "upstream": [
+        "function:cv::merge(const cv::Mat *,unsigned long,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:981:17",
+        "method:cv::Mat::elemSize1()@modules/core/include/opencv2/core/mat.hpp:1846:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.merge_bgra",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.merge_bgra_owned"
+      ],
+      "upstream": [
+        "function:cv::merge(const cv::Mat *,unsigned long,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:981:17",
+        "method:cv::Mat::elemSize1()@modules/core/include/opencv2/core/mat.hpp:1846:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.min_max_values",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.min_max_values_owned"
+      ],
+      "upstream": [
+        "function:cv::minMaxLoc(const cv::_InputArray &,double *,double *,cv::Point_<int> *,cv::Point_<int> *,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:863:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.minimum",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.minimum_owned"
+      ],
+      "upstream": [
+        "function:cv::min(const cv::Mat &,const cv::Mat &,cv::Mat &)@modules/core/include/opencv2/core.hpp:1528:17"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.morphology",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.morphology_owned"
+      ],
+      "upstream": [
+        "function:cv::getStructuringElement(int,cv::Size_<int>,cv::Point_<int>)@modules/imgproc/include/opencv2/imgproc.hpp:1530:18",
+        "function:cv::morphologyEx(const cv::_InputArray &,const cv::_OutputArray &,int,const cv::_InputArray &,cv::Point_<int>,int,int,const cv::Scalar_<double> &)@modules/imgproc/include/opencv2/imgproc.hpp:2408:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.multiply_scaled",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.multiply_scaled_owned"
+      ],
+      "upstream": [
+        "function:cv::multiply(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,double,int)@modules/core/include/opencv2/core.hpp:408:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_approximate_hull",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_approximate_hull_owned"
+      ],
+      "upstream": [
+        "function:cv::approxPolyDP(const cv::_InputArray &,const cv::_OutputArray &,double,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4145:19",
+        "function:cv::convexHull(const cv::_InputArray &,const cv::_OutputArray &,bool,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4351:19",
+        "function:cv::isContourConvex(const cv::_InputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:4380:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_bounds",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_bounds_owned"
+      ],
+      "upstream": [
+        "function:cv::boundingRect(const cv::_InputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:4187:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Rect_<int>::empty()@modules/core/include/opencv2/core/types.hpp:472:10"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_centroid",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_centroid_owned"
+      ],
+      "upstream": [
+        "function:cv::moments(const cv::_InputArray &,bool)@modules/imgproc/include/opencv2/imgproc.hpp:3893:22",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_convex_hull",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_convex_hull_owned"
+      ],
+      "upstream": [
+        "function:cv::convexHull(const cv::_InputArray &,const cv::_OutputArray &,bool,bool)@modules/imgproc/include/opencv2/imgproc.hpp:4351:19",
+        "function:cv::isContourConvex(const cv::_InputArray &)@modules/imgproc/include/opencv2/imgproc.hpp:4380:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_counts",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_counts_owned"
+      ],
+      "upstream": [
+        "function:cv::countNonZero(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:597:18",
+        "function:cv::extractChannel(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1097:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_enclosing_circle",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_enclosing_circle_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_enclosing_triangle",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_enclosing_triangle_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_fit_ellipse",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_fit_ellipse_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_fit_line",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_fit_line_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_min_area_box",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_min_area_box_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.non_zero_points",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.non_zero_points_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.normalize_min_max",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.normalize_min_max_owned"
+      ],
+      "upstream": [
+        "function:cv::normalize(const cv::_InputArray &,const cv::_InputOutputArray &,double,double,int,int,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:825:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.otsu_threshold",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.otsu_threshold_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.pad",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.pad_owned"
+      ],
+      "upstream": [
+        "function:cv::copyMakeBorder(const cv::_InputArray &,const cv::_OutputArray &,int,int,int,int,int,const cv::Scalar_<double> &)@modules/core/include/opencv2/core.hpp:294:19",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.pre_corner_response",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.pre_corner_response_owned"
+      ],
+      "upstream": [
+        "function:cv::preCornerDetect(const cv::_InputArray &,const cv::_OutputArray &,int,int)@modules/imgproc/include/opencv2/imgproc.hpp:2036:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.pyr_down",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.pyr_down_owned"
+      ],
+      "upstream": [
+        "function:cv::pyrDown(const cv::_InputArray &,const cv::_OutputArray &,const cv::Size_<int> &,int)@modules/imgproc/include/opencv2/imgproc.hpp:3213:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.pyr_up",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.pyr_up_owned"
+      ],
+      "upstream": [
+        "function:cv::pyrUp(const cv::_InputArray &,const cv::_OutputArray &,const cv::Size_<int> &,int)@modules/imgproc/include/opencv2/imgproc.hpp:3233:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.replace_channel",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.replace_channel_owned"
+      ],
+      "upstream": [
+        "function:cv::insertChannel(const cv::_InputArray &,const cv::_InputOutputArray &,int)@modules/core/include/opencv2/core.hpp:1105:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.resize",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.resize_owned"
+      ],
+      "upstream": [
+        "function:cv::resize(const cv::_InputArray &,const cv::_OutputArray &,cv::Size_<int>,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:2453:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.rotate",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.rotate_owned"
+      ],
+      "upstream": [
+        "function:cv::rotate(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1171:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.scale_abs",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.scale_abs_owned"
+      ],
+      "upstream": [
+        "function:cv::convertScaleAbs(const cv::_InputArray &,const cv::_OutputArray &,double,double)@modules/core/include/opencv2/core.hpp:516:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.scharr_edges",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.scharr_edges_owned"
+      ],
+      "upstream": [
+        "function:cv::Scharr(const cv::_InputArray &,const cv::_OutputArray &,int,int,int,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1857:19",
+        "function:cv::convertScaleAbs(const cv::_InputArray &,const cv::_OutputArray &,double,double)@modules/core/include/opencv2/core.hpp:516:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.select_mask",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.select_mask_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::copyTo(const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core/mat.hpp:1266:10"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.shape_match_scores",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.shape_match_scores_owned"
+      ],
+      "upstream": [
+        "function:cv::compare(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,int)@modules/core/include/opencv2/core.hpp:1511:19",
+        "function:cv::countNonZero(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:597:18",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.sharpen",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.sharpen_owned"
+      ],
+      "upstream": [
+        "function:cv::filter2D(const cv::_InputArray &,const cv::_OutputArray &,int,const cv::_InputArray &,cv::Point_<int>,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1733:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.sobel_edges",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.sobel_edges_owned"
+      ],
+      "upstream": [
+        "function:cv::Sobel(const cv::_InputArray &,const cv::_OutputArray &,int,int,int,int,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:1807:19",
+        "function:cv::convertScaleAbs(const cv::_InputArray &,const cv::_OutputArray &,double,double)@modules/core/include/opencv2/core.hpp:516:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.stack_blur",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.stack_blur_owned"
+      ],
+      "upstream": [
+        "function:cv::stackBlur(const cv::_InputArray &,const cv::_OutputArray &,cv::Size_<int>)@modules/imgproc/include/opencv2/imgproc.hpp:1701:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.stddev_channels",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.stddev_channels_owned"
+      ],
+      "upstream": [
+        "function:cv::meanStdDev(const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:670:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.subtract_saturated",
+      "status": "gap",
+      "gap": "direct_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.subtract_saturated_owned"
+      ],
+      "upstream": [
+        "function:cv::subtract(const cv::_InputArray &,const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &,int)@modules/core/include/opencv2/core.hpp:380:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.sum_channels",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.sum_channels_owned"
+      ],
+      "upstream": [
+        "function:cv::sum(const cv::_InputArray &)@modules/core/include/opencv2/core.hpp:560:32",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.threshold",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.threshold_owned"
+      ],
+      "upstream": [
+        "function:cv::threshold(const cv::_InputArray &,const cv::_OutputArray &,double,double,int)@modules/imgproc/include/opencv2/imgproc.hpp:3133:21",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.tile",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.tile_owned"
+      ],
+      "upstream": [
+        "function:cv::repeat(const cv::_InputArray &,int,int,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1186:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.transpose",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.transpose_owned"
+      ],
+      "upstream": [
+        "function:cv::transpose(const cv::_InputArray &,const cv::_OutputArray &)@modules/core/include/opencv2/core.hpp:1796:19"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.triangle_threshold",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.triangle_threshold_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.warp_affine",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.warp_affine_owned"
+      ],
+      "upstream": [
+        "function:cv::warpAffine(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &,cv::Size_<int>,int,int,const cv::Scalar_<double> &)@modules/imgproc/include/opencv2/imgproc.hpp:2481:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.imgproc.warp_perspective",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.warp_perspective_owned"
+      ],
+      "upstream": [
+        "function:cv::warpPerspective(const cv::_InputArray &,const cv::_OutputArray &,const cv::_InputArray &,cv::Size_<int>,int,int,const cv::Scalar_<double> &)@modules/imgproc/include/opencv2/imgproc.hpp:2513:19",
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Scalar_<double>::all(double)@modules/core/include/opencv2/core/types.hpp:694:25"
+      ]
+    },
+    {
+      "operation": "opencv.mat.byte_count",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.byte_count"
+      ],
+      "upstream": [
+        "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.channels",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.channels"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.clone",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.clone_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26"
+      ]
+    },
+    {
+      "operation": "opencv.mat.col_range_copy",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.col_range_copy_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::colRange(int,int)@modules/core/include/opencv2/core/mat.hpp:1181:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.cols",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.cols"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.convert_depth",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.convert_depth_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::convertTo(const cv::_OutputArray &,int,double,double)@modules/core/include/opencv2/core/mat.hpp:1305:10"
+      ]
+    },
+    {
+      "operation": "opencv.mat.depth_code",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.depth_code"
+      ],
+      "upstream": [
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.diagonal_copy",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.diagonal_copy_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::diag(int)@modules/core/include/opencv2/core/mat.hpp:1222:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.dimension_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.dimension_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.element_count",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.element_count"
+      ],
+      "upstream": [
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.element_size",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.element_size"
+      ],
+      "upstream": [
+        "method:cv::Mat::elemSize1()@modules/core/include/opencv2/core/mat.hpp:1846:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.empty",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.empty"
+      ],
+      "upstream": [
+        "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10"
+      ]
+    },
+    {
+      "operation": "opencv.mat.export_tensor_packet",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.to_tensor_packet"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::depth()@modules/core/include/opencv2/core/mat.hpp:1868:9",
+        "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12",
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.from_bytes",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.mat_from_bytes"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.from_u8",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.mat_from_u8"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.import_tensor_packet",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.mat_from_tensor_packet"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.is_contiguous",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.is_contiguous"
+      ],
+      "upstream": [
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10"
+      ]
+    },
+    {
+      "operation": "opencv.mat.is_submatrix",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.is_submatrix"
+      ],
+      "upstream": [
+        "method:cv::Mat::isSubmatrix()@modules/core/include/opencv2/core/mat.hpp:1832:10"
+      ]
+    },
+    {
+      "operation": "opencv.mat.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_mat_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.pixel_size",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.pixel_size"
+      ],
+      "upstream": [
+        "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.reshape_copy",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.reshape_copy_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::channels()@modules/core/include/opencv2/core/mat.hpp:1874:9",
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::elemSize1()@modules/core/include/opencv2/core/mat.hpp:1846:12",
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::reshape(int,int)@modules/core/include/opencv2/core/mat.hpp:1365:9",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.row_range_copy",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.row_range_copy_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::clone()@modules/core/include/opencv2/core/mat.hpp:1236:26",
+        "method:cv::Mat::rowRange(int,int)@modules/core/include/opencv2/core/mat.hpp:1167:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.rows",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.rows"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.step_scalars",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.step_scalars"
+      ],
+      "upstream": [
+        "method:cv::Mat::step1(int)@modules/core/include/opencv2/core/mat.hpp:1881:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.to_bytes",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mat.to_bytes"
+      ],
+      "upstream": [
+        "method:cv::Mat::elemSize()@modules/core/include/opencv2/core/mat.hpp:1839:12",
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12"
+      ]
+    },
+    {
+      "operation": "opencv.mat.to_u8",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mat.to_u8"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.mat.type_code",
+      "status": "mapped",
+      "wrappers": [
+        "method.opencv_mat.type_code"
+      ],
+      "upstream": [
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9"
+      ]
+    },
+    {
+      "operation": "opencv.mat.zeros",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.mat_zeros"
+      ],
+      "upstream": [
+        "method:cv::Mat::zeros(int,int,int)@modules/core/include/opencv2/core/mat.hpp:1459:37",
+        "method:cv::MatExpr::operator Mat()@modules/core/include/opencv2/core/mat.hpp:3660:5"
+      ]
+    },
+    {
+      "operation": "opencv.mat.zeros_typed",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.mat_zeros_typed"
+      ],
+      "upstream": [
+        "method:cv::Mat::zeros(int,int,int)@modules/core/include/opencv2/core/mat.hpp:1459:37",
+        "method:cv::MatExpr::operator Mat()@modules/core/include/opencv2/core/mat.hpp:3660:5"
+      ]
+    },
+    {
+      "operation": "opencv.ml.boost_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_boost_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.boost_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_boost_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.decision_tree_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_decision_tree_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.decision_tree_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_decision_tree_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_boost",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_decision_tree",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_gaussian_mixture",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_linear_svm",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_logistic",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_mlp",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_normal_bayes",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_random_forest",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.dispose_sgd_svm",
+      "status": "gap",
+      "gap": "no_wrapper",
+      "wrappers": [],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_knn_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.gaussian_mixture_cluster_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_gaussian_mixture_model.cluster_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.gaussian_mixture_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_gaussian_mixture_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.gaussian_mixture_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_gaussian_mixture_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.linear_svm_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_linear_svm_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.linear_svm_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_linear_svm_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_boost_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_boost_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_knn_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_decision_tree_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_decision_tree_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_gaussian_mixture_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_gaussian_mixture_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_linear_svm_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_linear_svm_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_logistic_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_logistic_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_mlp_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_mlp_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_normal_bayes_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_normal_bayes_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_random_forest_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_random_forest_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.live_sgd_svm_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "function.live_sgd_svm_model_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.logistic_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_logistic_regression_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.logistic_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_logistic_regression_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.mlp_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mlp_classifier_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.mlp_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_mlp_classifier_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.normal_bayes_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_normal_bayes_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.normal_bayes_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_normal_bayes_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_knn_model.predict_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::KNearest::findNearest(const cv::_InputArray &,int,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &)@modules/ml/include/opencv2/ml.hpp:490:27",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.predict_boost",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_boost_model.predict_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict_decision_tree",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_decision_tree_model.predict_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict_gaussian_clusters",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_gaussian_mixture_model.predict_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::row(int)@modules/core/include/opencv2/core/mat.hpp:1149:9",
+        "method:cv::Vec<double, 2>::operator[](int)@modules/core/include/opencv2/core/matx.hpp:425:16",
+        "method:cv::ml::EM::predict2(const cv::_InputArray &,const cv::_OutputArray &)@modules/ml/include/opencv2/ml.hpp:930:27",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.predict_linear_svm",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_linear_svm_model.predict_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict_logistic",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_logistic_regression_model.predict_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::isContinuous()@modules/core/include/opencv2/core/mat.hpp:1829:10",
+        "method:cv::Mat::type()@modules/core/include/opencv2/core/mat.hpp:1853:9",
+        "method:cv::ml::LogisticRegression::predict(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/ml/include/opencv2/ml.hpp:1691:27",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.predict_mlp",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_mlp_classifier_model.predict_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::predict(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/ml/include/opencv2/ml.hpp:377:27"
+      ]
+    },
+    {
+      "operation": "opencv.ml.predict_normal_bayes",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_normal_bayes_model.predict_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict_random_forest",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_random_forest_model.predict_owned"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.predict_sgd_svm",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "method.opencv_sgd_svm_model.predict_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::predict(const cv::_InputArray &,const cv::_OutputArray &,int)@modules/ml/include/opencv2/ml.hpp:377:27"
+      ]
+    },
+    {
+      "operation": "opencv.ml.random_forest_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_random_forest_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.random_forest_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_random_forest_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_knn_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.sgd_svm_feature_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sgd_svm_model.feature_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.sgd_svm_sample_count",
+      "status": "gap",
+      "gap": "no_exact_call",
+      "wrappers": [
+        "method.opencv_sgd_svm_model.sample_count"
+      ],
+      "upstream": []
+    },
+    {
+      "operation": "opencv.ml.train_boost_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_boost_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10",
+        "method:cv::ml::Boost::create()@modules/ml/include/opencv2/ml.hpp:1370:31",
+        "method:cv::ml::Boost::getBoostType()@modules/ml/include/opencv2/ml.hpp:1338:25",
+        "method:cv::ml::Boost::getWeakCount()@modules/ml/include/opencv2/ml.hpp:1345:25",
+        "method:cv::ml::Boost::getWeightTrimRate()@modules/ml/include/opencv2/ml.hpp:1353:28",
+        "method:cv::ml::Boost::setBoostType(int)@modules/ml/include/opencv2/ml.hpp:1340:26",
+        "method:cv::ml::Boost::setWeakCount(int)@modules/ml/include/opencv2/ml.hpp:1347:26",
+        "method:cv::ml::Boost::setWeightTrimRate(double)@modules/ml/include/opencv2/ml.hpp:1355:26",
+        "method:cv::ml::DTrees::getCVFolds()@modules/ml/include/opencv2/ml.hpp:1097:25",
+        "method:cv::ml::DTrees::getMaxDepth()@modules/ml/include/opencv2/ml.hpp:1081:25",
+        "method:cv::ml::DTrees::getMinSampleCount()@modules/ml/include/opencv2/ml.hpp:1089:25",
+        "method:cv::ml::DTrees::getPriors()@modules/ml/include/opencv2/ml.hpp:1151:29",
+        "method:cv::ml::DTrees::getRegressionAccuracy()@modules/ml/include/opencv2/ml.hpp:1131:27",
+        "method:cv::ml::DTrees::getTruncatePrunedTree()@modules/ml/include/opencv2/ml.hpp:1122:26",
+        "method:cv::ml::DTrees::getUse1SERule()@modules/ml/include/opencv2/ml.hpp:1114:26",
+        "method:cv::ml::DTrees::getUseSurrogates()@modules/ml/include/opencv2/ml.hpp:1106:26",
+        "method:cv::ml::DTrees::setCVFolds(int)@modules/ml/include/opencv2/ml.hpp:1099:26",
+        "method:cv::ml::DTrees::setMaxCategories(int)@modules/ml/include/opencv2/ml.hpp:1073:26",
+        "method:cv::ml::DTrees::setMaxDepth(int)@modules/ml/include/opencv2/ml.hpp:1083:26",
+        "method:cv::ml::DTrees::setMinSampleCount(int)@modules/ml/include/opencv2/ml.hpp:1091:26",
+        "method:cv::ml::DTrees::setPriors(const cv::Mat &)@modules/ml/include/opencv2/ml.hpp:1153:26",
+        "method:cv::ml::DTrees::setRegressionAccuracy(float)@modules/ml/include/opencv2/ml.hpp:1133:26",
+        "method:cv::ml::DTrees::setTruncatePrunedTree(bool)@modules/ml/include/opencv2/ml.hpp:1124:26",
+        "method:cv::ml::DTrees::setUse1SERule(bool)@modules/ml/include/opencv2/ml.hpp:1116:26",
+        "method:cv::ml::DTrees::setUseSurrogates(bool)@modules/ml/include/opencv2/ml.hpp:1108:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_decision_tree_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_decision_tree_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10",
+        "method:cv::ml::DTrees::create()@modules/ml/include/opencv2/ml.hpp:1225:32",
+        "method:cv::ml::DTrees::getCVFolds()@modules/ml/include/opencv2/ml.hpp:1097:25",
+        "method:cv::ml::DTrees::getMaxDepth()@modules/ml/include/opencv2/ml.hpp:1081:25",
+        "method:cv::ml::DTrees::getMinSampleCount()@modules/ml/include/opencv2/ml.hpp:1089:25",
+        "method:cv::ml::DTrees::getNodes()@modules/ml/include/opencv2/ml.hpp:1207:38",
+        "method:cv::ml::DTrees::getPriors()@modules/ml/include/opencv2/ml.hpp:1151:29",
+        "method:cv::ml::DTrees::getRegressionAccuracy()@modules/ml/include/opencv2/ml.hpp:1131:27",
+        "method:cv::ml::DTrees::getRoots()@modules/ml/include/opencv2/ml.hpp:1202:37",
+        "method:cv::ml::DTrees::getSplits()@modules/ml/include/opencv2/ml.hpp:1212:39",
+        "method:cv::ml::DTrees::getTruncatePrunedTree()@modules/ml/include/opencv2/ml.hpp:1122:26",
+        "method:cv::ml::DTrees::getUse1SERule()@modules/ml/include/opencv2/ml.hpp:1114:26",
+        "method:cv::ml::DTrees::getUseSurrogates()@modules/ml/include/opencv2/ml.hpp:1106:26",
+        "method:cv::ml::DTrees::setCVFolds(int)@modules/ml/include/opencv2/ml.hpp:1099:26",
+        "method:cv::ml::DTrees::setMaxCategories(int)@modules/ml/include/opencv2/ml.hpp:1073:26",
+        "method:cv::ml::DTrees::setMaxDepth(int)@modules/ml/include/opencv2/ml.hpp:1083:26",
+        "method:cv::ml::DTrees::setMinSampleCount(int)@modules/ml/include/opencv2/ml.hpp:1091:26",
+        "method:cv::ml::DTrees::setPriors(const cv::Mat &)@modules/ml/include/opencv2/ml.hpp:1153:26",
+        "method:cv::ml::DTrees::setRegressionAccuracy(float)@modules/ml/include/opencv2/ml.hpp:1133:26",
+        "method:cv::ml::DTrees::setTruncatePrunedTree(bool)@modules/ml/include/opencv2/ml.hpp:1124:26",
+        "method:cv::ml::DTrees::setUse1SERule(bool)@modules/ml/include/opencv2/ml.hpp:1116:26",
+        "method:cv::ml::DTrees::setUseSurrogates(bool)@modules/ml/include/opencv2/ml.hpp:1108:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_gaussian_mixture",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_gaussian_mixture_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::EM::create()@modules/ml/include/opencv2/ml.hpp:1026:28",
+        "method:cv::ml::EM::getClustersNumber()@modules/ml/include/opencv2/ml.hpp:871:25",
+        "method:cv::ml::EM::getCovarianceMatrixType()@modules/ml/include/opencv2/ml.hpp:878:25",
+        "method:cv::ml::EM::getCovs(std::vector<cv::Mat> &)@modules/ml/include/opencv2/ml.hpp:907:26",
+        "method:cv::ml::EM::getMeans()@modules/ml/include/opencv2/ml.hpp:901:25",
+        "method:cv::ml::EM::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:887:34",
+        "method:cv::ml::EM::getWeights()@modules/ml/include/opencv2/ml.hpp:895:25",
+        "method:cv::ml::EM::setClustersNumber(int)@modules/ml/include/opencv2/ml.hpp:873:26",
+        "method:cv::ml::EM::setCovarianceMatrixType(int)@modules/ml/include/opencv2/ml.hpp:880:26",
+        "method:cv::ml::EM::setTermCriteria(const cv::TermCriteria &)@modules/ml/include/opencv2/ml.hpp:889:26",
+        "method:cv::ml::EM::trainEM(const cv::_InputArray &,const cv::_OutputArray &,const cv::_OutputArray &,const cv::_OutputArray &)@modules/ml/include/opencv2/ml.hpp:960:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_knn_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_knn_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::KNearest::create()@modules/ml/include/opencv2/ml.hpp:507:34",
+        "method:cv::ml::KNearest::getAlgorithmType()@modules/ml/include/opencv2/ml.hpp:460:25",
+        "method:cv::ml::KNearest::getDefaultK()@modules/ml/include/opencv2/ml.hpp:442:25",
+        "method:cv::ml::KNearest::setAlgorithmType(int)@modules/ml/include/opencv2/ml.hpp:462:26",
+        "method:cv::ml::KNearest::setDefaultK(int)@modules/ml/include/opencv2/ml.hpp:444:26",
+        "method:cv::ml::KNearest::setIsClassifier(bool)@modules/ml/include/opencv2/ml.hpp:450:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_linear_svm_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_linear_svm_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::SVM::create()@modules/ml/include/opencv2/ml.hpp:816:29",
+        "method:cv::ml::SVM::getC()@modules/ml/include/opencv2/ml.hpp:568:28",
+        "method:cv::ml::SVM::getKernelType()@modules/ml/include/opencv2/ml.hpp:607:25",
+        "method:cv::ml::SVM::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:601:38",
+        "method:cv::ml::SVM::getType()@modules/ml/include/opencv2/ml.hpp:540:25",
+        "method:cv::ml::SVM::setC(double)@modules/ml/include/opencv2/ml.hpp:570:26",
+        "method:cv::ml::SVM::setKernel(int)@modules/ml/include/opencv2/ml.hpp:611:26",
+        "method:cv::ml::SVM::setTermCriteria(const cv::TermCriteria &)@modules/ml/include/opencv2/ml.hpp:603:26",
+        "method:cv::ml::SVM::setType(int)@modules/ml/include/opencv2/ml.hpp:542:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_logistic_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_logistic_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::LogisticRegression::create()@modules/ml/include/opencv2/ml.hpp:1704:44",
+        "method:cv::ml::LogisticRegression::getIterations()@modules/ml/include/opencv2/ml.hpp:1641:25",
+        "method:cv::ml::LogisticRegression::getLearningRate()@modules/ml/include/opencv2/ml.hpp:1635:28",
+        "method:cv::ml::LogisticRegression::getMiniBatchSize()@modules/ml/include/opencv2/ml.hpp:1661:25",
+        "method:cv::ml::LogisticRegression::getRegularization()@modules/ml/include/opencv2/ml.hpp:1647:25",
+        "method:cv::ml::LogisticRegression::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:1667:34",
+        "method:cv::ml::LogisticRegression::getTrainMethod()@modules/ml/include/opencv2/ml.hpp:1653:25",
+        "method:cv::ml::LogisticRegression::setIterations(int)@modules/ml/include/opencv2/ml.hpp:1643:26",
+        "method:cv::ml::LogisticRegression::setLearningRate(double)@modules/ml/include/opencv2/ml.hpp:1637:26",
+        "method:cv::ml::LogisticRegression::setMiniBatchSize(int)@modules/ml/include/opencv2/ml.hpp:1663:26",
+        "method:cv::ml::LogisticRegression::setRegularization(int)@modules/ml/include/opencv2/ml.hpp:1649:26",
+        "method:cv::ml::LogisticRegression::setTermCriteria(cv::TermCriteria)@modules/ml/include/opencv2/ml.hpp:1669:26",
+        "method:cv::ml::LogisticRegression::setTrainMethod(int)@modules/ml/include/opencv2/ml.hpp:1655:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_mlp_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_mlp_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::ANN_MLP::create()@modules/ml/include/opencv2/ml.hpp:1604:33",
+        "method:cv::ml::ANN_MLP::getBackpropMomentumScale()@modules/ml/include/opencv2/ml.hpp:1492:28",
+        "method:cv::ml::ANN_MLP::getBackpropWeightScale()@modules/ml/include/opencv2/ml.hpp:1483:28",
+        "method:cv::ml::ANN_MLP::getLayerSizes()@modules/ml/include/opencv2/ml.hpp:1469:29",
+        "method:cv::ml::ANN_MLP::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:1476:34",
+        "method:cv::ml::ANN_MLP::getTrainMethod()@modules/ml/include/opencv2/ml.hpp:1449:25",
+        "method:cv::ml::ANN_MLP::setActivationFunction(int,double,double)@modules/ml/include/opencv2/ml.hpp:1457:26",
+        "method:cv::ml::ANN_MLP::setLayerSizes(const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:1463:26",
+        "method:cv::ml::ANN_MLP::setTermCriteria(cv::TermCriteria)@modules/ml/include/opencv2/ml.hpp:1478:26",
+        "method:cv::ml::ANN_MLP::setTrainMethod(int,double,double)@modules/ml/include/opencv2/ml.hpp:1446:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_normal_bayes_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_normal_bayes_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::NormalBayesClassifier::create()@modules/ml/include/opencv2/ml.hpp:414:47",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_random_forest_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_random_forest_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::Mat::empty()@modules/core/include/opencv2/core/mat.hpp:1888:10",
+        "method:cv::ml::DTrees::getCVFolds()@modules/ml/include/opencv2/ml.hpp:1097:25",
+        "method:cv::ml::DTrees::getMaxDepth()@modules/ml/include/opencv2/ml.hpp:1081:25",
+        "method:cv::ml::DTrees::getMinSampleCount()@modules/ml/include/opencv2/ml.hpp:1089:25",
+        "method:cv::ml::DTrees::getNodes()@modules/ml/include/opencv2/ml.hpp:1207:38",
+        "method:cv::ml::DTrees::getPriors()@modules/ml/include/opencv2/ml.hpp:1151:29",
+        "method:cv::ml::DTrees::getRegressionAccuracy()@modules/ml/include/opencv2/ml.hpp:1131:27",
+        "method:cv::ml::DTrees::getRoots()@modules/ml/include/opencv2/ml.hpp:1202:37",
+        "method:cv::ml::DTrees::getSplits()@modules/ml/include/opencv2/ml.hpp:1212:39",
+        "method:cv::ml::DTrees::getTruncatePrunedTree()@modules/ml/include/opencv2/ml.hpp:1122:26",
+        "method:cv::ml::DTrees::getUse1SERule()@modules/ml/include/opencv2/ml.hpp:1114:26",
+        "method:cv::ml::DTrees::getUseSurrogates()@modules/ml/include/opencv2/ml.hpp:1106:26",
+        "method:cv::ml::DTrees::setCVFolds(int)@modules/ml/include/opencv2/ml.hpp:1099:26",
+        "method:cv::ml::DTrees::setMaxCategories(int)@modules/ml/include/opencv2/ml.hpp:1073:26",
+        "method:cv::ml::DTrees::setMaxDepth(int)@modules/ml/include/opencv2/ml.hpp:1083:26",
+        "method:cv::ml::DTrees::setMinSampleCount(int)@modules/ml/include/opencv2/ml.hpp:1091:26",
+        "method:cv::ml::DTrees::setPriors(const cv::Mat &)@modules/ml/include/opencv2/ml.hpp:1153:26",
+        "method:cv::ml::DTrees::setRegressionAccuracy(float)@modules/ml/include/opencv2/ml.hpp:1133:26",
+        "method:cv::ml::DTrees::setTruncatePrunedTree(bool)@modules/ml/include/opencv2/ml.hpp:1124:26",
+        "method:cv::ml::DTrees::setUse1SERule(bool)@modules/ml/include/opencv2/ml.hpp:1116:26",
+        "method:cv::ml::DTrees::setUseSurrogates(bool)@modules/ml/include/opencv2/ml.hpp:1108:26",
+        "method:cv::ml::RTrees::create()@modules/ml/include/opencv2/ml.hpp:1310:32",
+        "method:cv::ml::RTrees::getActiveVarCount()@modules/ml/include/opencv2/ml.hpp:1263:25",
+        "method:cv::ml::RTrees::getCalculateVarImportance()@modules/ml/include/opencv2/ml.hpp:1254:26",
+        "method:cv::ml::RTrees::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:1275:34",
+        "method:cv::ml::RTrees::getVarImportance()@modules/ml/include/opencv2/ml.hpp:1284:25",
+        "method:cv::ml::RTrees::setActiveVarCount(int)@modules/ml/include/opencv2/ml.hpp:1265:26",
+        "method:cv::ml::RTrees::setCalculateVarImportance(bool)@modules/ml/include/opencv2/ml.hpp:1256:26",
+        "method:cv::ml::RTrees::setTermCriteria(const cv::TermCriteria &)@modules/ml/include/opencv2/ml.hpp:1277:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    },
+    {
+      "operation": "opencv.ml.train_sgd_svm_classifier",
+      "status": "gap",
+      "gap": "composed_behavior_review",
+      "wrappers": [
+        "function.train_sgd_svm_classifier_owned"
+      ],
+      "upstream": [
+        "method:cv::ml::SVMSGD::create()@modules/ml/include/opencv2/ml.hpp:1829:32",
+        "method:cv::ml::SVMSGD::getInitialStepSize()@modules/ml/include/opencv2/ml.hpp:1868:27",
+        "method:cv::ml::SVMSGD::getMarginRegularization()@modules/ml/include/opencv2/ml.hpp:1862:27",
+        "method:cv::ml::SVMSGD::getMarginType()@modules/ml/include/opencv2/ml.hpp:1856:25",
+        "method:cv::ml::SVMSGD::getShift()@modules/ml/include/opencv2/ml.hpp:1823:27",
+        "method:cv::ml::SVMSGD::getStepDecreasingPower()@modules/ml/include/opencv2/ml.hpp:1874:27",
+        "method:cv::ml::SVMSGD::getSvmsgdType()@modules/ml/include/opencv2/ml.hpp:1850:25",
+        "method:cv::ml::SVMSGD::getTermCriteria()@modules/ml/include/opencv2/ml.hpp:1882:34",
+        "method:cv::ml::SVMSGD::getWeights()@modules/ml/include/opencv2/ml.hpp:1818:25",
+        "method:cv::ml::SVMSGD::setOptimalParameters(int,int)@modules/ml/include/opencv2/ml.hpp:1846:26",
+        "method:cv::ml::SVMSGD::setTermCriteria(const cv::TermCriteria &)@modules/ml/include/opencv2/ml.hpp:1884:26",
+        "method:cv::ml::StatModel::getVarCount()@modules/ml/include/opencv2/ml.hpp:330:25",
+        "method:cv::ml::StatModel::isClassifier()@modules/ml/include/opencv2/ml.hpp:337:26",
+        "method:cv::ml::StatModel::isTrained()@modules/ml/include/opencv2/ml.hpp:335:26",
+        "method:cv::ml::StatModel::train(const cv::_InputArray &,int,const cv::_InputArray &)@modules/ml/include/opencv2/ml.hpp:354:26"
+      ]
+    }
+  ]
+}

@@ -67,6 +67,21 @@ std::unique_ptr<T> contain(Operation operation) noexcept {
   return nullptr;
 }
 
+/// Executes one copied-value operation while containing every C++ exception.
+template <typename T, typename Operation>
+T contain_value(Operation operation, T fallback) noexcept {
+  try {
+    return operation();
+  } catch (const std::bad_alloc&) {
+    set(NativeFailure::AllocationFailed);
+  } catch (const std::exception&) {
+    set(NativeFailure::NativeException);
+  } catch (...) {
+    set(NativeFailure::NativeFailure);
+  }
+  return fallback;
+}
+
 }  // namespace failure
 }  // namespace terlan_opencv
 

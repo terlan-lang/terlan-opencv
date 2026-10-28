@@ -1,18 +1,19 @@
-/** Demonstrates deterministic in-memory image encoding and decoding. */
+/**
+ * Demonstrates deterministic in-memory image encoding and decoding.
+ */
 module samples.imgcodecs.EncodeDecode.
 
-import opencv.Codecs.
-import opencv.Mat.
 import opencv.Types.{Bmp, Gray, Grayscale}.
+import opencv.{Codecs, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the in-memory codec example. */
+/**
+ * Runs the in-memory codec example.
+ */
 pub main(): Unit ->
-    // Create the image that the file-oriented tutorial would normally read.
     let source = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
-    // Encode and decode entirely in memory; filesystem policy belongs to the
-    // application, not to the OpenCV package boundary.
     let encoded = Codecs.encode(source, Bmp);
     let decoded = Codecs.decode(encoded, Grayscale);
     let valid = encoded.length() > 0 and Mat.to_u8(decoded).to_list() == [0, 64, 128, 255];

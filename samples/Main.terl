@@ -1,0 +1,61 @@
+/**
+ * Provides the application entry selected when the complete OpenCV sample
+ * collection is linked into one VM image.
+ */
+module samples.Main.
+
+import samples.calib3d.{PoseEstimation, ProjectPoints, UndistortImage}.
+import samples.core.{ImageBlending, ImageScanning, MaskFiltering, MatBasics, MatrixOperations}.
+import samples.dnn.{BlobPreprocessing, Classification, IdentityInference, ObjectDetection, Segmentation}.
+import samples.features2d.{AkazeMatching, BriskMatching, KazeMatching, MserRegions, OrbFeatures, SiftMatching, SimpleBlobDetection}.
+import samples.imgcodecs.{EncodeDecode, JpegEncodeDecode, PngEncodeDecode, TiffEncodeDecode, WebpEncodeDecode}.
+import samples.imgproc.{Borders, Contours, CornerDetection, Drawing, EdgeDetection, FloodFillComponents, GeometricTransforms, Histograms, HoughDetection, Morphology, Pyramids, RangeMask, Smoothing, TemplateMatching, Thresholding}.
+import samples.ml.{KnnClassification, LinearSvmClassification}.
+
+/**
+ * Runs every sample in stable inventory order from one compiler-native
+ * application image.
+ */
+pub main(): Unit ->
+    PoseEstimation.main();
+    ProjectPoints.main();
+    UndistortImage.main();
+    ImageBlending.main();
+    ImageScanning.main();
+    MaskFiltering.main();
+    MatBasics.main();
+    MatrixOperations.main();
+    BlobPreprocessing.main();
+    Classification.main();
+    IdentityInference.main();
+    ObjectDetection.main();
+    Segmentation.main();
+    AkazeMatching.main();
+    BriskMatching.main();
+    KazeMatching.main();
+    MserRegions.main();
+    OrbFeatures.main();
+    SiftMatching.main();
+    SimpleBlobDetection.main();
+    EncodeDecode.main();
+    JpegEncodeDecode.main();
+    PngEncodeDecode.main();
+    TiffEncodeDecode.main();
+    WebpEncodeDecode.main();
+    Borders.main();
+    Contours.main();
+    CornerDetection.main();
+    Drawing.main();
+    EdgeDetection.main();
+    FloodFillComponents.main();
+    GeometricTransforms.main();
+    Histograms.main();
+    HoughDetection.main();
+    Morphology.main();
+    Pyramids.main();
+    RangeMask.main();
+    Smoothing.main();
+    TemplateMatching.main();
+    Thresholding.main();
+    KnnClassification.main();
+    LinearSvmClassification.main().

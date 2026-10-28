@@ -1,0 +1,295 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Runs OpenCV sample and package runtime checks with explicit native boundary
+ * environments and exact diagnostic assertions.
+ */
+import std.core.Option.{None, Some}.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File}.
+import std.system.{Arguments, Environment, Process}.
+
+import type std.system.Process.{Command, Output}.
+
+struct Inputs {
+    mode: String,
+    program: String,
+    repository: String,
+    opencv_install: String,
+    runtime_guard: String,
+    native_worker: String,
+}.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_runtime_check]: ", message));
+    false.
+
+library_path(inputs: Inputs): String ->
+    let package_library = child(inputs.opencv_install, "lib");
+    case Environment.get("LD_LIBRARY_PATH") {
+        None -> package_library;
+        Some(existing) ->
+            if {
+                existing == "" -> package_library;
+                true -> String.concat([package_library, ":", existing])
+            }
+    }.
+
+bounded(inputs: Inputs, arguments: List[String]): Command ->
+    let request = Process.with_arguments(Process.command(inputs.program), arguments);
+    let located = Process.with_working_directory(request, inputs.repository);
+    let timed = Process.with_timeout_ms(located, 600_000);
+    Process.with_output_limit_bytes(timed, 16_777_216).
+
+with_runtime(command: Command, inputs: Inputs): Command ->
+    Process.with_environment(
+        command,
+        [
+            Process.environment_entry("LD_LIBRARY_PATH", library_path(inputs)),
+            Process.environment_entry(
+                "TERLAN_OPENCV_NATIVE_BOUNDARY_HELPER_PATH",
+                inputs.runtime_guard,
+            ),
+            Process.environment_entry("TERLAN_OPENCV_NATIVE_WORKER_PATH", inputs.native_worker),
+        ],
+    ).
+
+without_helper(command: Command): Command ->
+    Process.without_environment(
+        command,
+        ["TERLAN_OPENCV_NATIVE_BOUNDARY_HELPER_PATH", "TERLAN_NATIVE_BOUNDARY_PATH"],
+    ).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+run_success(label: String, command: Command): Bool ->
+    case Process.run(command) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) ->
+            let _printed = print_output(output);
+            let status = output.status;
+            if {
+                status == 0 -> true;
+                true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
+            }
+    }.
+
+expect_failure(label: String, diagnostic: String, command: Command): Bool ->
+    case Process.run(command) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) ->
+            let _printed = print_output(output);
+            let status = output.status;
+            let combined = String.append(output.stdout, output.stderr);
+            if {
+                status == 0 -> failure(String.append(label, " unexpectedly passed"));
+                not String.contains(combined, diagnostic) -> failure(
+                    String.concat([label, " did not contain expected diagnostic: ", diagnostic]),
+                );
+                true -> true
+            }
+    }.
+
+test_arguments(path: String): List[String] ->
+    ["test", path, "--target", "terlan-vm"].
+
+preflight(inputs: Inputs): Bool ->
+    let package_test = child(inputs.repository, "generated/tests/opencv/MatTest.terl");
+    let consumer_test = child(inputs.repository, "tests/consumer/tests/opencv_consumer/OpenCvConsumerTest.terl");
+    let package_command = without_helper(bounded(inputs, test_arguments(package_test)));
+    let consumer_command =
+        without_helper(
+            Process.with_environment(
+                bounded(inputs, test_arguments(consumer_test)),
+                [Process.environment_entry("LD_LIBRARY_PATH", library_path(inputs))],
+            ),
+        );
+    if {
+        not expect_failure(
+    "package preflight",
+    "error[native_helper_unavailable]: TERLAN_OPENCV_NATIVE_BOUNDARY_HELPER_PATH is not set for native package namespace `opencv`",
+    package_command,
+) -> false;
+        true -> run_success("consumer preflight", consumer_command)
+    }.
+
+unavailable_test(inputs: Inputs, label: String, path: String): Bool ->
+    let command =
+        Process.with_environment(
+            bounded(inputs, test_arguments(path)),
+            [
+                Process.environment_entry(
+                    "TERLAN_OPENCV_NATIVE_BOUNDARY_HELPER_PATH",
+                    inputs.runtime_guard,
+                ),
+                Process.environment_entry("TERLAN_OPENCV_NATIVE_WORKER_PATH", inputs.native_worker),
+            ],
+        );
+    expect_failure(
+        label,
+        "error[opencv.unavailable]: OpenCV native runtime is unavailable",
+        command,
+    ).
+
+unavailable(inputs: Inputs): Bool ->
+    let package_test = child(inputs.repository, "generated/tests/opencv/MatTest.terl");
+    let consumer_test = child(inputs.repository, "tests/consumer/tests/opencv_consumer/OpenCvConsumerTest.terl");
+    if {
+        not unavailable_test(inputs, "package unavailable check", package_test) -> false;
+        true -> unavailable_test(inputs, "consumer unavailable check", consumer_test)
+    }.
+
+run_package_test(inputs: Inputs, path: String): Bool ->
+    let _announced = println(String.append("running ", path));
+    let command = with_runtime(bounded(inputs, test_arguments(path)), inputs);
+    let label = String.append("package test ", path);
+    run_success(label, command).
+
+run_package_test_files(inputs: Inputs, paths: List[String]): Bool ->
+    case paths {
+        [] -> true;
+        [path | rest] ->
+            if {
+                not String.ends_with(path, "Test.terl") -> run_package_test_files(inputs, rest);
+                not run_package_test(inputs, path) -> false;
+                true -> run_package_test_files(inputs, rest)
+            }
+    }.
+
+run_consumer_tests(inputs: Inputs): Bool ->
+    let path = child(inputs.repository, "tests/consumer/tests");
+    let command = with_runtime(bounded(inputs, test_arguments(path)), inputs);
+    run_success("consumer tests", command).
+
+package_tests(inputs: Inputs): Bool ->
+    case Directory.files_recursive(child(inputs.repository, "generated/tests")) {
+        Err(reason) -> failure(reason.message);
+        Ok(paths) ->
+            if {
+                not run_package_test_files(inputs, paths) -> false;
+                true -> run_consumer_tests(inputs)
+            }
+    }.
+
+strip_trailing_newlines(value: String): String ->
+    if {
+        String.ends_with(value, "\n") -> strip_trailing_newlines(String.utf8_slice(value, 0, String.byte_size(value) - 1));
+        true -> value
+    }.
+
+check_sample_value(
+    label: String,
+    expected: String,
+    value: String,
+    remaining_expectations: List[String],
+    remaining_actual: List[String],
+): Bool ->
+    if {
+        value != expected -> failure(
+            String.concat(["sample ", label, " produced '", value, "'; expected '", expected, "'"]),
+        );
+        true -> let _printed = println(String.concat(["sample ", label, ": ", value]));
+        check_sample_rows(remaining_expectations, remaining_actual)
+    }.
+
+check_sample_row(line: String, rest: List[String], observed: List[String]): Bool ->
+    case {String.split(line, "\t"), observed} {
+        {[label, expected], [value | remaining]} ->
+            check_sample_value(label, expected, value, rest, remaining);
+        {[label, _expected], []} -> failure(String.append("sample produced no output: ", label));
+        _ -> failure(String.append("invalid sample expectation row: ", line))
+    }.
+
+check_sample_rows(expectations: List[String], actual: List[String]): Bool ->
+    case {expectations, actual} {
+        {[], []} -> true;
+        {["" | rest], observed} -> check_sample_rows(rest, observed);
+        {[line | rest], observed} -> check_sample_row(line, rest, observed);
+        {[], [value | _rest]} -> failure(String.append("unexpected sample output: ", value))
+    }.
+
+check_sample_application(source: String, output: Output): Bool ->
+    let stderr = output.stderr;
+    let _stderr =
+        if {
+            stderr == "" -> Unit;
+            true -> eprintln(stderr)
+        };
+    let status = output.status;
+    if {
+        status != 0 -> failure(String.concat(["sample application exited with status ", Int.to_string(status)]));
+        true -> check_sample_rows(
+            String.split(source, "\n"),
+            String.split(strip_trailing_newlines(output.stdout), "\n"),
+        )
+    }.
+
+run_sample_application(inputs: Inputs, source: String): Bool ->
+    let artifact = child(inputs.repository, "_build/vm/samples_Main.tvm");
+    let command = with_runtime(bounded(inputs, ["run", artifact, "--entry", "samples.Main.main"]), inputs);
+    case Process.run(command) {
+        Err(reason) -> failure(reason.message);
+        Ok(output) -> check_sample_application(source, output)
+    }.
+
+samples(inputs: Inputs): Bool ->
+    case File.read_text(child(inputs.repository, "samples/expected-output.tsv")) {
+        Err(reason) -> failure(reason.message);
+        Ok(source) -> run_sample_application(inputs, source)
+    }.
+
+run(inputs: Inputs): Bool ->
+    case inputs.mode {
+        "samples" -> samples(inputs);
+        "preflight" -> preflight(inputs);
+        "unavailable" -> unavailable(inputs);
+        "package" -> package_tests(inputs);
+        _ -> failure(String.append("unknown runtime check mode: ", inputs.mode))
+    }.
+
+entry(): Bool ->
+    let {
+        6 <- Arguments.count();
+        Some(mode) <- Arguments.get(0);
+        Some(program) <- Arguments.get(1);
+        Some(repository) <- Arguments.get(2);
+        Some(opencv_install) <- Arguments.get(3);
+        Some(runtime_guard) <- Arguments.get(4);
+        Some(native_worker) <- Arguments.get(5)
+    } else {
+        _ ->
+            failure(
+                "expected <samples|preflight|unavailable|package> <program> <repository> <opencv-install> <runtime-guard> <native-worker>",
+            )
+    };
+    run(
+        Inputs(
+            mode = mode,
+            program = program,
+            repository = repository,
+            opencv_install = opencv_install,
+            runtime_guard = runtime_guard,
+            native_worker = native_worker,
+        ),
+    ).
+
+assert(entry());
+Unit.

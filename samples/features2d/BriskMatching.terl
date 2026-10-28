@@ -1,15 +1,16 @@
-/** Demonstrates bounded BRISK detection, binary descriptors, and matching. */
+/**
+ * Demonstrates bounded BRISK detection, binary descriptors, and matching.
+ */
 module samples.features2d.BriskMatching.
 
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Imgproc, Mat}.
 import std.io.Console.{println}.
 
-/** Runs the BRISK matching example. */
+/**
+ * Runs the BRISK matching example.
+ */
 pub main(): Unit ->
-    // Build a stable target with corners at several scales.
     let blank = Mat.zeros(64, 64, Gray);
     let box = Imgproc.draw_rectangle(blank, 8, 8, 48, 48, 255, 2);
     let cross = Imgproc.draw_cross(box, 32, 32, 21, 255, 2);
@@ -18,7 +19,11 @@ pub main(): Unit ->
     let train = Features.detect_brisk(image, 10, 3, 64);
     let matches = Features.match_brisk(query, train, 32);
     let match_count = Features.brisk_match_count(matches);
-    let valid = Features.brisk_count(query) > 0 and Features.brisk_descriptor_width(query) == 64 and match_count > 0 and Features.brisk_match_distances(matches)[0] == 0;
+    let valid =
+        Features.brisk_count(query) > 0
+            and Features.brisk_descriptor_width(query) == 64
+            and match_count > 0
+            and Features.brisk_match_distances(matches)[0] == 0;
     Features.dispose_brisk_matches(matches);
     Features.dispose_brisk(train);
     Features.dispose_brisk(query);
@@ -27,6 +32,9 @@ pub main(): Unit ->
     Mat.dispose(box);
     Mat.dispose(blank);
     if {
-        valid and Features.live_brisk_match_count() == 0 and Features.live_brisk_count() == 0 and Mat.live_count() == 0 -> println("BRISK matching example complete");
+        valid
+            and Features.live_brisk_match_count() == 0
+            and Features.live_brisk_count() == 0
+            and Mat.live_count() == 0 -> println("BRISK matching example complete");
         true -> println("BRISK matching example failed")
     }.

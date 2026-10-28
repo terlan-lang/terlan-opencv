@@ -4,7 +4,10 @@ use std::fs;
 
 use serde_json::Value;
 
-use super::{package_root, validate_offline, COMPILE_DATABASE, HEADER, MANIFEST};
+use super::{
+    package_root, snake_name, stable_symbol_id, validate_generated_aot_adapter, validate_offline,
+    COMPILE_DATABASE, GENERATED_BOUNDARY, GENERATED_HELPER, HEADER, MANIFEST,
+};
 
 /// Copies every input required by the offline validator into an isolated root.
 fn copy_fixture(name: &str) -> std::path::PathBuf {
@@ -37,6 +40,24 @@ fn copy_fixture(name: &str) -> std::path::PathBuf {
     root
 }
 
+/// Copies generated AOT adapter evidence into an isolated package root.
+fn copy_generated_fixture(name: &str) -> std::path::PathBuf {
+    let source = package_root();
+    let root = std::env::temp_dir().join(format!(
+        "opencv_generated_aot_{name}_{}_{}",
+        std::process::id(),
+        std::thread::current().name().unwrap_or("test")
+    ));
+    let _ = fs::remove_dir_all(&root);
+    for path in [GENERATED_BOUNDARY, GENERATED_HELPER] {
+        let target = root.join(path);
+        fs::create_dir_all(target.parent().expect("generated input parent"))
+            .expect("create generated input parent");
+        fs::copy(source.join(path), target).expect("copy generated AOT adapter input");
+    }
+    root
+}
+
 /// Writes one structured JSON mutation into a copied fixture.
 fn write_json(root: &std::path::Path, path: &str, value: &Value) {
     fs::write(
@@ -44,6 +65,22 @@ fn write_json(root: &std::path::Path, path: &str, value: &Value) {
         serde_json::to_vec_pretty(value).expect("render mutated JSON"),
     )
     .expect("write mutated JSON");
+}
+
+/// Keeps generated IDs compatible with the package's established resource names.
+#[test]
+fn generated_symbol_ids_are_stable() {
+    assert_eq!(snake_name("OpenCvMat"), "opencv_mat");
+    assert_eq!(snake_name("MatrixDepth"), "matrix_depth");
+    let symbol = serde_json::json!({
+        "kind": "method",
+        "cpp_name": "depth_code",
+        "receiver": "terlan_opencv::OpenCvMat"
+    });
+    assert_eq!(
+        stable_symbol_id(symbol.as_object().expect("symbol object")).expect("stable ID"),
+        "method.opencv_mat.depth_code"
+    );
 }
 
 /// Requires a deterministic offline rejection and removes the fixture.
@@ -206,5 +243,93 @@ fn missing_offline_metadata_inputs_are_rejected() {
         let root = copy_fixture(name);
         fs::remove_file(root.join(path)).expect("remove required metadata input");
         expect_rejection(root, expected);
+    }
+}
+
+/// Accepts the generated public adapter ABI and its bounded helper.
+#[test]
+fn generated_aot_adapter_is_public_and_bounded() {
+    validate_generated_aot_adapter(&package_root())
+        .expect("generated OpenCV adapter must satisfy public AOT ABI");
+}
+
+/// Rejects legacy metadata, ABI drift, and mismatched C++ targets.
+#[test]
+fn generated_aot_metadata_drift_is_rejected() {
+    for (name, from, to, expected) in [
+        (
+            "legacy_runtime",
+            "[public_adapter]",
+            "[runtime]",
+            "legacy [runtime]",
+        ),
+        (
+            "abi_version",
+            "adapter_abi_version = 1",
+            "adapter_abi_version = 2",
+            "adapter_abi_version",
+        ),
+        (
+            "frame_bound",
+            "max_frame_bytes = 1048576",
+            "max_frame_bytes = 1048577",
+            "max_frame_bytes",
+        ),
+        (
+            "cpp_target",
+            "target = \"x86_64-unknown-linux-gnu\"",
+            "target = \"aarch64-unknown-linux-gnu\"",
+            "C++ metadata target differs",
+        ),
+    ] {
+        let root = copy_generated_fixture(name);
+        let path = root.join(GENERATED_BOUNDARY);
+        let source = fs::read_to_string(&path).expect("read generated metadata");
+        let mutated = if name == "cpp_target" {
+            source.replacen(from, to, 1)
+        } else {
+            source.replace(from, to)
+        };
+        assert_ne!(source, mutated, "fixture mutation must apply");
+        fs::write(path, mutated).expect("write mutated generated metadata");
+        let error =
+            validate_generated_aot_adapter(&root).expect_err("AOT metadata drift must fail");
+        assert!(error.contains(expected), "unexpected error: {error}");
+        fs::remove_dir_all(root).expect("remove generated fixture");
+    }
+}
+
+/// Rejects removal of helper flow control and private runtime ABI leakage.
+#[test]
+fn generated_aot_helper_drift_is_rejected() {
+    for (name, mutation, expected) in [
+        (
+            "missing_monotonicity",
+            ("\"request_not_monotonic\"", "\"request_replayed\""),
+            "request_not_monotonic",
+        ),
+        (
+            "missing_chunked_transfer",
+            ("struct InboundTransfer", "struct RemovedInboundTransfer"),
+            "struct InboundTransfer",
+        ),
+        (
+            "private_runtime",
+            (
+                "use std::collections::HashMap;",
+                "use std::collections::HashMap;\n// TvmRef",
+            ),
+            "TvmRef",
+        ),
+    ] {
+        let root = copy_generated_fixture(name);
+        let path = root.join(GENERATED_HELPER);
+        let source = fs::read_to_string(&path).expect("read generated helper");
+        let mutated = source.replace(mutation.0, mutation.1);
+        assert_ne!(source, mutated, "fixture mutation must apply");
+        fs::write(path, mutated).expect("write mutated generated helper");
+        let error = validate_generated_aot_adapter(&root).expect_err("helper ABI drift must fail");
+        assert!(error.contains(expected), "unexpected error: {error}");
+        fs::remove_dir_all(root).expect("remove generated fixture");
     }
 }

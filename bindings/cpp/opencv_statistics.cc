@@ -29,13 +29,13 @@ std::unique_ptr<std::vector<std::int64_t>> copy_channel_sums(
   return result;
 }
 
-/// Checks that two matrices are equal-size unsigned-byte grayscale channels.
-bool compatible_grayscale_channels(const cv::Mat& first,
-                                   const cv::Mat& second) noexcept {
-  return first.type() == CV_8UC1 && second.type() == CV_8UC1 &&
-         validation::valid_image_pair(
-             first.rows, first.cols, first.channels(), second.rows,
-             second.cols, second.channels());
+/// Checks that two matrices are equal-size typed single channels.
+bool compatible_single_channels(const cv::Mat& first,
+                                const cv::Mat& second) noexcept {
+  return valid_owned_matrix(first) && valid_owned_matrix(second) &&
+         first.channels() == 1 && second.channels() == 1 &&
+         first.depth() == second.depth() && first.rows == second.rows &&
+         first.cols == second.cols;
 }
 
 }  // namespace
@@ -162,31 +162,29 @@ OpenCvMat::non_zero_counts_owned() const noexcept {
 std::unique_ptr<OpenCvMat> OpenCvMat::extract_channel_owned(
     std::int64_t channel_index) const noexcept {
   failure::clear();
-  if (impl_ == nullptr || impl_->value.depth() != CV_8U ||
-      !validation::valid_channel_index(
-          impl_->value.rows, impl_->value.cols, impl_->value.channels(),
-          channel_index)) {
+  if (impl_ == nullptr || !valid_owned_matrix(impl_->value) ||
+      channel_index < 0 || channel_index >= impl_->value.channels()) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
   return failure::contain<OpenCvMat>([this, channel_index] {
     cv::Mat result;
     cv::extractChannel(impl_->value, result, static_cast<int>(channel_index));
-    return own_grayscale_mat(std::move(result), impl_->value);
+    return own_typed_channel_count_mat(std::move(result), impl_->value, 1);
   });
 }
 
 std::unique_ptr<OpenCvMat> OpenCvMat::merge_bgr_owned(
     const OpenCvMat& green, const OpenCvMat& red) const noexcept {
   failure::clear();
-  const auto shape =
-      impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::merged_image_shape(impl_->value.rows,
-                                           impl_->value.cols, 3);
+  const auto shape = impl_ == nullptr
+                         ? validation::ImageShape{false, 0, 0}
+                         : validation::matrix_shape(
+                               impl_->value.rows, impl_->value.cols, 3,
+                               impl_->value.elemSize1());
   if (!shape.valid || green.impl_ == nullptr || red.impl_ == nullptr ||
-      !compatible_grayscale_channels(impl_->value, green.impl_->value) ||
-      !compatible_grayscale_channels(impl_->value, red.impl_->value)) {
+      !compatible_single_channels(impl_->value, green.impl_->value) ||
+      !compatible_single_channels(impl_->value, red.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -195,7 +193,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::merge_bgr_owned(
         impl_->value, green.impl_->value, red.impl_->value};
     cv::Mat result;
     cv::merge(channels.data(), channels.size(), result);
-    return own_channel_count_mat(std::move(result), impl_->value, 3);
+    return own_typed_channel_count_mat(std::move(result), impl_->value, 3);
   });
 }
 
@@ -203,16 +201,16 @@ std::unique_ptr<OpenCvMat> OpenCvMat::merge_bgra_owned(
     const OpenCvMat& green, const OpenCvMat& red,
     const OpenCvMat& alpha) const noexcept {
   failure::clear();
-  const auto shape =
-      impl_ == nullptr
-          ? validation::ImageShape{false, 0, 0}
-          : validation::merged_image_shape(impl_->value.rows,
-                                           impl_->value.cols, 4);
+  const auto shape = impl_ == nullptr
+                         ? validation::ImageShape{false, 0, 0}
+                         : validation::matrix_shape(
+                               impl_->value.rows, impl_->value.cols, 4,
+                               impl_->value.elemSize1());
   if (!shape.valid || green.impl_ == nullptr || red.impl_ == nullptr ||
       alpha.impl_ == nullptr ||
-      !compatible_grayscale_channels(impl_->value, green.impl_->value) ||
-      !compatible_grayscale_channels(impl_->value, red.impl_->value) ||
-      !compatible_grayscale_channels(impl_->value, alpha.impl_->value)) {
+      !compatible_single_channels(impl_->value, green.impl_->value) ||
+      !compatible_single_channels(impl_->value, red.impl_->value) ||
+      !compatible_single_channels(impl_->value, alpha.impl_->value)) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }
@@ -221,7 +219,7 @@ std::unique_ptr<OpenCvMat> OpenCvMat::merge_bgra_owned(
         impl_->value, green.impl_->value, red.impl_->value, alpha.impl_->value};
     cv::Mat result;
     cv::merge(channels.data(), channels.size(), result);
-    return own_channel_count_mat(std::move(result), impl_->value, 4);
+    return own_typed_channel_count_mat(std::move(result), impl_->value, 4);
   });
 }
 
@@ -230,12 +228,13 @@ std::unique_ptr<OpenCvMat> OpenCvMat::replace_channel_owned(
     std::int64_t channel_index) const noexcept {
   failure::clear();
   if (impl_ == nullptr || replacement.impl_ == nullptr ||
-      impl_->value.depth() != CV_8U ||
-      replacement.impl_->value.type() != CV_8UC1 ||
-      !validation::valid_channel_replacement(
-          impl_->value.rows, impl_->value.cols, impl_->value.channels(),
-          replacement.impl_->value.rows, replacement.impl_->value.cols,
-          replacement.impl_->value.channels(), channel_index)) {
+      !valid_owned_matrix(impl_->value) ||
+      !valid_owned_matrix(replacement.impl_->value) ||
+      replacement.impl_->value.channels() != 1 ||
+      replacement.impl_->value.depth() != impl_->value.depth() ||
+      replacement.impl_->value.rows != impl_->value.rows ||
+      replacement.impl_->value.cols != impl_->value.cols ||
+      channel_index < 0 || channel_index >= impl_->value.channels()) {
     failure::set(failure::NativeFailure::InvalidArgument);
     return nullptr;
   }

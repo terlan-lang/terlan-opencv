@@ -1,0 +1,93 @@
+module opencv.CoreTest.
+
+import opencv.{Core, Mat}.
+import std.vm.Bytes.
+
+close(actual: Float, expected: Float): Bool ->
+    let difference = actual - expected;
+    difference < 0.000001 and difference > -0.000001.
+
+@test
+pub dense_core_matrix_workflow(): Bool ->
+    let identity = Core.identity(2, 2, Atom["f64"]);
+    let values =
+        identity
+        |> Mat.to_bytes();
+    let copied = Mat.from_bytes(values, 2, 2, 1, Atom["f64"]);
+    let product =
+        copied
+        |> Core.multiply(identity);
+    let determinant =
+        product
+        |> Core.determinant();
+    let trace =
+        product
+        |> Core.trace();
+    let norm =
+        product
+        |> Core.norm(Atom["l1"]);
+    let valid =
+        Mat.rows(product) == 2
+            and Mat.cols(product) == 2
+            and close(determinant, 1.0)
+            and close(norm, 2.0)
+            and trace == [2.0];
+    Mat.dispose(product);
+    Mat.dispose(copied);
+    Mat.dispose(identity);
+    valid.
+
+@test
+pub seeded_random_matrices_are_repeatable(): Bool ->
+    let first = Core.random_uniform(2, 3, Atom["f64"], -1.0, 1.0, 42);
+    let second = Core.random_uniform(2, 3, Atom["f64"], -1.0, 1.0, 42);
+    let same = Mat.to_bytes(first).to_list() == Mat.to_bytes(second).to_list();
+    Mat.dispose(second);
+    Mat.dispose(first);
+    same.
+
+@test
+pub matrix_persistence_round_trips_all_formats(): Bool ->
+    let source = Core.identity(3, 2, Atom["f32"]);
+    let yaml = Core.serialize(source, Atom["yaml"]);
+    let xml = Core.serialize(source, Atom["xml"]);
+    let json = Core.serialize(source, Atom["json"]);
+    let from_yaml = Core.deserialize(yaml, Atom["yaml"]);
+    let from_xml = Core.deserialize(xml, Atom["xml"]);
+    let from_json = Core.deserialize(json, Atom["json"]);
+    let expected = Mat.to_bytes(source).to_list();
+    let valid =
+        Mat.to_bytes(from_yaml).to_list() == expected
+            and Mat.to_bytes(from_xml).to_list() == expected
+            and Mat.to_bytes(from_json).to_list() == expected;
+    Mat.dispose(from_json);
+    Mat.dispose(from_xml);
+    Mat.dispose(from_yaml);
+    Mat.dispose(source);
+    valid.
+
+@test
+pub core_array_reductions_and_transforms(): Bool ->
+    let identity = Core.identity(2, 2, Atom["f64"]);
+    let normalized = Core.normalize(identity, 1.0, Atom["l2"]);
+    let reduced = Core.reduce(identity, Atom["across_rows"], Atom["sum"]);
+    let rooted = Core.square_root(identity);
+    let valid =
+        Core.sum(identity) == [2.0]
+            and Core.mean(identity) == [0.5]
+            and Core.standard_deviation(identity) == [0.5]
+            and close(Core.norm(normalized, Atom["l2"]), 1.0)
+            and Core.sum(reduced) == [2.0]
+            and Mat.to_bytes(rooted).to_list() == Mat.to_bytes(identity).to_list();
+    Mat.dispose(rooted);
+    Mat.dispose(reduced);
+    Mat.dispose(normalized);
+    Mat.dispose(identity);
+    valid.
+
+@test
+pub portable_runtime_information(): Bool ->
+    Core.version() == "4.13.0"
+        and Core.processor_count() > 0
+        and Core.thread_count() > 0
+        and Core.tick_frequency() > 0.0.

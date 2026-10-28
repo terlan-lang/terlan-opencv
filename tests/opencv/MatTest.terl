@@ -3,16 +3,107 @@ module opencv.MatTest.
 import opencv.Mat.
 import std.vm.Bytes.
 
-/** Validates matrix construction, cloning, copied bytes, dimensions, and cleanup. */
+/**
+ * Validates matrix construction, cloning, copied bytes, dimensions, and cleanup.
+ */
 @test
 pub matrix_lifecycle_contracts(): Bool ->
     let bytes = Bytes.from_list([0, 1, 2, 3, 4, 5]);
     let matrix = Mat.from_u8(bytes, 2, 3, Atom["gray"]);
     let copied = Mat.clone(matrix);
     let zero = Mat.zeros(2, 2, Atom["bgr"]);
-    let valid = Mat.rows(matrix) == 2 and Mat.cols(matrix) == 3 and Mat.channels(matrix) == 1 and Mat.is_contiguous(matrix) and Mat.to_u8(matrix).to_list() == bytes.to_list() and Mat.to_u8(copied).to_list() == bytes.to_list() and Mat.rows(zero) == 2 and Mat.cols(zero) == 2 and Mat.channels(zero) == 3 and Mat.to_u8(zero).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] and Mat.live_count() == 3;
+    let valid =
+        Mat.rows(matrix) == 2
+            and Mat.cols(matrix) == 3
+            and Mat.channels(matrix) == 1
+            and Mat.is_contiguous(matrix)
+            and Mat.to_u8(matrix).to_list() == bytes.to_list()
+            and Mat.to_u8(copied).to_list() == bytes.to_list()
+            and Mat.rows(zero) == 2
+            and Mat.cols(zero) == 2
+            and Mat.channels(zero) == 3
+            and Mat.to_u8(zero).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.live_count() == 3;
     Mat.dispose(zero);
     Mat.dispose(copied);
     Mat.dispose(matrix);
     valid and Mat.live_count() == 0.
 
+/**
+ * Validates generic scalar depths, channel counts, copied bytes, and typed zero storage.
+ */
+@test
+pub typed_matrix_storage_contracts(): Bool ->
+    let u8_bytes = Bytes.from_list([0, 1, 2, 3, 4, 5]);
+    let u8_matrix = Mat.from_bytes(u8_bytes, 1, 2, 3, Atom["u8"]);
+    let i16_bytes = Bytes.from_list([1, 2, 3, 4, 5, 6, 7, 8]);
+    let i16_matrix = Mat.from_bytes(i16_bytes, 2, 2, 1, Atom["i16"]);
+    let f64_zero = Mat.zeros_typed(1, 2, 2, Atom["f64"]);
+    let converted = Mat.convert_depth(u8_matrix, Atom["f32"], 0.5, 1.0);
+    let valid =
+        Mat.rows(u8_matrix) == 1
+            and Mat.cols(u8_matrix) == 2
+            and Mat.channels(u8_matrix) == 3
+            and Mat.depth_code(u8_matrix) == 0
+            and Mat.element_size(u8_matrix) == 1
+            and Mat.pixel_size(u8_matrix) == 3
+            and Mat.type_code(u8_matrix) == 16
+            and Mat.dimension_count(u8_matrix) == 2
+            and Mat.element_count(u8_matrix) == 2
+            and Mat.step_scalars(u8_matrix, 0) == 6
+            and Mat.step_scalars(u8_matrix, 1) == 3
+            and Mat.byte_count(u8_matrix) == 6
+            and not Mat.empty(u8_matrix)
+            and not Mat.is_submatrix(u8_matrix)
+            and Mat.to_bytes(u8_matrix).to_list() == u8_bytes.to_list()
+            and Mat.rows(i16_matrix) == 2
+            and Mat.cols(i16_matrix) == 2
+            and Mat.channels(i16_matrix) == 1
+            and Mat.depth_code(i16_matrix) == 3
+            and Mat.element_size(i16_matrix) == 2
+            and Mat.pixel_size(i16_matrix) == 2
+            and Mat.type_code(i16_matrix) == 3
+            and Mat.dimension_count(i16_matrix) == 2
+            and Mat.element_count(i16_matrix) == 4
+            and Mat.step_scalars(i16_matrix, 0) == 2
+            and Mat.step_scalars(i16_matrix, 1) == 1
+            and Mat.byte_count(i16_matrix) == 8
+            and Mat.to_bytes(i16_matrix).to_list() == i16_bytes.to_list()
+            and Mat.channels(f64_zero) == 2
+            and Mat.depth_code(f64_zero) == 6
+            and Mat.element_size(f64_zero) == 8
+            and Mat.byte_count(f64_zero) == 32
+            and Mat.to_bytes(f64_zero).to_list() == [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            and Mat.rows(converted) == 1
+            and Mat.cols(converted) == 2
+            and Mat.channels(converted) == 3
+            and Mat.depth_code(converted) == 5
+            and Mat.element_size(converted) == 4
+            and Mat.live_count() == 4;
+    Mat.dispose(converted);
+    Mat.dispose(f64_zero);
+    Mat.dispose(i16_matrix);
+    Mat.dispose(u8_matrix);
+    valid and Mat.live_count() == 0.
+
+/**
+ * Validates package-neutral typed tensor exchange without exposing matrix storage.
+ */
+@test
+pub tensor_packet_round_trip_preserves_interleaved_float_image(): Bool ->
+    let bytes =
+        Bytes.from_list(
+            [0, 0, 128, 63, 0, 0, 0, 64, 0, 0, 64, 64, 0, 0, 128, 64, 0, 0, 160, 64, 0, 0, 192, 64],
+        );
+    let source = Mat.from_bytes(bytes, 1, 2, 3, Atom["f32"]);
+    let packet = Mat.export_tensor_packet(source, "opencv");
+    let restored = Mat.from_tensor_packet(packet);
+    let valid =
+        Mat.rows(restored) == 1
+            and Mat.cols(restored) == 2
+            and Mat.channels(restored) == 3
+            and Mat.depth_code(restored) == 5
+            and Mat.to_bytes(restored).to_list() == bytes.to_list();
+    Mat.dispose(restored);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.

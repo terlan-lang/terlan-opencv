@@ -1,20 +1,26 @@
-/** Demonstrates bounded maximally stable extremal-region extraction. */
+/**
+ * Demonstrates bounded maximally stable extremal-region extraction.
+ */
 module samples.features2d.MserRegions.
 
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 
-/** Runs the MSER region example. */
+/**
+ * Runs the MSER region example.
+ */
 pub main(): Unit ->
-    // A filled high-contrast region replaces ambient scene input.
     let blank = Mat.zeros(64, 64, Gray);
     let image = Imgproc.fill_rectangle(blank, 16, 16, 32, 32, 255);
     let regions = Features.detect_mser(image, 5, 16, 2048, 16);
     let count = Features.mser_count(regions);
-    let valid = count > 0 and Features.mser_points(regions).length() > 0 and Features.mser_offsets(regions).length() == count + 1 and Features.mser_bounds(regions).length() == count * 4;
+    let valid =
+        count > 0
+            and Features.mser_points(regions).length() > 0
+            and Features.mser_offsets(regions).length() == count + 1
+            and Features.mser_bounds(regions).length() == count * 4;
     Features.dispose_mser(regions);
     Mat.dispose(image);
     Mat.dispose(blank);

@@ -1,21 +1,27 @@
-/** Demonstrates grayscale histogram calculation and equalization. */
+/**
+ * Demonstrates grayscale histogram calculation and equalization.
+ */
 module samples.imgproc.Histograms.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the histogram example. */
+/**
+ * Runs the histogram example.
+ */
 pub main(): Unit ->
     let source = Mat.from_u8(Bytes.from_list([0, 0, 64, 128, 255, 255]), 2, 3, Gray);
-    // Establish 256 bins over the complete unsigned-byte range and compute the
-    // histogram. Channel splitting is unnecessary for a grayscale source.
     let histogram = Imgproc.histogram(source);
-    // Equalize the source into an independently owned output matrix.
     let equalized = Imgproc.equalize_hist(source);
-    let valid = histogram.length() == 256 and histogram[0] == 2 and histogram[255] == 2 and Mat.rows(equalized) == 2 and Mat.cols(equalized) == 3;
+    let valid =
+        histogram.length() == 256
+            and histogram[0] == 2
+            and histogram[255] == 2
+            and Mat.rows(equalized) == 2
+            and Mat.cols(equalized) == 3;
     Mat.dispose(equalized);
     Mat.dispose(source);
     if {

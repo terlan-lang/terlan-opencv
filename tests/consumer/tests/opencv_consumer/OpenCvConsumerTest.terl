@@ -1,7 +1,6 @@
 module opencv_consumer.OpenCvConsumerTest.
 
-import opencv_consumer.Pipeline.
-import std.test.Test.{assert}.
+import opencv_consumer.{CodecChecks, Smoke}.
 
 /**
  * Proves an independent project can execute the generated package through a
@@ -9,4 +8,11 @@ import std.test.Test.{assert}.
  */
 @test
 pub external_consumer_executes_real_opencv_pipeline(): Bool ->
-    assert(Pipeline.execute()).
+    Smoke.execute().
+
+/**
+ * Proves the same independent package path can execute codec operations.
+ */
+@test
+pub external_consumer_executes_real_opencv_codecs(): Bool ->
+    CodecChecks.execute().

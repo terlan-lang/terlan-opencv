@@ -1,19 +1,33 @@
 module opencv.ComponentsTest.
 
-import opencv.Components.
-import opencv.Imgproc.
-import opencv.Mat.
+import opencv.{Components, Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.vm.Bytes.
 
-/** Validates four- and eight-neighbor connected-component projections and cleanup. */
+/**
+ * Validates four- and eight-neighbor connected-component projections and cleanup.
+ */
 @test
 pub connected_component_contracts(): Bool ->
     let source = Mat.from_u8(Bytes.from_list([0, 255, 0, 0, 255, 0, 0, 0, 255]), 3, 3, Atom["gray"]);
     let four = Imgproc.connected_components(source, Atom["four"]);
     let eight = Imgproc.connected_components(source, Atom["eight"]);
-    let valid = Components.foreground_count(four) == 2 and Components.labels(four) == [0, 1, 0, 0, 1, 0, 0, 0, 2] and Components.areas(four) == [2, 1] and Components.bounds(four) == [1, 0, 1, 2, 2, 2, 1, 1] and Components.centroids(four) == [1.0, 0.5, 2.0, 2.0] and Components.foreground_count(eight) == 1 and Components.labels(eight) == [0, 1, 0, 0, 1, 0, 0, 0, 1] and Components.areas(eight) == [3] and Components.bounds(eight) == [1, 0, 2, 3] and Components.centroids(eight).length() == 2 and Components.centroids(eight)[0] > 1.333 and Components.centroids(eight)[0] < 1.334 and Components.centroids(eight)[1] == 1.0 and Components.live_count() == 2;
+    let valid =
+        Components.foreground_count(four) == 2
+            and Components.labels(four) == [0, 1, 0, 0, 1, 0, 0, 0, 2]
+            and Components.areas(four) == [2, 1]
+            and Components.bounds(four) == [1, 0, 1, 2, 2, 2, 1, 1]
+            and Components.centroids(four) == [1.0, 0.5, 2.0, 2.0]
+            and Components.foreground_count(eight) == 1
+            and Components.labels(eight) == [0, 1, 0, 0, 1, 0, 0, 0, 1]
+            and Components.areas(eight) == [3]
+            and Components.bounds(eight) == [1, 0, 2, 3]
+            and Components.centroids(eight).length() == 2
+            and Components.centroids(eight)[0] > 1.333
+            and Components.centroids(eight)[0] < 1.334
+            and Components.centroids(eight)[1] == 1.0
+            and Components.live_count() == 2;
     Components.dispose(eight);
     Components.dispose(four);
     Mat.dispose(source);
     valid and Components.live_count() == 0 and Mat.live_count() == 0.
-

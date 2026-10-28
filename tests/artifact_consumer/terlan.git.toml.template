@@ -1,0 +1,11 @@
+[package]
+name = "terlan-opencv-artifact-consumer"
+version = "0.0.0"
+namespace = "example"
+
+[build]
+source_roots = ["src"]
+artifact = "library"
+
+[dependencies]
+opencv = { git = "@OPENCV_REPOSITORY@", rev = "@OPENCV_REVISION@" }

@@ -63,6 +63,14 @@ make opencv-samples-check TERLC="$(command -v terlc)"
 
 - Matrix creation, copying, conversion, inspection, channel operations,
   arithmetic, masks, and statistics
+- Typed matrix exchange with Terlan CUDA and other tensor packages
+- Deterministic random matrices, dot products, matrix multiplication, dense
+  system solving, inversion, determinants, norms, and traces
+- Per-channel statistics, symbolic reductions, normalization, row and column
+  sorting, and finite exponential, logarithm, power, and square-root transforms
+- Bounded in-memory YAML, XML, and JSON matrix persistence
+- Linked runtime version and build details, processor and worker counts, tick
+  frequency, and optimized-code-path reporting
 - Resizing, color conversion, filtering, thresholding, morphology, edge
   detection, histograms, contours, connected components, and drawing
 - Affine and perspective transforms, image pyramids, undistortion, camera
@@ -71,15 +79,15 @@ make opencv-samples-check TERLC="$(command -v terlc)"
   feature detection
 - Binary and floating-point descriptor matching
 - K-nearest-neighbor and linear support-vector-machine classification
-- In-memory BMP encoding and decoding
+- In-memory BMP, PNG, JPEG, WebP, and TIFF encoding and decoding
 - In-memory ONNX loading, image preprocessing, CPU inference,
   classification, segmentation, object-detection decoding, and non-maximum
   suppression
 
 ## Coming Soon
 
+- Full behavioral parity with the pinned OpenCV 4.13 public runtime API
 - Installable package releases
-- More image codecs
 - Video processing and tracking
 - Computational photography and image stitching
 - Stereo calibration, depth processing, and expanded 3D operations
@@ -88,11 +96,51 @@ make opencv-samples-check TERLC="$(command -v terlc)"
   and additional model pipelines
 - Hardware-accelerated execution
 
+## Platform Support
+
+| Platform | Status |
+| --- | --- |
+| Linux x86-64 | Supported from source |
+| Linux ARM64 | Coming soon |
+| macOS on Apple silicon | Coming soon |
+| macOS on Intel | Coming soon |
+| Windows x86-64 | Coming soon |
+
+Linux x86-64 is the currently validated development platform and the target of
+the first packaged artifact. That artifact requires glibc 2.35 or newer and a
+system C++ runtime providing `GLIBCXX_3.4.30` or newer. Other platforms will be
+listed as supported only after their packaged examples pass on the target OS.
+
 ## Samples
 
 The [samples](samples/README.md) directory contains runnable Terlan programs
 covering core matrices, image processing, codecs, features, calibration,
 machine learning, and DNN inference.
+
+## Repository Scripts
+
+Repository orchestration is written in Terlan and registered in
+`terlan.toml`. `make opencv-scripts-check` recursively type-checks, fully
+lints, and verifies formatting for repository `.terls` files.
+Make runs those scripts from an isolated `_build/scripts` output directory so
+their compiler artifacts cannot replace package or sample VM images.
+`scripts/CheckSources.terls` also runs the grouped-binding and
+function-reference lint gates over every source root.
+`scripts/CheckCppValidation.terls` owns isolated compilation and execution of
+the header validation fixtures, while `scripts/GeneratePackage.terls` owns
+binding generation and deterministic test and sample staging.
+`scripts/RuntimeChecks.terls` runs sample expectations, native-helper failure
+contracts, generated package tests, and external consumer tests with explicit
+runtime environments. `scripts/PackageArtifact.terls` owns artifact assembly,
+deterministic replay, verification, and the extracted-package consumer smoke
+test. `scripts/FreshWorkspaceCheck.terls` validates immutable inputs, clones
+clean compiler, package, and OpenCV repositories, rebuilds the required
+compiler tools, runs the package consumer gate, and records verified promotion
+evidence. `scripts/Workspace.terls` creates the generated native dependency
+link and performs idempotent cleanup through portable Terlan filesystem APIs.
+
+The ONNX fixture freshness check remains in Make because `protoc --encode`
+emits binary stdout and the current Terlan process API captures UTF-8 text.
 
 ## License
 

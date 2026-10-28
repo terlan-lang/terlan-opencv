@@ -1,0 +1,138 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Generates the native package and stages package-owned tests and samples.
+ */
+import std.core.Option.Some.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File}.
+import std.system.{Arguments, Process}.
+
+import type std.system.Process.{Command, Output}.
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_generate]: ", message));
+    false.
+
+remove_tree_if_present(path: String): Bool ->
+    let {
+        Ok(_entries) <- Directory.entries(path);
+        Err(reason) <- Directory.remove_all(path)
+    } else {
+        _ -> true
+    };
+    failure(reason.message).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+check_output(output: Output): Bool ->
+    let _printed = print_output(output);
+    let status = output.status;
+    if {
+        status == 0 -> true;
+        true -> failure(String.concat(["terlc bind exited with status ", Int.to_string(status)]))
+    }.
+
+run_command(compiler: String, repository: String, arguments: List[String]): Bool ->
+    let request = Process.with_arguments(Process.command(compiler), arguments);
+    let located = Process.with_working_directory(request, repository);
+    let timed = Process.with_timeout_ms(located, 600_000);
+    let command = Process.with_output_limit_bytes(timed, 16_777_216);
+    case Process.run(command) {
+        Err(reason) -> failure(reason.message);
+        Ok(output) -> check_output(output)
+    }.
+
+copy(source: String, destination: String): Bool ->
+    case File.copy(source, destination) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+create(path: String): Bool ->
+    case Directory.create_all(path) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+copy_tree(source: String, destination: String, excluded: List[String]): Bool ->
+    case Directory.copy_tree_excluding(source, destination, excluded) {
+        Err(reason) -> failure(reason.message);
+        Ok(Unit) -> true
+    }.
+
+remove_file(path: String): Bool ->
+    case File.delete(path) {
+        Err(reason) -> failure(reason.message);
+        Ok(Unit) -> true
+    }.
+
+stage(repository: String, generated: String): Bool ->
+    let tests = child(repository, "tests/opencv");
+    let samples = child(repository, "samples");
+    let generated_tests = child(generated, "tests/opencv");
+    let generated_samples = child(generated, "samples/src/samples");
+    if {
+        not copy(
+    child(tests, "DnnDetectionChecks.terl"),
+    child(generated, "src/opencv/DnnDetectionChecks.terl"),
+) -> false;
+        not remove_tree_if_present(generated_tests) -> false;
+        not create(child(generated, "tests")) -> false;
+        not copy_tree(tests, generated_tests, []) -> false;
+        not remove_file(child(generated_tests, "DnnDetectionChecks.terl")) -> false;
+        not remove_file(child(generated_tests, "README.md")) -> false;
+        not create(child(generated, "samples/src")) -> false;
+        not copy_tree(samples, generated_samples, ["target", "_build"]) -> false;
+        not copy(child(samples, "terlan.toml.template"), child(generated, "samples/terlan.toml")) -> false;
+        not remove_file(child(generated_samples, "CAPABILITIES.md")) -> false;
+        not remove_file(child(generated_samples, "README.md")) -> false;
+        not remove_file(child(generated_samples, "expected-output.tsv")) -> false;
+        true -> remove_file(child(generated_samples, "terlan.toml.template"))
+    }.
+
+run(compiler: String, repository: String): Bool ->
+    let generated = child(repository, "generated");
+    if {
+        not remove_tree_if_present(generated) -> false;
+        not run_command(
+    compiler,
+    repository,
+    [
+        "bind",
+        "cpp",
+        "--manifest",
+        child(repository, "bindings/opencv.native-binding.json"),
+        "--out",
+        generated,
+    ],
+) -> false;
+        true -> stage(repository, generated)
+    }.
+
+entry(): Bool ->
+    case {Arguments.get(0), Arguments.get(1), Arguments.count()} {
+        {Some(compiler), Some(repository), 2} -> run(compiler, repository);
+        _ -> failure("expected <terlc> <repository>")
+    }.
+
+assert(entry());
+Unit.

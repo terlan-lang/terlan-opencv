@@ -1,19 +1,28 @@
-/** Demonstrates bounded simple-blob detection with copied keypoint geometry. */
+/**
+ * Demonstrates bounded simple-blob detection with copied keypoint geometry.
+ */
 module samples.features2d.SimpleBlobDetection.
 
-import opencv.Features.
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Features, Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 
-/** Runs the simple-blob example. */
+/**
+ * Runs the simple-blob example.
+ */
 pub main(): Unit ->
-    // Draw one bright disk whose area lies inside the detector bounds.
     let blank = Mat.zeros(64, 64, Gray);
     let image = Imgproc.fill_circle(blank, 32, 32, 8, 255);
     let keypoints = Features.simple_blob_keypoints(image, 255, 50, 500, 1.0, 8);
-    let valid = keypoints.length() == 4 and keypoints[0] > 31.9 and keypoints[0] < 32.1 and keypoints[1] > 31.9 and keypoints[1] < 32.1 and keypoints[2] > 0.0 and keypoints[3] >= 0.0;
+    let valid =
+        keypoints.length() == 4
+            and keypoints[0] > 31.9
+            and keypoints[0] < 32.1
+            and keypoints[1] > 31.9
+            and keypoints[1] < 32.1
+            and keypoints[2] > 0.0
+            and keypoints[3] >= 0.0;
     Mat.dispose(image);
     Mat.dispose(blank);
     if {

@@ -1,18 +1,53 @@
-/** Demonstrates bounded Shi-Tomasi and Harris corner responses. */
+/**
+ * Demonstrates bounded Shi-Tomasi and Harris corner responses.
+ */
 module samples.imgproc.CornerDetection.
 
-import opencv.Imgproc.
-import opencv.Mat.
 import opencv.Types.{Gray}.
+import opencv.{Imgproc, Mat}.
+import std.collections.List.{length}.
 import std.io.Console.{println}.
 import std.vm.Bytes.
 
-/** Runs the corner-detection example. */
+/**
+ * Runs the corner-detection example.
+ */
 pub main(): Unit ->
-    // Load a deterministic grayscale pattern and select a bounded maximum
-    // number of corners instead of a GUI trackbar value.
-    let source = Mat.from_u8(Bytes.from_list([0, 0, 255, 255, 0, 0, 0, 255, 255, 0, 255, 255, 0, 0, 255, 255, 255, 0, 0, 255, 0, 0, 255, 255, 0]), 5, 5, Gray);
-    // Apply the Shi-Tomasi detector and calculate the Harris response field.
+    let source =
+        Mat.from_u8(
+            Bytes.from_list(
+                [
+                    0,
+                    0,
+                    255,
+                    255,
+                    0,
+                    0,
+                    0,
+                    255,
+                    255,
+                    0,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    255,
+                    0,
+                    0,
+                    255,
+                    0,
+                    0,
+                    255,
+                    255,
+                    0,
+                ],
+            ),
+            5,
+            5,
+            Gray,
+        );
     let corners = Imgproc.good_features_to_track(source, 16, 0.01, 1.0);
     let harris = Imgproc.harris_response(source, 3, 3, 0.04);
     let valid = corners.length() <= 32 and harris.length() == 25;

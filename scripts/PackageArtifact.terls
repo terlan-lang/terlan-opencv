@@ -1,0 +1,447 @@
+#!/usr/bin/env -S terlc run
+/**
+ * Builds, replays, verifies, and consumes the relocatable OpenCV package
+ * artifact without shell pipelines or command substitution.
+ */
+import std.core.Option.Some.
+import std.core.Result.{Err, Ok}.
+import std.core.{Int, String, Unit}.
+import std.io.Console.{eprintln, println}.
+import std.io.{Directory, File}.
+import std.system.{Arguments, Process}.
+
+import type std.system.Process.{Command, EnvironmentEntry, Output}.
+
+struct Inputs {
+    mode: String,
+    compiler: String,
+    repository: String,
+    artifact_directory: String,
+    replay_directory: String,
+    target: String,
+    rust_flags: String,
+    bridge_flags: String,
+}.
+
+struct Captured {
+    valid: Bool,
+    value: String,
+}.
+
+captured_value(value: String): Captured ->
+    Captured(valid = true, value = value).
+
+capture_failed(): Captured ->
+    Captured(valid = false, value = "").
+
+child(parent: String, name: String): String ->
+    if {
+        String.ends_with(parent, "/") -> String.append(parent, name);
+        true -> String.concat([parent, "/", name])
+    }.
+
+failure(message: String): Bool ->
+    let _printed = eprintln(String.append("error[opencv_package_artifact]: ", message));
+    false.
+
+bounded(program: String, arguments: List[String], directory: String): Command ->
+    let request = Process.with_arguments(Process.command(program), arguments);
+    let located = Process.with_working_directory(request, directory);
+    let timed = Process.with_timeout_ms(located, Process.limits().maximum_timeout_ms);
+    Process.with_output_limit_bytes(timed, 16_777_216).
+
+environment(command: Command, values: List[EnvironmentEntry]): Command ->
+    Process.with_environment(command, values).
+
+print_output(output: Output): Unit ->
+    let stdout = output.stdout;
+    let stderr = output.stderr;
+    let _stdout =
+        if {
+            stdout == "" -> Unit;
+            true -> println(stdout)
+        };
+    if {
+        stderr == "" -> Unit;
+        true -> eprintln(stderr)
+    }.
+
+check_output(label: String, output: Output): Bool ->
+    let _printed = print_output(output);
+    let status = output.status;
+    if {
+        status == 0 -> true;
+        true -> failure(String.concat([label, " exited with status ", Int.to_string(status)]))
+    }.
+
+run_ok(label: String, command: Command): Bool ->
+    case Process.run(command) {
+        Err(reason) -> failure(String.concat([label, ": ", reason.message]));
+        Ok(output) -> check_output(label, output)
+    }.
+
+captured_output(label: String, output: Output): Captured ->
+    let stderr = output.stderr;
+    let _stderr =
+        if {
+            stderr == "" -> Unit;
+            true -> eprintln(stderr)
+        };
+    let status = output.status;
+    if {
+        status != 0 -> let _reported = failure(String.concat([label, " exited with status ", Int.to_string(status)]));
+        capture_failed();
+        true -> captured_value(output.stdout)
+    }.
+
+capture_stdout(label: String, command: Command): Captured ->
+    case Process.run(command) {
+        Err(reason) ->
+            let _reported = failure(String.concat([label, ": ", reason.message]));
+            capture_failed();
+        Ok(output) -> captured_output(label, output)
+    }.
+
+create(path: String): Bool ->
+    case Directory.create_all(path) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+remove_if_present(path: String): Bool ->
+    let {
+        Ok(_entries) <- Directory.entries(path);
+        Err(reason) <- Directory.remove_all(path)
+    } else {
+        _ -> true
+    };
+    failure(reason.message).
+
+copy(source: String, destination: String): Bool ->
+    case File.copy(source, destination) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+write(path: String, contents: String): Bool ->
+    case File.write_text(path, contents) {
+        Ok(Unit) -> true;
+        Err(reason) -> failure(reason.message)
+    }.
+
+read_path(path: String): Captured ->
+    case File.read_text(path) {
+        Err(reason) ->
+            let _reported = failure(reason.message);
+            capture_failed();
+        Ok(contents) ->
+            let value = String.trim(contents);
+            if {
+                value == "" -> let _reported = failure(String.append("empty artifact path file: ", path));
+                capture_failed();
+                true -> captured_value(value)
+            }
+    }.
+
+append_strings(left: List[String], right: List[String]): List[String] ->
+    case left {
+        [] -> right;
+        [value | rest] -> [value | append_strings(rest, right)]
+    }.
+
+artifact_command(inputs: Inputs, arguments: List[String]): Command ->
+    bounded(
+        "cargo",
+        append_strings(
+            [
+                "run",
+                "--offline",
+                "--locked",
+                "--quiet",
+                "--manifest-path",
+                child(inputs.repository, "tools/package_artifact/Cargo.toml"),
+                "--",
+            ],
+            arguments,
+        ),
+        inputs.repository,
+    ).
+
+build_artifact(inputs: Inputs, destination: String): Captured ->
+    let command = artifact_command(inputs, ["build", inputs.repository, destination, inputs.target]);
+    let output = capture_stdout("package artifact build", command);
+    if {
+        not output.valid -> capture_failed();
+        true -> let archive = String.trim(output.value);
+        if {
+            archive == "" -> let _reported = failure("package artifact build returned an empty archive path");
+            capture_failed();
+            true -> captured_value(archive)
+        }
+    }.
+
+helper_build_command(inputs: Inputs, generated_manifest: String): Command ->
+    let command =
+        bounded(
+            "cargo",
+            [
+                "build",
+                "--offline",
+                "--locked",
+                "--quiet",
+                "--release",
+                "--manifest-path",
+                generated_manifest,
+                "--bin",
+                "native-boundary-helper",
+            ],
+            inputs.repository,
+        );
+    environment(
+        command,
+        [
+            Process.environment_entry("RUSTFLAGS", inputs.rust_flags),
+            Process.environment_entry("CXXFLAGS", inputs.bridge_flags),
+        ],
+    ).
+
+guard_build_command(inputs: Inputs, guard_manifest: String): Command ->
+    let command =
+        bounded(
+            "cargo",
+            [
+                "build",
+                "--offline",
+                "--locked",
+                "--quiet",
+                "--release",
+                "--manifest-path",
+                guard_manifest,
+            ],
+            inputs.repository,
+        );
+    environment(command, [Process.environment_entry("RUSTFLAGS", inputs.rust_flags)]).
+
+lockfile_command(inputs: Inputs, generated_manifest: String): Command ->
+    bounded(
+        "cargo",
+        ["generate-lockfile", "--offline", "--manifest-path", generated_manifest],
+        inputs.repository,
+    ).
+
+write_built_artifact(inputs: Inputs): Bool ->
+    let archive = build_artifact(inputs, inputs.artifact_directory);
+    if {
+        not archive.valid -> false;
+        true -> write(child(inputs.artifact_directory, "artifact.path"), archive.value)
+    }.
+
+build(inputs: Inputs): Bool ->
+    let generated_manifest = child(inputs.repository, "generated/native/rust/Cargo.toml");
+    let guard_manifest = child(inputs.repository, "native/runtime_guard/Cargo.toml");
+    let helper_build = helper_build_command(inputs, generated_manifest);
+    let guard_build = guard_build_command(inputs, guard_manifest);
+    let lockfile = lockfile_command(inputs, generated_manifest);
+    if {
+        not run_ok("generated lockfile", lockfile) -> false;
+        not run_ok("native boundary helper build", helper_build) -> false;
+        not run_ok("runtime guard build", guard_build) -> false;
+        not create(inputs.artifact_directory) -> false;
+        true -> write_built_artifact(inputs)
+    }.
+
+checksum(inputs: Inputs, archive: String): Bool ->
+    run_ok(
+        "external archive checksum",
+        bounded("sha256sum", ["-c", String.append(archive, ".sha256")], inputs.artifact_directory),
+    ).
+
+prepare_smoke(inputs: Inputs, smoke: String): Bool ->
+    let package_source = child(smoke, "package-source");
+    if {
+        not remove_if_present(smoke) -> false;
+        not create(child(smoke, "src/example")) -> false;
+        not create(child(smoke, "tests/example")) -> false;
+        not create(child(package_source, "src/opencv")) -> false;
+        not copy(child(inputs.repository, "terlan.toml"), child(package_source, "terlan.toml")) -> false;
+        not copy(
+    child(inputs.repository, "tests/artifact_consumer/src/example/Threshold.terl"),
+    child(smoke, "src/example/Threshold.terl"),
+) -> false;
+        not copy(
+    child(inputs.repository, "tests/artifact_consumer/src/example/CodecRoundTrip.terl"),
+    child(smoke, "src/example/CodecRoundTrip.terl"),
+) -> false;
+        not copy(
+    child(inputs.repository, "tests/artifact_consumer/tests/example/ThresholdTest.terl"),
+    child(smoke, "tests/example/ThresholdTest.terl"),
+) -> false;
+        true -> copy(
+            child(
+                inputs.repository,
+                "tests/artifact_consumer/tests/example/CodecRoundTripTest.terl",
+            ),
+            child(smoke, "tests/example/CodecRoundTripTest.terl"),
+        )
+    }.
+
+capture_revision(package_source: String): Captured ->
+    let revision = capture_stdout("git revision", bounded("git", ["rev-parse", "HEAD"], package_source));
+    if {
+        not revision.valid -> capture_failed();
+        true -> captured_value(String.trim(revision.value))
+    }.
+
+initialize_package_source(inputs: Inputs, smoke: String): Captured ->
+    let package_source = child(smoke, "package-source");
+    let init = bounded("git", ["init", "--quiet"], package_source);
+    let add = bounded("git", ["add", "terlan.toml"], package_source);
+    let commit =
+        bounded(
+            "git",
+            [
+                "-c",
+                "user.name=Terlan OpenCV Gate",
+                "-c",
+                "user.email=opencv-gate@terlan.invalid",
+                "commit",
+                "--quiet",
+                "-m",
+                "fixture",
+            ],
+            package_source,
+        );
+    if {
+        not run_ok("git init", init) -> capture_failed();
+        not run_ok("git add", add) -> capture_failed();
+        not run_ok("git commit", commit) -> capture_failed();
+        true -> capture_revision(package_source)
+    }.
+
+write_consumer_toml(inputs: Inputs, smoke: String, revision: String): Bool ->
+    let template_path = child(inputs.repository, "tests/artifact_consumer/terlan.git.toml.template");
+    case File.read_text(template_path) {
+        Err(reason) -> failure(reason.message);
+        Ok(source) ->
+            let repository = child(smoke, "package-source");
+            let with_repository = String.replace(source, "@OPENCV_REPOSITORY@", repository);
+            let contents = String.replace(with_repository, "@OPENCV_REVISION@", revision);
+            write(child(smoke, "terlan.toml"), contents)
+    }.
+
+consume(inputs: Inputs, smoke: String, archive: String): Bool ->
+    let fetch =
+        bounded(
+            inputs.compiler,
+            ["package", "fetch", smoke, "--target", inputs.target, "--artifact", archive],
+            inputs.repository,
+        );
+    let test =
+        Process.without_environment(
+            bounded(
+                inputs.compiler,
+                ["test", child(smoke, "tests"), "--target", "terlan-vm"],
+                inputs.repository,
+            ),
+            [
+                "LD_LIBRARY_PATH",
+                "TERLAN_OPENCV_NATIVE_BOUNDARY_HELPER_PATH",
+                "TERLAN_OPENCV_NATIVE_WORKER_PATH",
+            ],
+        );
+    if {
+        not run_ok("artifact package fetch", fetch) -> false;
+        true -> run_ok("artifact consumer tests", test)
+    }.
+
+replay(inputs: Inputs, archive: String): Captured ->
+    if {
+        not remove_if_present(inputs.replay_directory) -> capture_failed();
+        not create(inputs.replay_directory) -> capture_failed();
+        true -> build_artifact(inputs, inputs.replay_directory)
+    }.
+
+finish_smoke(inputs: Inputs, smoke: String, archive: String): Bool ->
+    let revision = initialize_package_source(inputs, smoke);
+    if {
+        not revision.valid -> false;
+        not write_consumer_toml(inputs, smoke, revision.value) -> false;
+        true -> consume(inputs, smoke, archive)
+    }.
+
+verify_replay(
+    inputs: Inputs,
+    archive: String,
+    replayed: String,
+    extract: String,
+    smoke: String,
+): Bool ->
+    let replay_path = child(inputs.replay_directory, "artifact.path");
+    let comparison = bounded("cmp", [archive, replayed], inputs.repository);
+    let verification = artifact_command(inputs, ["verify", archive, extract]);
+    if {
+        not write(replay_path, replayed) -> false;
+        not run_ok("artifact reproducibility", comparison) -> false;
+        not run_ok("artifact verification", verification) -> false;
+        not prepare_smoke(inputs, smoke) -> false;
+        true -> finish_smoke(inputs, smoke, archive)
+    }.
+
+check_archive(inputs: Inputs, archive: String): Bool ->
+    let smoke = child(inputs.artifact_directory, "smoke");
+    let extract = child(inputs.artifact_directory, "extracted");
+    if {
+        not checksum(inputs, archive) -> false;
+        true -> let replayed = replay(inputs, archive);
+        if {
+            not replayed.valid -> false;
+            true -> verify_replay(inputs, archive, replayed.value, extract, smoke)
+        }
+    }.
+
+check(inputs: Inputs): Bool ->
+    let archive = read_path(child(inputs.artifact_directory, "artifact.path"));
+    if {
+        not archive.valid -> false;
+        true -> check_archive(inputs, archive.value)
+    }.
+
+run(inputs: Inputs): Bool ->
+    case inputs.mode {
+        "build" -> build(inputs);
+        "check" -> check(inputs);
+        _ -> failure(String.append("unknown package artifact mode: ", inputs.mode))
+    }.
+
+entry(): Bool ->
+    let {
+        8 <- Arguments.count();
+        Some(mode) <- Arguments.get(0);
+        Some(compiler) <- Arguments.get(1);
+        Some(repository) <- Arguments.get(2);
+        Some(artifact_directory) <- Arguments.get(3);
+        Some(replay_directory) <- Arguments.get(4);
+        Some(target) <- Arguments.get(5);
+        Some(rust_flags) <- Arguments.get(6);
+        Some(bridge_flags) <- Arguments.get(7)
+    } else {
+        _ ->
+            failure(
+                "expected <build|check> <terlc> <repository> <artifact-directory> <replay-directory> <target> <rust-flags> <bridge-flags>",
+            )
+    };
+    run(
+        Inputs(
+            mode = mode,
+            compiler = compiler,
+            repository = repository,
+            artifact_directory = artifact_directory,
+            replay_directory = replay_directory,
+            target = target,
+            rust_flags = rust_flags,
+            bridge_flags = bridge_flags,
+        ),
+    ).
+
+assert(entry());
+Unit.

@@ -1,0 +1,42 @@
+module opencv.MatViewTest.
+
+import opencv.Mat.
+import std.vm.Bytes.
+
+/**
+ * Validates copied row, column, diagonal, and reshape matrix views.
+ */
+@test
+pub copied_matrix_views(): Bool ->
+    let source = Mat.from_u8(Bytes.from_list([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]), 3, 4, Atom["gray"]);
+    let rows = Mat.row_range_copy(source, 1, 3);
+    let columns = Mat.col_range_copy(source, 1, 3);
+    let diagonal = Mat.diagonal_copy(source, 0);
+    let upper_diagonal = Mat.diagonal_copy(source, 1);
+    let reshaped = Mat.reshape_copy(source, 2, 2);
+    let valid =
+        Mat.rows(rows) == 2
+            and Mat.cols(rows) == 4
+            and Mat.to_bytes(rows).to_list() == [4, 5, 6, 7, 8, 9, 10, 11]
+            and not Mat.is_submatrix(rows)
+            and Mat.rows(columns) == 3
+            and Mat.cols(columns) == 2
+            and Mat.to_bytes(columns).to_list() == [1, 2, 5, 6, 9, 10]
+            and not Mat.is_submatrix(columns)
+            and Mat.rows(diagonal) == 3
+            and Mat.cols(diagonal) == 1
+            and Mat.to_bytes(diagonal).to_list() == [0, 5, 10]
+            and not Mat.is_submatrix(diagonal)
+            and Mat.to_bytes(upper_diagonal).to_list() == [1, 6, 11]
+            and Mat.rows(reshaped) == 2
+            and Mat.cols(reshaped) == 3
+            and Mat.channels(reshaped) == 2
+            and Mat.to_bytes(reshaped).to_list() == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+            and not Mat.is_submatrix(reshaped);
+    Mat.dispose(reshaped);
+    Mat.dispose(upper_diagonal);
+    Mat.dispose(diagonal);
+    Mat.dispose(columns);
+    Mat.dispose(rows);
+    Mat.dispose(source);
+    valid and Mat.live_count() == 0.
