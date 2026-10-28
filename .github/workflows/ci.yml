@@ -44,7 +44,7 @@ jobs:
       - name: Build pinned Terlan script runner
         run: |
           cargo build --quiet --manifest-path _build/terlan/Cargo.toml \
-            -p terlan --bin terlc
+            -p terlan --bin terlc --bin terlan-vm
 
       - name: Validate package-owned contracts
         run: |

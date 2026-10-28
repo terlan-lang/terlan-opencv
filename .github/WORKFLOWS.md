@@ -16,10 +16,10 @@ execution that require the OpenCV source and runtime.
 - promotion revision tooling;
 - every registered package-owned Terlan script.
 
-This job builds the reviewed compiler revision from `upstream/terlan.lock.toml`
-to check and run package-owned scripts. It does not download OpenCV or execute
-the native package. Those operations belong to promotion and release jobs with
-reviewed immutable inputs.
+This job builds the reviewed compiler and VM revision from
+`upstream/terlan.lock.toml` to check and run package-owned scripts. It does not
+download OpenCV or execute the native package. Those operations belong to
+promotion and release jobs with reviewed immutable inputs.
 
 ## Promotion
 
