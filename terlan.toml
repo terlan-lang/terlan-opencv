@@ -5,7 +5,7 @@ namespace = "opencv"
 description = "CPU-first OpenCV vision, machine-learning, and inference-preprocessing integration for Terlan"
 license = "Apache-2.0"
 repository = "https://github.com/terlan-lang/terlan-opencv"
-compiler = ">= 0.0.7"
+compiler = ">= 0.0.10"
 links = ["https://terlan.org", "https://opencv.org"]
 
 [build]

@@ -10,22 +10,12 @@ close(actual: Float, expected: Float): Bool ->
 @test
 pub dense_core_matrix_workflow(): Bool ->
     let identity = Core.identity(2, 2, Atom["f64"]);
-    let values =
-        identity
-        |> Mat.to_bytes();
+    let values = Mat.to_bytes(identity);
     let copied = Mat.from_bytes(values, 2, 2, 1, Atom["f64"]);
-    let product =
-        copied
-        |> Core.multiply(identity);
-    let determinant =
-        product
-        |> Core.determinant();
-    let trace =
-        product
-        |> Core.trace();
-    let norm =
-        product
-        |> Core.norm(Atom["l1"]);
+    let product = Core.multiply(copied, identity);
+    let determinant = Core.determinant(product);
+    let trace = Core.trace(product);
+    let norm = Core.norm(product, Atom["l1"]);
     let valid =
         Mat.rows(product) == 2
             and Mat.cols(product) == 2

@@ -1,5 +1,5 @@
 /**
- * Demonstrates one pipeline against the installed OpenCV package artifact.
+ * Demonstrates image processing against the installed OpenCV package artifact.
  */
 module example.Threshold.
 
@@ -11,7 +11,9 @@ import std.vm.Bytes.
  * Converts four grayscale pixels into one copied binary image.
  */
 pub make_binary_image(): Bytes ->
-    Bytes.from_list([0, 64, 128, 255])
-    |> Mat.from_u8(2, 2, Gray)
-    |> Imgproc.threshold(100.0, 255.0, BinaryThreshold)
-    |> Mat.to_u8().
+    let image = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let binary = Imgproc.threshold(image, 100.0, 255.0, BinaryThreshold);
+    let pixels = Mat.to_u8(binary);
+    Mat.dispose(binary);
+    Mat.dispose(image);
+    pixels.

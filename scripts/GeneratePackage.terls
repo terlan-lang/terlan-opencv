@@ -22,7 +22,7 @@ failure(message: String): Bool ->
     false.
 
 remove_tree_if_present(path: String): Bool ->
-    let {
+    when {
         Ok(_entries) <- Directory.entries(path);
         Err(reason) <- Directory.remove_all(path)
     } else {

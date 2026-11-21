@@ -266,7 +266,7 @@ run(inputs: Inputs): Bool ->
     }.
 
 entry(): Bool ->
-    let {
+    when {
         6 <- Arguments.count();
         Some(mode) <- Arguments.get(0);
         Some(program) <- Arguments.get(1);
