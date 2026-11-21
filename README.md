@@ -15,10 +15,12 @@ import opencv.Types.{BinaryThreshold, Gray}.
 import std.vm.Bytes.
 
 pub make_binary_image(): Bytes ->
-    Bytes.from_list([0, 64, 128, 255])
-    |> Mat.from_u8(2, 2, Gray)
-    |> Imgproc.threshold(100.0, 255.0, BinaryThreshold)
-    |> Mat.to_u8().
+    let image = Mat.from_u8(Bytes.from_list([0, 64, 128, 255]), 2, 2, Gray);
+    let binary = Imgproc.threshold(image, 100.0, 255.0, BinaryThreshold);
+    let pixels = Mat.to_u8(binary);
+    Mat.dispose(binary);
+    Mat.dispose(image);
+    pixels.
 ```
 
 The source is a 2x2 grayscale image with pixel values `0`, `64`, `128`, and
@@ -29,7 +31,7 @@ white.
 ## Installation
 
 The first packaged release is coming soon. To use the current version from
-source, install Terlan `0.0.7`, Rust, CMake, a C++ compiler, and Git, then clone
+source, install Terlan `0.0.10` or newer, Rust, CMake, a C++ compiler, and Git, then clone
 the repository:
 
 ```sh
