@@ -46730,6 +46730,10 @@
           "kind": "opaque_resource",
           "name": "Mat"
         }
+      ],
+      "type_imports": [
+        "opencv.Types.MatrixDepth",
+        "opencv.Types.PixelLayout"
       ]
     },
     {
@@ -47315,7 +47319,18 @@
         }
       ],
       "module": "opencv.Core",
-      "types": []
+      "types": [],
+      "type_imports": [
+        "opencv.Mat.Mat",
+        "opencv.Types.DecompositionMethod",
+        "opencv.Types.MatrixDepth",
+        "opencv.Types.MatrixNorm",
+        "opencv.Types.ReductionDimension",
+        "opencv.Types.ReductionOperation",
+        "opencv.Types.SerializationFormat",
+        "opencv.Types.SortDimension",
+        "opencv.Types.SortOrder"
+      ]
     },
     {
       "documentation": "Owned connected-component analyses with copied projections.",
@@ -48831,6 +48846,9 @@
           "kind": "opaque_resource",
           "name": "MserRegions"
         }
+      ],
+      "type_imports": [
+        "opencv.Mat.Mat"
       ]
     },
     {
@@ -49311,6 +49329,9 @@
           "kind": "opaque_resource",
           "name": "Contours"
         }
+      ],
+      "type_imports": [
+        "opencv.Mat.Mat"
       ]
     },
     {
@@ -51977,7 +51998,24 @@
           "role": "immutable_method"
         }
       ],
-      "module": "opencv.Imgproc"
+      "module": "opencv.Imgproc",
+      "type_imports": [
+        "opencv.Components.Components",
+        "opencv.Contours.Contours",
+        "opencv.Mat.Mat",
+        "opencv.Types.AdaptiveThresholdMethod",
+        "opencv.Types.AffineTransform",
+        "opencv.Types.BorderMode",
+        "opencv.Types.ColorConversion",
+        "opencv.Types.ComparisonMode",
+        "opencv.Types.Connectivity",
+        "opencv.Types.FlipMode",
+        "opencv.Types.Interpolation",
+        "opencv.Types.MorphologyOperation",
+        "opencv.Types.PerspectiveTransform",
+        "opencv.Types.RotateMode",
+        "opencv.Types.ThresholdMode"
+      ]
     },
     {
       "documentation": "Owned CPU-only classical machine-learning models with copied data boundaries.",
@@ -54420,7 +54458,16 @@
         }
       ],
       "module": "opencv.Calib3d",
-      "types": []
+      "types": [],
+      "type_imports": [
+        "opencv.Mat.Mat",
+        "opencv.Types.AffineTransform",
+        "opencv.Types.CameraIntrinsics",
+        "opencv.Types.CameraPose",
+        "opencv.Types.DistortionCoefficients",
+        "opencv.Types.PerspectiveTransform",
+        "opencv.Types.Vector3"
+      ]
     },
     {
       "documentation": "Filesystem-free image codecs with copied byte boundaries.",
@@ -54466,7 +54513,12 @@
           "role": "immutable_method"
         }
       ],
-      "module": "opencv.Codecs"
+      "module": "opencv.Codecs",
+      "type_imports": [
+        "opencv.Mat.Mat",
+        "opencv.Types.DecodeMode",
+        "opencv.Types.ImageFormat"
+      ]
     },
     {
       "documentation": "CPU-only deterministic preprocessing and bounded in-memory ONNX inference with copied tensor values.",
@@ -55850,6 +55902,9 @@
           "kind": "opaque_resource",
           "name": "Classifications"
         }
+      ],
+      "type_imports": [
+        "opencv.Mat.Mat"
       ]
     }
   ],

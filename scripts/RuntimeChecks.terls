@@ -243,8 +243,8 @@ check_sample_application(source: String, output: Output): Bool ->
     }.
 
 run_sample_application(inputs: Inputs, source: String): Bool ->
-    let artifact = child(inputs.repository, "_build/vm/samples_Main.tvm");
-    let command = with_runtime(bounded(inputs, ["run", artifact, "--entry", "samples.Main.main"]), inputs);
+    let project = child(inputs.repository, "generated/samples");
+    let command = with_runtime(bounded(inputs, ["run", project]), inputs);
     case Process.run(command) {
         Err(reason) -> failure(reason.message);
         Ok(output) -> check_sample_application(source, output)

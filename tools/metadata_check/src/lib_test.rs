@@ -310,8 +310,24 @@ fn generated_aot_helper_drift_is_rejected() {
         ),
         (
             "missing_chunked_transfer",
-            ("struct InboundTransfer", "struct RemovedInboundTransfer"),
-            "struct InboundTransfer",
+            (
+                "adapter_transport::read_message(",
+                "adapter_transport::removed_read_message(",
+            ),
+            "adapter_transport::read_message(",
+        ),
+        (
+            "unbounded_frame",
+            (".take((limits.frame + 1) as u64)", ".take(u64::MAX)"),
+            ".take((limits.frame + 1) as u64)",
+        ),
+        (
+            "unbounded_transfer",
+            (
+                "bytes.len().saturating_add(chunk.len()) > limits.message()",
+                "false",
+            ),
+            "bytes.len().saturating_add(chunk.len()) > limits.message()",
         ),
         (
             "private_runtime",
