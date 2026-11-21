@@ -868,10 +868,10 @@ mod tests {
         let (root, ledger, inventory, reconciliation, mappings) = inputs();
         let report = build_report(&root, &ledger, &inventory, &reconciliation, &mappings).unwrap();
         assert_eq!(report.summary.operations, 429);
-        assert_eq!(report.summary.identities, 7_419);
+        assert_eq!(report.summary.identities, 7_648);
         assert_eq!(
             report.summary.classifications.values().sum::<usize>(),
-            7_419
+            7_648
         );
     }
 

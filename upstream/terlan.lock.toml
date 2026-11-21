@@ -1,3 +1,3 @@
 schema = "terlan.opencv.compiler.v1"
 repository = "https://github.com/terlan-lang/terlan.git"
-commit = "7951ad0b6260f96db756ae75e8d2858df03d6947"
+commit = "eb6dc3090ffba5a97bbd5391c6a8b3a8962cee51"

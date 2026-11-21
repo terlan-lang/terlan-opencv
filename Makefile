@@ -157,7 +157,7 @@ opencv-samples-check: opencv-generate
 opencv-samples-runtime-check: opencv-native-adapter-check opencv-runtime-guard-check
 	"$(TERLC)" build generated/samples --target terlan-vm
 	$(TERLAN_SCRIPT) runtime-checks -- samples \
-		"$(abspath ../terlan/target/debug/terlan-vm)" "$(CURDIR)" \
+		"$(abspath $(TERLC))" "$(CURDIR)" \
 		"$(abspath $(OPENCV_INSTALL))" "$(abspath $(RUNTIME_GUARD))" "$(abspath $(NATIVE_HELPER))"
 
 opencv-promotion-tool-check:

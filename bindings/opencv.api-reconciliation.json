@@ -834,7 +834,7 @@
         "method.opencv_dnn_blob.batch_count"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -953,7 +953,7 @@
         "method.opencv_dnn_blob.channel_count"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -965,7 +965,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -977,7 +977,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -989,7 +989,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1000,7 +1000,7 @@
         "function.classification_candidates_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1098,7 +1098,7 @@
         "method.opencv_dnn_blob.height"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1265,7 +1265,7 @@
         "method.opencv_dnn_output.shape_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1310,7 +1310,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1322,7 +1322,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1334,7 +1334,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1346,7 +1346,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1357,7 +1357,7 @@
         "method.opencv_dnn_output.sigmoid_classification_candidates_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1368,7 +1368,7 @@
         "method.opencv_dnn_output.sigmoid_classifications_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1380,7 +1380,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1392,7 +1392,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1404,7 +1404,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1415,7 +1415,7 @@
         "method.opencv_dnn_output.softmax_classifications_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1427,7 +1427,7 @@
       ],
       "upstream": [
         "method:cv::Mat::total()@modules/core/include/opencv2/core/mat.hpp:1895:12",
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1438,7 +1438,7 @@
         "function.top_classification_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1476,7 +1476,7 @@
         "function.top_classifications_owned"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
@@ -1500,7 +1500,7 @@
         "method.opencv_dnn_blob.width"
       ],
       "upstream": [
-        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:621:10"
+        "method:cv::MatSize::operator[](int)@modules/core/include/opencv2/core/mat.hpp:620:16"
       ]
     },
     {
