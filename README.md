@@ -135,7 +135,9 @@ binding generation and deterministic test and sample staging.
 contracts, generated package tests, and external consumer tests with explicit
 runtime environments. `scripts/PackageArtifact.terls` owns artifact assembly,
 deterministic replay, verification, and the extracted-package consumer smoke
-test. `scripts/FreshWorkspaceCheck.terls` validates immutable inputs, clones
+test. The artifact consumer removes its staged source repository after fetch
+and clears runtime helper overrides before testing from the package cache.
+`scripts/FreshWorkspaceCheck.terls` validates immutable inputs, clones
 clean compiler, package, and OpenCV repositories, rebuilds the required
 compiler tools, runs the package consumer gate, and records verified promotion
 evidence. `scripts/Workspace.terls` creates the generated native dependency

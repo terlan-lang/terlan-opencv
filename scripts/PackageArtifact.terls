@@ -351,6 +351,7 @@ consume(inputs: Inputs, smoke: String, archive: String): Bool ->
         );
     if {
         not run_ok("artifact package fetch", fetch) -> false;
+        not remove_if_present(child(smoke, "package-source")) -> false;
         true -> run_ok("artifact consumer tests", test)
     }.
 
