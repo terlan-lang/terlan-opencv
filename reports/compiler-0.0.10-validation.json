@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-26",
+  "package": "terlan-opencv",
+  "source_commit": "e08c400ae6e0b5bb1d553019a9a6c41fb5fa4066",
+  "compiler": {
+    "version": "0.0.10",
+    "source_revision": "8b40bcca5a47",
+    "target": "x86_64-unknown-linux-gnu",
+    "distribution": "https://github.com/terlan-lang/terlan/releases/tag/v0.0.10",
+    "archive_sha256": "f251afd1ffdb7aa6704df6786a9c4800daec6ac2c6485e7e7342defc286e3547",
+    "terlc_sha256": "2bc491fd8ff5b599c25a038f026ce6bb9ca87d83e8101b00853870ca7f07e75d"
+  },
+  "scope": "CPU native VM tests; real package native helper; forced uncached test execution",
+  "environment": {
+    "TERLAN_TEST_FORCE_RERUN": "1"
+  },
+  "results": [
+    {
+      "command": "terlc test generated/tests",
+      "exit_code": 0,
+      "tests_passed": 35,
+      "tests_failed": 0,
+      "log_sha256": "cc2a0f61ba839545fd199b80910b95fcaf28d7249a636d09fdacc8d8ad45ca9c",
+      "success_marker": null
+    },
+    {
+      "command": "terlc test tests/consumer/tests",
+      "exit_code": 0,
+      "tests_passed": 2,
+      "tests_failed": 0,
+      "log_sha256": "9319845ebf48852e99be79b4e7f90e3d6ad7f16510b14aa343e2e4ddb5db8b7d",
+      "success_marker": null
+    }
+  ]
+}
